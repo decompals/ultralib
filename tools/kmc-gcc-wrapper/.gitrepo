@@ -1,0 +1,12 @@
+; DO NOT EDIT (unless you know what you are doing)
+;
+; This subdirectory is a git "subrepo", and this file is maintained by the
+; git-subrepo command. See https://github.com/git-commands/git-subrepo#readme
+;
+[subrepo]
+	remote = https://github.com/Mr-Wiseguy/kmc-gcc-wrapper.git
+	branch = master
+	commit = 5b2bbe7245660c0487c739cf3197777dd79000a9
+	parent = 60de9905735c942af6faa0fc885458128712c859
+	method = merge
+	cmdver = 0.4.3
