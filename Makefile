@@ -49,13 +49,13 @@ endif
 clean:
 	$(RM) -rf $(BUILD_DIR)
 
-distclean:
-	$(MAKE) clean
+distclean: clean
+	$(MAKE) -C tools distclean
 	$(RM) -rf $(BASE_DIR)
 
 setup:
 	cd $(BASE_DIR) && $(AR) xo ../$(BASE_AR)
-	chmod -R 777 $(BASE_DIR)
+	chmod -R +rw $(BASE_DIR)
 
 $(BUILD_DIR)/$(BASE_DIR)/%.o: $(BASE_DIR)/%.o
 	cp $< $@
