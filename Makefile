@@ -71,8 +71,7 @@ $(BUILD_DIR)/%.o: %.c
 ifneq ($(NON_MATCHING),1)
 # patch corrupted bytes
 	python3 tools/fix_objfile.py $@ $(BASE_DIR)/$(@F)
-#	@$(COMPARE_OBJ)
+	@$(COMPARE_OBJ)
 # change file timestamps to match original
 	touch -r $(BASE_DIR)/$(@F) $@
-	diff $@ $(BASE_DIR)/$(@F)
 endif
