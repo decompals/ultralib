@@ -5,6 +5,7 @@ BASE_DIR := base_$(TARGET)
 BASE_AR := $(TARGET).a
 BUILD_DIR := build
 BUILD_AR := $(BUILD_DIR)/$(TARGET).a
+WORKING_DIR := $(shell pwd)
 
 CPP := cpp -P
 AR := ar
@@ -66,11 +67,12 @@ ifneq ($(NON_MATCHING),1)
 endif
 
 $(BUILD_DIR)/%.o: %.c
-	cd $(<D) && ../$(CC) -nostdinc -c -G 0 -mgp32 -mfp32 -mips3 -O3 -I ../include $(<F) -o ../$@
+	cd $(<D) && $(WORKING_DIR)/$(CC) -nostdinc -c -G 0 -mgp32 -mfp32 -mips3 -O3 -I $(WORKING_DIR)/include $(<F) -o $(WORKING_DIR)/$@
 ifneq ($(NON_MATCHING),1)
 # patch corrupted bytes
 	python3 tools/fix_objfile.py $@ $(BASE_DIR)/$(@F)
 #	@$(COMPARE_OBJ)
 # change file timestamps to match original
 	touch -r $(BASE_DIR)/$(@F) $@
+	diff $@ $(BASE_DIR)/$(@F)
 endif
