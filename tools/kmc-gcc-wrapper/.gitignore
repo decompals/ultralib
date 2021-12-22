@@ -1,0 +1,15 @@
+*.s
+*.o
+__pycache__
+.vscode
+wrapper
+log.txt
+as
+cc1
+cpp
+gcc
+mild
+makemask
+sgi2gas
+ld
+test/
