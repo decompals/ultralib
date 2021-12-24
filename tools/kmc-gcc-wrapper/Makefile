@@ -10,9 +10,6 @@ all: $(PROGRAMS)
 $(PROGRAMS): $(SRCS) $(HEADERS)
 	$(CC) $(CFLAGS) $(SRCS) -DPROG=$@ -o $@
 
-ld: CFLAGS += -DNDEBUG
-makemask: CFLAGS += -DNDEBUG
-
 clean:
 	rm -f $(PROGRAMS)
 

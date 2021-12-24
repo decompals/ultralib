@@ -6,7 +6,7 @@ BASE_AR := $(TARGET).a
 BUILD_DIR := build
 BUILD_AR := $(BUILD_DIR)/$(TARGET).a
 
-ROOT := $(PWD)
+WORKING_DIR := $(shell pwd)
 
 CPP := cpp -P
 AR := ar
@@ -71,8 +71,7 @@ ifneq ($(NON_MATCHING),1)
 endif
 
 $(BUILD_DIR)/%.o: %.c
-	cd $(<D) && $(ROOT)/$(CC) $(CFLAGS) $(OPTFLAGS) -I $(ROOT)/include $(<F) -o $(ROOT)/$@
-	test -f $@
+	cd $(<D) && $(WORKING_DIR)/$(CC) $(CFLAGS) $(OPTFLAGS) -I $(WORKING_DIR)/include $(<F) -o $(WORKING_DIR)/$@
 ifneq ($(NON_MATCHING),1)
 # patch corrupted bytes
 	python3 tools/fix_objfile.py $@ $(BASE_DIR)/$(@F)
