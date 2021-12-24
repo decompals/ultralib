@@ -19,13 +19,14 @@ https://sourceware.org/gdb/current/onlinedocs/stabs.html
 (ecoff docs):
 https://web.archive.org/web/20160305114748/http://h41361.www4.hp.com/docs/base_doc/DOCUMENTATION/V50A_ACRO_SUP/OBJSPEC.PDF
 https://chromium.googlesource.com/native_client/nacl-toolchain/+/refs/tags/gcc-4.4.3/binutils/gas/ecoff.c
+https://kernel.googlesource.com/pub/scm/linux/kernel/git/hjl/binutils/+/hjl/secondary/include/coff/sym.h
 https://kernel.googlesource.com/pub/scm/linux/kernel/git/hjl/binutils/+/hjl/secondary/include/coff/symconst.h
 """
 
 from enum import IntEnum
 import struct
 
-class EcoffBasicType(IntEnum):
+class EcoffBt(IntEnum): # Basic Type
     NIL         =  0 # 
     ADR         =  1 # pointer-sized integer type
     CHAR        =  2 # char
@@ -62,6 +63,8 @@ class EcoffBasicType(IntEnum):
     ADR64       = 34 # 
     INT64       = 35 # 
     UINT64      = 36 # 
+
+    AGGREGATE   = 63 # not a basic type
     MAX         = 64 # 
 
 class EcoffSc(IntEnum):
@@ -119,7 +122,7 @@ class EcoffSt(IntEnum):
     ENUM       = 28 # enum
     INDIRECT   = 34 # 
 
-class EcoffTypeQualifier(IntEnum):
+class EcoffTq(IntEnum): # Type qualifier
     NIL   = 0 # 
     PTR   = 1 # pointer
     PROC  = 2 # procedure
@@ -128,6 +131,15 @@ class EcoffTypeQualifier(IntEnum):
     VOL   = 5 # volatile
     CONST = 6 # constant
     MAX   = 8 # 
+
+    UNK7   = 7 # invalid
+    UNK9   = 9 # invalid
+    UNK10   = 10 # invalid
+    UNK11   = 11 # invalid
+    UNK12   = 12 # invalid
+    UNK13   = 13 # invalid
+    UNK14   = 14 # invalid
+    UNK   = 15 # invalid
 
 class EcoffLanguageCode(IntEnum):
     C           = 0
@@ -181,6 +193,137 @@ delta        = {self.delta}
 count        = {self.count}
 extended     = {self.is_extended}"""
 
+class EcoffTir:
+    """
+    ECOFF Type Information Record
+
+    typedef struct {
+#ifdef LITTLE_ENDIAN
+        u32 tq3 : 4;
+        u32 tq2 : 4;
+        u32 tq1 : 4;        /* 6 type qualifiers - tqPtr, etc. */
+        u32 tq0 : 4;
+        /* ---- 16 bit boundary ---- */
+        u32 tq5 : 4;
+        u32 tq4 : 4;
+        u32 bt  : 6;        /* basic type */
+        u32 continued : 1;  /* indicates additional TQ info in next AUX */
+        u32 fBitfield : 1;  /* set if bit width is specified */
+#else
+        u32 fBitfield : 1;  /* set if bit width is specified */
+        u32 continued : 1;  /* indicates additional TQ info in next AUX */
+        u32 bt  : 6;        /* basic type */
+        u32 tq4 : 4;
+        u32 tq5 : 4;
+        /* ---- 16 bit boundary ---- */
+        u32 tq0 : 4;
+        u32 tq1 : 4;        /* 6 type qualifiers - tqPtr, etc. */
+        u32 tq2 : 4;
+        u32 tq3 : 4;
+#endif
+    } TIR, *pTIR; // size = 4
+    """
+    SIZE = 4
+
+    def __init__(self, data, endian) -> None:
+        if endian == 1:
+            self.tq3 = EcoffTq(get_bitrange(data, 0, 4))
+            self.tq2 = EcoffTq(get_bitrange(data, 4, 4))
+            self.tq1 = EcoffTq(get_bitrange(data, 8, 4))
+            self.tq0 = EcoffTq(get_bitrange(data, 12, 4))
+            self.tq5 = EcoffTq(get_bitrange(data, 16, 4))
+            self.tq4 = EcoffTq(get_bitrange(data, 20, 4))
+            self.bt = EcoffBt(get_bitrange(data, 24, 6))
+            self.continued = get_bitrange(data, 30, 1)
+            self.fBitfield = get_bitrange(data, 31, 1)
+        else:
+            self.fBitfield = get_bitrange(data, 0, 1)
+            self.continued = get_bitrange(data, 1, 1)
+            self.bt = EcoffBt(get_bitrange(data, 2, 6))
+            self.tq4 = EcoffTq(get_bitrange(data, 8, 4))
+            self.tq5 = EcoffTq(get_bitrange(data, 12, 4))
+            self.tq0 = EcoffTq(get_bitrange(data, 16, 4))
+            self.tq1 = EcoffTq(get_bitrange(data, 20, 4))
+            self.tq2 = EcoffTq(get_bitrange(data, 24, 4))
+            self.tq3 = EcoffTq(get_bitrange(data, 28, 4))
+        self.tqs = (self.tq0, self.tq1, self.tq2, self.tq3, self.tq4, self.tq5)
+
+    def __str__(self) -> str:
+        return f"""= EcoffTIR ==============
+fBitfield = {self.fBitfield}
+continued = {self.continued}
+bt        = {self.bt.name}
+tq4       = {self.tq4}
+tq5       = {self.tq5}
+tq0       = {self.tq0}
+tq1       = {self.tq1}
+tq2       = {self.tq2}
+tq3       = {self.tq3}"""
+
+class EcoffRNDXR:
+    """
+    typedef struct {
+#ifdef LITTLE_ENDIAN
+        u32 index : 20; /* index int sym/aux/iss tables */
+        u32 rfd   : 12; /* index into the file indirect table */
+#else
+        u32 rfd   : 12; /* index into the file indirect table */
+        u32 index : 20; /* index int sym/aux/iss tables */
+#endif
+    } RNDXR, *pRNDXR; // size = 4
+    """
+    SIZE = 4
+
+    def __init__(self, data, endian) -> None:
+        if endian == 1:
+            self.index = get_bitrange(data, 0, 20)
+            self.rfd = get_bitrange(data, 20, 12)
+        else:
+            self.rfd = get_bitrange(data, 0, 12)
+            self.index = get_bitrange(data, 12, 20)
+
+    def __str__(self) -> str:
+        return f"""= EcoffRNDXR ==============
+index = {self.index}
+rfd   = {self.rfd}"""
+
+class EcoffAux:
+    """
+    typedef union __sgi_auxu_u {
+        TIR     ti;     /* type information record */
+        RNDXR   rndx;   /* relative index into symbol table */
+        long_i  dnLow;  /* low dimension of array */
+        long_i  dnHigh; /* high dimension of array */
+        long_i  isym;   /* symbol table index (end of proc) */
+        long_i  iss;    /* index into string space (not used) */
+        long_i  width;  /* width for non-default sized struct fields */
+        long_i  count;  /* count of ranges for variant arm */
+    } AUXU, *pAUXU; // size = 4
+    """
+    SIZE = 4
+
+    def __init__(self, fdr, data, endian) -> None:
+        data = struct.unpack((">" if endian == 1 else "<") + "I", data)[0]
+        self.ti = EcoffTir(data, endian)
+        self.rndx = EcoffRNDXR(data, endian)
+        self.dnLow = self.dnHigh = self.isym = self.iss = self.width = self.count = data
+        self.fdr = fdr
+    
+    def __str__(self) -> str:
+        return f"""= EcoffAux ==============
+ti     = {{
+{self.ti}
+}}
+rndx   = {{
+{self.rndx}
+}}
+dnLow  = {self.dnLow:04X}
+dnHigh = {self.dnHigh:04X}
+isym   = {self.isym:04X}
+iss    = {self.iss:04X}
+width  = {self.width:04X}
+count  = {self.count:04X}"""
+
 class EcoffSymr:
     """
     ECOFF Local Symbol
@@ -188,6 +331,7 @@ class EcoffSymr:
     typedef struct sSymr {
         s32 iss;            /* index into String Space of name */
         s32 value;          /* symbol value */
+        /*  value can be an address, size or frame offset depending on symbol type */
         EcoffSt st    : 6;  /* symbol type */
         EcoffSc sc    : 5;  /* storage class - text, data, etc */
         s32 _reserved : 1;  /* reserved bit */
@@ -196,7 +340,8 @@ class EcoffSymr:
     """
     SIZE = 0xC
 
-    def __init__(self, parent, data):
+    def __init__(self, parent, idx, data):
+        self.idx = idx
         self.parent = parent # can be either Fdr or Pdr
         self.pdr = parent if type(parent) == EcoffPdr else None
         self.fdr = self.pdr.parent if self.pdr is not None else parent
@@ -210,11 +355,196 @@ class EcoffSymr:
         self.index = get_bitrange(bits, 0, 20)
 
         self.name = self.fdr.read_string(self.iss)
+        self.type_name = None
+
+        self.c_repr = None
 
         assert self._reserved == 0 # Sanity check
 
+    def link_syms(self):
+        if self.st == EcoffSt.END:
+            self.start_sym = self.fdr.symrs[self.index]
+        elif self.st in [EcoffSt.BLOCK, EcoffSt.FILE, EcoffSt.STRUCT, EcoffSt.UNION, EcoffSt.ENUM]:
+            self.end_sym = self.fdr.symrs[self.index - 1]
+        elif self.st in [EcoffSt.PROC, EcoffSt.STATICPROC]:
+            aux = self.fdr.auxs[self.index]
+            self.end_sym = self.fdr.symrs[aux.isym - 1]
+        elif self.st in [EcoffSt.GLOBAL, EcoffSt.STATIC, EcoffSt.PARAM, EcoffSt.LOCAL, EcoffSt.MEMBER, EcoffSt.TYPEDEF, EcoffSt.FORWARD]:
+            pass
+
+    def late_init(self):
+        if self.st == EcoffSt.END:
+            """
+            END symbols index the associated begin symbol
+            """
+            self.start_sym = self.fdr.symrs[self.index]
+            if self.start_sym.st == EcoffSt.BLOCK:
+                self.c_repr = "}"
+            elif self.start_sym.st == EcoffSt.FILE:
+                self.c_repr = f"// end of file: \"{self.start_sym.name}\""
+            elif self.start_sym.st in [EcoffSt.STRUCT, EcoffSt.UNION, EcoffSt.ENUM]:
+                self.c_repr = "}"
+                if len(self.start_sym.type_name) != 0:
+                    self.c_repr += " " + self.start_sym.type_name
+                self.c_repr += f";"
+        elif self.st in [EcoffSt.BLOCK, EcoffSt.FILE, EcoffSt.STRUCT, EcoffSt.UNION, EcoffSt.ENUM]:
+            """
+            These symbols index the first symbol after their associated END symbol
+            """
+            self.end_sym = self.fdr.symrs[self.index - 1]
+            if self.st == EcoffSt.BLOCK:
+                self.c_repr = "{"
+            elif self.st == EcoffSt.FILE:
+                self.c_repr = f"#line 1 \"{self.name}\""
+            elif self.st in [EcoffSt.STRUCT, EcoffSt.UNION, EcoffSt.ENUM]:
+                keyword = ""
+                self.type_name = ""
+                next_sym = self.fdr.symrs[self.index]
+                if next_sym.st == EcoffSt.TYPEDEF:
+                    # possible typedef struct/union/enum
+                    # TODO check this by ensuring the typedef symbol references this symbol
+                    keyword += "typedef "
+                    self.type_name = next_sym.name
+
+                if self.st == EcoffSt.UNION:
+                    keyword += "union"
+                elif self.st == EcoffSt.ENUM:
+                    keyword += "enum"
+                else:
+                    keyword += "struct"
+
+                name = self.name
+                if len(name) != 0:
+                    name = ' ' + name
+
+                self.c_repr = f"{keyword}{name} {{"
+        elif self.st in [EcoffSt.PROC, EcoffSt.STATICPROC]:
+            aux1 = self.fdr.auxs[self.index]
+            self.end_sym = self.fdr.symrs[aux1.isym - 1]
+
+            self.c_repr = ""
+            if self.st == EcoffSt.STATICPROC:
+                self.c_repr += "static "
+
+            self.return_type = self.process_type_information(1)
+            self.c_repr += self.return_type
+            if len(self.return_type) != 0:
+                self.c_repr += " "
+            self.c_repr += self.name
+            self.c_repr += "()"
+        elif self.st in [EcoffSt.GLOBAL, EcoffSt.STATIC, EcoffSt.PARAM, EcoffSt.LOCAL, EcoffSt.MEMBER, EcoffSt.FORWARD]:
+            self.c_repr = ""
+            if self.st == EcoffSt.MEMBER:
+                # value of a stMember is the offset in bits
+                self.c_repr += f"/* 0x{self.value//8:X} */ "
+
+            self.c_repr += self.process_type_information(0)
+            if len(self.c_repr) != 0:
+                self.c_repr += " "
+            self.c_repr += f"{self.name};"
+        elif self.st == EcoffSt.TYPEDEF:
+            # TODO the typedef may already be absorbed into a struct or similar, check before emitting
+            self.c_repr = f"typedef {self.type_name} {self.name};"
+
+    def process_type_information(self, ind):
+        c_bt_names = {
+            EcoffBt.NIL         : None, 
+            EcoffBt.ADR         : None, 
+            EcoffBt.CHAR        : "signed char", 
+            EcoffBt.UCHAR       : "char", 
+            EcoffBt.SHORT       : "short", 
+            EcoffBt.USHORT      : "unsigned short", 
+            EcoffBt.INT         : "int", 
+            EcoffBt.UINT        : "unsigned int", 
+            EcoffBt.LONG        : "long", 
+            EcoffBt.ULONG       : "unsigned long", 
+            EcoffBt.FLOAT       : "float", 
+            EcoffBt.DOUBLE      : "double", 
+            EcoffBt.STRUCT      : "struct", 
+            EcoffBt.UNION       : "union", 
+            EcoffBt.ENUM        : "enum", 
+            EcoffBt.TYPEDEF     : "typedef", 
+            EcoffBt.RANGE       : None, 
+            EcoffBt.SET         : None, 
+            EcoffBt.COMPLEX     : "complex", 
+            EcoffBt.DCOMPLEX    : "double complex", 
+            EcoffBt.INDIRECT    : None, 
+            EcoffBt.FIXEDDEC    : None, 
+            EcoffBt.FLOATDEC    : None, 
+            EcoffBt.STRING      : "const char*", 
+            EcoffBt.BIT         : None, 
+            EcoffBt.PICTURE     : None, 
+            EcoffBt.VOID        : "void", 
+            EcoffBt.LONGLONG    : "long long", 
+            EcoffBt.ULONGLONG   : "unsigned long long", 
+            EcoffBt.LONG64      : "long", 
+            EcoffBt.ULONG64     : "unsigned long", 
+            EcoffBt.LONGLONG64  : "long long", 
+            EcoffBt.ULONGLONG64 : "unsigned long long", 
+            EcoffBt.ADR64       : None, 
+            EcoffBt.INT64       : None, 
+            EcoffBt.UINT64      : None, 
+        }
+        c_tq_str = {
+            EcoffTq.NIL   : "",
+            EcoffTq.PTR   : "*",
+            EcoffTq.PROC  : "()",
+            EcoffTq.ARRAY : "[]",
+            EcoffTq.FAR   : "/* FAR */",
+            EcoffTq.VOL   : "volatile",
+            EcoffTq.CONST : "const",
+        }
+
+        aux = self.fdr.auxs[self.index + ind]
+        ind += 1
+        type_str = ""
+
+        if aux.ti.fBitfield == 1:
+            # TODO
+            ind += 1
+
+        if aux.ti.bt in [EcoffBt.STRUCT, EcoffBt.UNION, EcoffBt.ENUM, EcoffBt.TYPEDEF]:
+            type_ref_aux = self.fdr.auxs[self.index + ind]
+            ind += 1
+
+            fd_ref_idx = type_ref_aux.rndx.rfd
+            if fd_ref_idx == 4095:
+                fd_ref_idx = self.fdr.auxs[self.index + ind].isym
+                ind += 1
+
+            fdr_ref = self.fdr.parent.fdrs[fd_ref_idx]
+            sym_ref = fdr_ref.symrs[type_ref_aux.rndx.index]
+            # now we have the reference to the stStruct, stUnion, stEnum, or stTypeDef
+            type_str += f"{sym_ref.type_name if sym_ref.type_name is not None else sym_ref.name}"
+        else:
+            type_str += f"{c_bt_names[aux.ti.bt]}"
+
+        # TODO improve emitting qualified types
+        tqs = ""
+        for tq in aux.ti.tqs:
+            if tq == EcoffTq.NIL:
+                continue
+            if tq == EcoffTq.ARRAY:
+                ind += 2 # skips over some info such as the type of index (always int for C)
+                array_low_aux = self.fdr.auxs[self.index + ind]
+                array_high_aux = self.fdr.auxs[self.index + ind + 1]
+                stride_aux = self.fdr.auxs[self.index + ind + 2]
+                ind += 3
+                tqs += "["
+                if array_high_aux.dnHigh != 0xFFFFFFFF:
+                    tqs += '%d' % (array_high_aux.dnHigh + 1)
+                tqs += "]"
+            else:
+                tqs += c_tq_str[tq]
+            tqs += " "
+        tqs = tqs.strip()
+        if len(tqs) != 0:
+            type_str += " " + tqs
+
+        return type_str
+
     def __str__(self) -> str:
-        return f"""= EcoffSymr ==============
+        return f"""= EcoffSymr ============== {self.idx}
 iss       = 0x{self.iss:08X}
 value     = 0x{self.value:08X}
 st        = st{self.st.name}
@@ -412,13 +742,23 @@ class EcoffFdr:
         hdrr = self.parent.hdrr
         elf_data = self.parent.parent.data
 
+        # Aux Symbols
+        self.auxs = []
+        for i in range(self.caux):
+            i += self.iauxBase
+            assert i < hdrr.iauxMax , "Out of bounds in Auxiliary Symbol Table"
+            aux = EcoffAux(self, elf_data[hdrr.cbAuxOffset+i*EcoffAux.SIZE:][:EcoffAux.SIZE], self.fBigEndian)
+            self.auxs.append(aux)
+
         # Symbols
         self.symrs = []
         for i in range(self.csym):
-            i += self.isymBase
-            assert i < hdrr.isymMax , "Out of bounds in Local Symbol Table"
-            symr = EcoffSymr(self, elf_data[hdrr.cbSymOffset+i*EcoffSymr.SIZE:hdrr.cbSymOffset+(i+1)*EcoffSymr.SIZE])
+            j = i + self.isymBase
+            assert j < hdrr.isymMax , "Out of bounds in Local Symbol Table"
+            symr = EcoffSymr(self, i, elf_data[hdrr.cbSymOffset+j*EcoffSymr.SIZE:hdrr.cbSymOffset+(j+1)*EcoffSymr.SIZE])
             self.symrs.append(symr)
+        for symr in self.symrs:
+            symr.link_syms()
 
         # PDRs
         self.pdrs = []
@@ -429,6 +769,10 @@ class EcoffFdr:
             self.pdrs.append(pdr)
 
         self.size = sum([pdr.size for pdr in self.pdrs])
+
+    def late_init(self):
+        for symr in self.symrs:
+            symr.late_init()
 
     def pdr_forname(self, procedure_name):
         for pdr in self.pdrs:
@@ -450,6 +794,29 @@ class EcoffFdr:
 
     def read_string(self, index):
         return self.parent.read_string(self.issBase + index)
+
+    def c_str(self) -> str:
+        """
+        C prettyprint file
+        """
+        def print_symbol(symr):
+            return f"{symr.st.name} :: {symr.c_repr}"
+
+        indent = 0
+        out = f"File: {self.name}\n"
+
+        for symr in self.symrs:
+            if symr.st in [EcoffSt.END]:
+                indent -= 2
+
+            out += " " * indent
+            out += print_symbol(symr)
+            out += "\n"
+
+            if symr.st in [EcoffSt.FILE, EcoffSt.STRUCT, EcoffSt.UNION, EcoffSt.PROC, EcoffSt.STATICPROC, EcoffSt.BLOCK]:
+                indent += 2
+
+        return out
 
     def __str__(self) -> str:
         return f"""= EcoffFdr ===============
@@ -484,31 +851,31 @@ class EcoffHDRR:
     Symbolic Header
 
     typedef struct sHDRR {
-	    u16 magic;          /* 0x7009 */
-	    u16 vstamp;         /* version stamp */
-	    s32 ilineMax;       /* number of line number entries */
-	    s32 cbLine;         /* number of bytes for line number entries */
-	    s32 cbLineOffset;   /* offset to start of line number entries */
-	    s32 idnMax;         /* max index into dense number table */
-	    s32 cbDnOffset;     /* offset to start dense number table */
-	    s32 ipdMax;         /* number of procedures */
-	    s32 cbPdOffset;     /* offset to procedure descriptor table */
-	    s32 isymMax;        /* number of local symbols */
-	    s32 cbSymOffset;    /* offset to start of local symbols */
-	    s32 ioptMax;        /* max index into optimization symbol entries */
-	    s32 cbOptOffset;    /* offset to optimization symbol entries */
-	    s32 iauxMax;        /* number of auxillary symbol entries */
-	    s32 cbAuxOffset;    /* offset to start of auxillary symbol entries */
-	    s32 issMax;         /* max index into local strings */
-	    s32 cbSsOffset;     /* offset to start of local strings */
-	    s32 issExtMax;      /* max index into external strings */
-	    s32 cbSsExtOffset;  /* offset to start of external strings */
-	    s32 ifdMax;         /* number of file descriptor entries */
-	    s32 cbFdOffset;     /* offset to file descriptor table */
-	    s32 crfd;           /* number of relative file descriptor entries */
-	    s32 cbRfdOffset;    /* offset to relative file descriptor table */
-	    s32 iextMax;        /* max index into external symbols */
-	    s32 cbExtOffset;    /* offset to start of external symbol entries */
+        u16 magic;          /* 0x7009 */
+        u16 vstamp;         /* version stamp */
+        s32 ilineMax;       /* number of line number entries */
+        s32 cbLine;         /* number of bytes for line number entries */
+        s32 cbLineOffset;   /* offset to start of line number entries */
+        s32 idnMax;         /* max index into dense number table */
+        s32 cbDnOffset;     /* offset to start dense number table */
+        s32 ipdMax;         /* number of procedures */
+        s32 cbPdOffset;     /* offset to procedure descriptor table */
+        s32 isymMax;        /* number of local symbols */
+        s32 cbSymOffset;    /* offset to start of local symbols */
+        s32 ioptMax;        /* max index into optimization symbol entries */
+        s32 cbOptOffset;    /* offset to optimization symbol entries */
+        s32 iauxMax;        /* number of auxillary symbol entries */
+        s32 cbAuxOffset;    /* offset to start of auxillary symbol entries */
+        s32 issMax;         /* max index into local strings */
+        s32 cbSsOffset;     /* offset to start of local strings */
+        s32 issExtMax;      /* max index into external strings */
+        s32 cbSsExtOffset;  /* offset to start of external strings */
+        s32 ifdMax;         /* number of file descriptor entries */
+        s32 cbFdOffset;     /* offset to file descriptor table */
+        s32 crfd;           /* number of relative file descriptor entries */
+        s32 cbRfdOffset;    /* offset to relative file descriptor table */
+        s32 iextMax;        /* max index into external symbols */
+        s32 cbExtOffset;    /* offset to start of external symbol entries */
     } tHDRR, *pHDRR; // size = 0x60
     """
     HDRR_MAGIC = 0x7009
