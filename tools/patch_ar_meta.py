@@ -18,6 +18,8 @@ def ar_patch(ar, new_uid, new_gid, new_filemode):
     48      10      File size in bytes                          Decimal
     58      2       Ending characters                           0x60 0x0A
     """
+    assert len(ar) > 0x24 , "Got empty archive?"
+
     i = 8
     while i < len(ar):
         file_name = ar[i:][0:][:16].decode("ASCII")

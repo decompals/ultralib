@@ -1,5 +1,5 @@
 
-.PHONY=all clean distclean
+.PHONY: all clean distclean
 all: ar
 	$(MAKE) -C kmc-gcc-wrapper
 

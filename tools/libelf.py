@@ -1009,6 +1009,13 @@ class MdebugSection(Section):
             fdr = EcoffFdr.from_binary(self, i)
             self.fdrs.append(fdr)
 
+    def late_init(self):
+        if self.late_init_done:
+            return
+        super().late_init()
+        for fdr in self.fdrs:
+            fdr.late_init()
+
     def fdr_forname(self, filename):
         for fdr in self.fdrs:
             # remove path and file ext
@@ -1157,13 +1164,17 @@ if __name__ == "__main__":
     print("")
     mdebug_section = elf_file.find_section_by_type(SHT_MIPS_DEBUG)
     if mdebug_section is not None:
+        """
         for fdr in mdebug_section.fdrs:
             print(fdr)
+            for symr in fdr.symrs:
+                print(symr)
             for pdr in fdr.pdrs:
                 print(pdr)
                 for symr in pdr.symrs:
                     print(symr)
                 for liner in pdr.lines:
                     print(liner)
-            for symr in fdr.symrs:
-                print(symr)
+        """
+        for fdr in mdebug_section.fdrs:
+            print(fdr.c_str())

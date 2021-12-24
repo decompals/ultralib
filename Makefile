@@ -6,11 +6,16 @@ BASE_AR := $(TARGET).a
 BUILD_DIR := build
 BUILD_AR := $(BUILD_DIR)/$(TARGET).a
 
+ROOT := $(PWD)
+
 CPP := cpp -P
 AR := ar
 AS := tools/kmc-gcc-wrapper/as
 CC := tools/kmc-gcc-wrapper/gcc
 AR_OLD := tools/ar
+
+CFLAGS := -D_LANGUAGE_C -D_MIPS_SZLONG=32 -w -nostdinc -c -G 0 -mgp32 -mfp32 -mips3
+OPTFLAGS := -O3
 
 SRC_DIRS := $(shell find src -type d)
 ASM_DIRS := $(shell find asm -type d -not -path "asm/non_matchings*")
@@ -32,9 +37,9 @@ endif
 # Try to find a file corresponding to an archive file in any of src/ asm/ or the base directory, prioritizing src then asm then the original file
 AR_ORDER = $(foreach f,$(shell $(AR) t $(BASE_AR)),$(shell find $(BUILD_DIR)/src $(BUILD_DIR)/asm $(BUILD_DIR)/$(BASE_DIR) -name $f -type f -print -quit))
 
-$(shell mkdir -p $(BASE_DIR) $(BUILD_DIR)/$(BASE_DIR) $(foreach dir,$(ASM_DIRS) $(SRC_DIRS),$(BUILD_DIR)/$(dir)))
+$(shell mkdir -p asm $(BASE_DIR) src $(BUILD_DIR)/$(BASE_DIR) $(foreach dir,$(ASM_DIRS) $(SRC_DIRS),$(BUILD_DIR)/$(dir)))
 
-.PHONY=all clean distclean setup
+.PHONY: all clean distclean setup
 all: $(BUILD_AR)
 
 $(BUILD_AR): $(O_FILES)
@@ -66,11 +71,12 @@ ifneq ($(NON_MATCHING),1)
 endif
 
 $(BUILD_DIR)/%.o: %.c
-	cd $(<D) && ../$(CC) -nostdinc -c -G 0 -mgp32 -mfp32 -mips3 -O3 -I ../include $(<F) -o ../$@
+	cd $(<D) && $(ROOT)/$(CC) $(CFLAGS) $(OPTFLAGS) -I $(ROOT)/include $(<F) -o $(ROOT)/$@
+	test -f $@
 ifneq ($(NON_MATCHING),1)
 # patch corrupted bytes
 	python3 tools/fix_objfile.py $@ $(BASE_DIR)/$(@F)
-#	@$(COMPARE_OBJ)
+	@$(COMPARE_OBJ)
 # change file timestamps to match original
 	touch -r $(BASE_DIR)/$(@F) $@
 endif
