@@ -12,7 +12,7 @@ OSThread *__osGetNextFaultedThread(OSThread *lastFault) {
     }
 
     while (fault->priority != -1) {
-        if ((fault->flags & 0x2) != 0 && fault != lastFault) {
+        if ((fault->flags & OS_FLAG_FAULT) != 0 && fault != lastFault) {
             break;
         }
         fault = fault->tlnext;

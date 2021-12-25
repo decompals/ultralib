@@ -26,7 +26,7 @@ void __osTimerInterrupt(void) {
 	u32 elapsed_cycles;
 
 	if (__osTimerList->next != __osTimerList) {
-		while (1) {
+		while (TRUE) {
 			t = __osTimerList->next;
 			if (t == __osTimerList) {
 				__osSetCompare(0);

@@ -76,9 +76,9 @@ void __osInitialize_common() {
         }
     }
 
-    IO_WRITE(AI_CONTROL_REG, 1);
-    IO_WRITE(AI_DACRATE_REG, 0x3FFF);
-    IO_WRITE(AI_BITRATE_REG, 0xF);
+    IO_WRITE(AI_CONTROL_REG, AI_CONTROL_DMA_ON);
+    IO_WRITE(AI_DACRATE_REG, AI_MAX_DAC_RATE - 1);
+    IO_WRITE(AI_BITRATE_REG, AI_MAX_BIT_RATE - 1);
 }
 
 void __osInitialize_autodetect() {
