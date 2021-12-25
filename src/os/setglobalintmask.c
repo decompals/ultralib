@@ -1,13 +1,5 @@
-#include "PR/ultratypes.h"
-
-typedef u32 OSEvent;
-typedef u32 OSIntMask;
-typedef u32 OSPageMask;
-typedef u32 OSHWIntr;
-
-extern OSIntMask __OSGlobalIntMask;	/* global interrupt mask */
-extern u32		__osDisableInt(void);
-extern void		__osRestoreInt(u32);
+#include "PR/os_internal.h"
+#include "PR/R4300.h"
 
 void __osSetGlobalIntMask(OSHWIntr mask)
 {

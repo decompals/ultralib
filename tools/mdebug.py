@@ -426,7 +426,7 @@ class EcoffSymr:
             if self.st == EcoffSt.STATICPROC:
                 self.c_repr += "static "
 
-            self.return_type = self.process_type_information(1)
+            self.return_type, _ = self.process_type_information(1)
             self.c_repr += self.return_type
             if len(self.return_type) != 0:
                 self.c_repr += " "
@@ -438,13 +438,15 @@ class EcoffSymr:
                 # value of a stMember is the offset in bits
                 self.c_repr += f"/* 0x{self.value//8:X} */ "
 
-            self.c_repr += self.process_type_information(0)
+            type_str, bitwidth = self.process_type_information(0)
+            self.c_repr += type_str
             if len(self.c_repr) != 0:
                 self.c_repr += " "
-            self.c_repr += f"{self.name};"
+            self.c_repr += f"{self.name}{f' : {bitwidth}' if bitwidth is not None else ''};"
         elif self.st == EcoffSt.TYPEDEF:
             # TODO the typedef may already be absorbed into a struct or similar, check before emitting
-            self.c_repr = f"typedef {self.type_name} {self.name};"
+            type_str, _ = self.process_type_information(0)
+            self.c_repr = f"typedef {type_str} {self.name};"
 
     def process_type_information(self, ind):
         c_bt_names = {
@@ -499,8 +501,9 @@ class EcoffSymr:
         ind += 1
         type_str = ""
 
+        bit_width = None
         if aux.ti.fBitfield == 1:
-            # TODO
+            bit_width = self.fdr.auxs[self.index + ind].isym
             ind += 1
 
         if aux.ti.bt in [EcoffBt.STRUCT, EcoffBt.UNION, EcoffBt.ENUM, EcoffBt.TYPEDEF]:
@@ -541,7 +544,7 @@ class EcoffSymr:
         if len(tqs) != 0:
             type_str += " " + tqs
 
-        return type_str
+        return type_str, bit_width
 
     def __str__(self) -> str:
         return f"""= EcoffSymr ============== {self.idx}
