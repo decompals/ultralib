@@ -40,6 +40,9 @@ endif
 
 # Try to find a file corresponding to an archive file in any of src/ asm/ or the base directory, prioritizing src then asm then the original file
 AR_ORDER = $(foreach f,$(shell $(AR) t $(BASE_AR)),$(shell find $(BUILD_DIR)/src $(BUILD_DIR)/asm $(BUILD_DIR)/$(BASE_DIR) -name $f -type f -print -quit))
+MATCHED_OBJS = $(filter-out $(BUILD_DIR)/$(BASE_DIR)/%,$(AR_ORDER))
+NUM_OBJS = $(words $(AR_ORDER))
+NUM_OBJS_MATCHED = $(words $(MATCHED_OBJS))
 
 $(shell mkdir -p asm $(BASE_DIR) src $(BUILD_DIR)/$(BASE_DIR) $(foreach dir,$(ASM_DIRS) $(SRC_DIRS),$(BUILD_DIR)/$(dir)))
 
@@ -53,6 +56,7 @@ ifneq ($(NON_MATCHING),1)
 	dd bs=1 skip=24 seek=24 count=12 conv=notrunc if=$(BASE_AR) of=$@ status=none
 	python3 tools/patch_ar_meta.py $@
 	@$(COMPARE_AR)
+	@echo "Matched: $(NUM_OBJS_MATCHED)/$(NUM_OBJS)"
 endif
 
 clean:
