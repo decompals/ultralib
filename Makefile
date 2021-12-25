@@ -82,6 +82,12 @@ ifneq ($(NON_MATCHING),1)
 	@touch $@
 endif
 
+$(BUILD_DIR)/src/os/assert.marker: OPTFLAGS := -O0
+$(BUILD_DIR)/src/os/ackramromread.marker: OPTFLAGS := -O0
+$(BUILD_DIR)/src/os/ackramromwrite.marker: OPTFLAGS := -O0
+$(BUILD_DIR)/src/os/exit.marker: OPTFLAGS := -O0
+$(BUILD_DIR)/src/os/seterrorhandler.marker: OPTFLAGS := -O0
+
 $(BUILD_DIR)/%.marker: %.c
 	cd $(<D) && $(WORKING_DIR)/$(CC) $(CFLAGS) $(OPTFLAGS) -I $(WORKING_DIR)/include $(<F) -o $(WORKING_DIR)/$(@:.marker=.o)
 ifneq ($(NON_MATCHING),1)

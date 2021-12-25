@@ -1,9 +1,9 @@
 #include "PR/os_internal.h"
 
-void __osSetGlobalIntMask(OSHWIntr mask) {
+void __osResetGlobalIntMask(OSHWIntr mask) {
     register u32 saveMask = __osDisableInt();
 
-    __OSGlobalIntMask |= mask;
-    
+    __OSGlobalIntMask &= ~(mask & ~OS_IM_RCP);
+
     __osRestoreInt(saveMask);
 }

@@ -66,6 +66,10 @@
 #define RDRAM_0_DEVICE_ID   0
 #define RDRAM_1_DEVICE_ID   1
 
+#define RDRAM_RESET_MODE    0
+#define RDRAM_ACTIVE_MODE   1
+#define RDRAM_STANDBY_MODE  2
+
 #define RDRAM_LENGTH            (2 * 512 * 2048)
 #define RDRAM_0_BASE_ADDRESS    (RDRAM_0_DEVICE_ID * RDRAM_LENGTH)
 #define RDRAM_1_BASE_ADDRESS    (RDRAM_1_DEVICE_ID * RDRAM_LENGTH)
@@ -74,9 +78,46 @@
 #define RDRAM_1_CONFIG      0x00400
 #define RDRAM_GLOBAL_CONFIG 0x80000
 
-#define RDRAM_RESET_MODE    0
-#define RDRAM_ACTIVE_MODE   1
-#define RDRAM_STANDBY_MODE  2
+/**
+ * PIF Physical memory map (total size = 2 KB)
+ *
+ *            Size      Description     Mode
+ *  1FC007FF    +-------+-----------------+-----+
+ *              |  64 B | JoyChannel RAM  | R/W |
+ *  1FC007C0    +-------+-----------------+-----+
+ *              |1984 B |    Boot ROM     |  *  |  * = Reserved
+ *  1FC00000    +-------+-----------------+-----+
+ */
+#define PIF_ROM_START   0x1FC00000
+#define PIF_ROM_END     0x1FC007BF
+#define PIF_RAM_START   0x1FC007C0
+#define PIF_RAM_END     0x1FC007FF
+
+
+/**
+ * Controller channel 
+ * Each game controller channel has 4 error bits that are defined in bit 6-7 of
+ * the Rx and Tx data size area bytes. Programmers need to clear these bits
+ * when setting the Tx/Rx size area values for a channel
+ */
+#define CHNL_ERR_NORESP		0x80	/* Bit 7 (Rx): No response error */
+#define CHNL_ERR_OVERRUN	0x40	/* Bit 6 (Rx): Overrun error */
+#define CHNL_ERR_FRAME		0x80	/* Bit 7 (Tx): Frame error */
+#define CHNL_ERR_COLLISION	0x40	/* Bit 6 (Tx): Collision error */
+
+#define CHNL_ERR_MASK		0xC0	/* Bit 6-7: channel errors */
+
+
+/**
+ * External device info
+ */
+#define DEVICE_TYPE_CART	0	/* ROM cartridge */
+#define DEVICE_TYPE_BULK	1	/* ROM bulk */
+#define DEVICE_TYPE_64DD	2	/* 64 Disk Drive */
+#define DEVICE_TYPE_SRAM	3	/* SRAM */
+/* 4-6 are reserved */
+#define DEVICE_TYPE_INIT	7	/* initial value */
+/* 8-14 are reserved */
 
 /**
  * Signal Processor (SP) Memory
@@ -87,7 +128,7 @@
 #define SP_IMEM_END     0x04001FFF
 
 /**
- * Signal Processor (SP) Registers
+ * Signal Processor (SP) CP0 Registers
  */
 
 #define SP_BASE_REG         0x04040000
@@ -118,9 +159,6 @@
 
 //! SP PC (R/W): [11:0] program counter
 #define SP_PC_REG       0x04080000
-
-//! SP IMEM BIST REG (R/W): [6:0] BIST status bits
-#define SP_IBIST_REG        0x04080004
 
 /**
  * SP_MEM_ADDR_REG: bit 12
@@ -194,6 +232,11 @@
 #define SP_CLR_CPUSIGNAL        SP_CLR_SIG4
 #define SP_SET_CPUSIGNAL        SP_SET_SIG4
 #define SP_STATUS_CPUSIGNAL     SP_STATUS_SIG4
+
+/*
+ * SP IMEM BIST REG (R/W): [6:0] BIST status bits; see below for detail
+ */
+#define SP_IBIST_REG        0x04080004
 
 /*
  * SP_IBIST_REG: write bits
@@ -749,20 +792,23 @@
 #define SI_STATUS_INTERRUPT (1 << 12) // Interrupt is set
 
 /**
- * PIF Physical memory map (total size = 2 KB)
- *
- *            Size      Description     Mode
- *  1FC007FF    +-------+-----------------+-----+
- *          |  64 B | JoyChannel RAM  | R/W |
- *  1FC007C0    +-------+-----------------+-----+
- *          |1984 B |    Boot ROM     |  *  |  * = Reserved
- *  1FC00000    +-------+-----------------+-----+
+ * Development Board GIO Control Registers 
  */
-#define PIF_ROM_START   0x1FC00000
-#define PIF_ROM_END     0x1FC007BF
-#define PIF_RAM_START   0x1FC007C0
-#define PIF_RAM_END     0x1FC007FF
 
+#define GIO_BASE_REG		0x18000000
+
+/* Game to Host Interrupt */
+#define GIO_GIO_INTR_REG	(GIO_BASE_REG+0x000)
+
+/* Game to Host SYNC */
+#define GIO_GIO_SYNC_REG	(GIO_BASE_REG+0x400)
+
+/* Host to Game Interrupt */
+#define GIO_CART_INTR_REG	(GIO_BASE_REG+0x800)
+
+/**
+ * Common macros
+ */
 #if defined(_LANGUAGE_C) || defined(_LANGUAGE_C_PLUS_PLUS)
 #define	IO_READ(addr)       (*(vu32*)PHYS_TO_K1(addr))
 #define	IO_WRITE(addr,data) (*(vu32*)PHYS_TO_K1(addr)=(u32)(data))
