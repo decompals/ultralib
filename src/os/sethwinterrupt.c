@@ -1,4 +1,4 @@
-#include <PR/os_internal.h>
+#include "PR/os_internal.h"
 
 struct __osHwInt {
     s32 (*handler)(void);

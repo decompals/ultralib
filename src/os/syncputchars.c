@@ -1,7 +1,7 @@
-#include <PR/os_internal.h>
-#include <PR/rdb.h>
-#include <PR/rcp.h>
-#include <PR/R4300.h>
+#include "PR/os_internal.h"
+#include "PR/rdb.h"
+#include "PR/rcp.h"
+#include "PR/R4300.h"
 
 unsigned int __osRdbSendMessage = 0;
 unsigned int __osRdbWriteOK = 1;

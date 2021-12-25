@@ -1,4 +1,4 @@
-#include <PR/os_internal.h>
+#include "PR/os_internal.h"
 #include "osint.h"
 
 int osSetTimer(OSTimer *t, OSTime countdown, OSTime interval, OSMesgQueue *mq, OSMesg msg) {

@@ -1,8 +1,8 @@
 #ifndef _RCP_H_
 #define _RCP_H_
 
-#include <PR/R4300.h>
-#include <PR/ultratypes.h>
+#include "PR/R4300.h"
+#include "PR/ultratypes.h"
 
 /**********************************************************************
  *

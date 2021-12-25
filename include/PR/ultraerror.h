@@ -13,7 +13,7 @@
 extern "C" {
 #endif
 
-#include <PR/ultratypes.h>
+#include "PR/ultratypes.h"
 
 #define	OS_ERROR_FMT	"/usr/lib/PR/error.fmt"
 #define OS_ERROR_MAGIC	0x6b617479

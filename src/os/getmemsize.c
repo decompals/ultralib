@@ -1,6 +1,6 @@
-#include <PR/os_internal.h>
-#include <PR/rcp.h>
-#include <PR/R4300.h>
+#include "PR/os_internal.h"
+#include "PR/rcp.h"
+#include "PR/R4300.h"
 
 #define STEP 0x100000
 #define SIZE_4MB 0x400000

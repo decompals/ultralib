@@ -1,4 +1,4 @@
-#include <PR/os_internal.h>
+#include "PR/os_internal.h"
 #include "osint.h"
 
 struct __osThreadTail __osThreadTail = {0, -1};

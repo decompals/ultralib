@@ -1,4 +1,4 @@
-#include <PR/os_internal.h>
+#include "PR/os_internal.h"
 #include "osint.h"
 
 OSId osGetThreadId(OSThread *thread) {

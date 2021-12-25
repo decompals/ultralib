@@ -1,5 +1,5 @@
-#include <PR/os_internal.h>
-#include <PR/rcp.h>
+#include "PR/os_internal.h"
+#include "PR/rcp.h"
 
 typedef struct
 {

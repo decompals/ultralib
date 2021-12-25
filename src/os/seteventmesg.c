@@ -1,5 +1,5 @@
-#include <macros.h>
-#include <PR/os_internal.h>
+#include "macros.h"
+#include "PR/os_internal.h"
 #include "osint.h"
 
 __OSEventState __osEventStateTab[OS_NUM_EVENTS] ALIGNED(8);
