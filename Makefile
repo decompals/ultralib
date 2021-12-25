@@ -14,7 +14,7 @@ AS := tools/kmc-gcc-wrapper/as
 CC := tools/kmc-gcc-wrapper/gcc
 AR_OLD := tools/ar
 
-CFLAGS := -D_LANGUAGE_C -D_MIPS_SZLONG=32 -w -nostdinc -c -G 0 -mgp32 -mfp32 -mips3
+CFLAGS := -D_LANGUAGE_C -D_MIPS_SZLONG=32 -D_FINALROM -w -nostdinc -c -G 0 -mgp32 -mfp32 -mips3
 OPTFLAGS := -O3
 
 SRC_DIRS := $(shell find src -type d)
@@ -24,15 +24,19 @@ S_FILES  := $(foreach dir,$(ASM_DIRS),$(wildcard $(dir)/*.s))
 O_FILES  := $(foreach f,$(S_FILES:.s=.o),$(BUILD_DIR)/$f) \
             $(foreach f,$(C_FILES:.c=.o),$(BUILD_DIR)/$f) \
             $(foreach f,$(wildcard $(BASE_DIR)/*),$(BUILD_DIR)/$f)
+# Because we patch the object file timestamps, we can't use them as the targets since they'll always be older than the C file
+# Therefore instead we use marker files that have actual timestamps as the dependencies for the archive
+MARKER_FILES := $(O_FILES:.o=.marker)
 
 ifneq ($(NON_MATCHING),1)
-COMPARE_OBJ = cmp $(BASE_DIR)/$(@F) $@ && echo "$@: OK"
+COMPARE_OBJ = cmp $(BASE_DIR)/$(@F:.marker=.o) $(@:.marker=.o) && echo "$(@:.marker=.o): OK"
 COMPARE_AR = cmp $(BASE_AR) $@ && echo "$@: OK"
 else
 COMPARE_OBJ :=
 COMPARE_AR :=
 AR_OLD := $(AR)
 endif
+
 
 # Try to find a file corresponding to an archive file in any of src/ asm/ or the base directory, prioritizing src then asm then the original file
 AR_ORDER = $(foreach f,$(shell $(AR) t $(BASE_AR)),$(shell find $(BUILD_DIR)/src $(BUILD_DIR)/asm $(BUILD_DIR)/$(BASE_DIR) -name $f -type f -print -quit))
@@ -42,7 +46,7 @@ $(shell mkdir -p asm $(BASE_DIR) src $(BUILD_DIR)/$(BASE_DIR) $(foreach dir,$(AS
 .PHONY: all clean distclean setup
 all: $(BUILD_AR)
 
-$(BUILD_AR): $(O_FILES)
+$(BUILD_AR): $(MARKER_FILES)
 	$(AR_OLD) rcs $@ $(AR_ORDER)
 ifneq ($(NON_MATCHING),1)
 # patch archive creation time and individual files' ownership & permissions
@@ -62,20 +66,34 @@ setup:
 	cd $(BASE_DIR) && $(AR) xo ../$(BASE_AR)
 	chmod -R +rw $(BASE_DIR)
 
-$(BUILD_DIR)/$(BASE_DIR)/%.o: $(BASE_DIR)/%.o
-	cp $< $@
+# KMC gcc has a custom flag, N64ALIGN, which forces 8 byte alignment on arrays. This can be used to match, but
+# an explicit aligned(8) attribute can be used instead. We opted for the latter for better compatibilty with
+# other versions of GCC that do not have this flag.
+# export N64ALIGN := ON
+export VR4300MUL := ON
+
+$(BUILD_DIR)/$(BASE_DIR)/%.marker: $(BASE_DIR)/%.o
+	cp $< $(@:.marker=.o)
 ifneq ($(NON_MATCHING),1)
 #	@$(COMPARE_OBJ)
 # change file timestamps to match original
-	touch -r $(BASE_DIR)/$(@F) $@
+	@touch -r $(BASE_DIR)/$(@F:.marker=.o) $(@:.marker=.o)
+	@$(COMPARE_OBJ)
+	@touch $@
 endif
 
-$(BUILD_DIR)/%.o: %.c
-	cd $(<D) && $(WORKING_DIR)/$(CC) $(CFLAGS) $(OPTFLAGS) -I $(WORKING_DIR)/include $(<F) -o $(WORKING_DIR)/$@
+$(BUILD_DIR)/%.marker: %.c
+	cd $(<D) && $(WORKING_DIR)/$(CC) $(CFLAGS) $(OPTFLAGS) -I $(WORKING_DIR)/include $(<F) -o $(WORKING_DIR)/$(@:.marker=.o)
 ifneq ($(NON_MATCHING),1)
 # patch corrupted bytes
-	python3 tools/fix_objfile.py $@ $(BASE_DIR)/$(@F)
+	python3 tools/fix_objfile.py $(@:.marker=.o) $(BASE_DIR)/$(@F:.marker=.o)
 	@$(COMPARE_OBJ)
 # change file timestamps to match original
-	touch -r $(BASE_DIR)/$(@F) $@
+	@touch -r $(BASE_DIR)/$(@F:.marker=.o) $(@:.marker=.o)
+# create or update the marker file
+	@touch $@
 endif
+
+# Disable built-in rules
+.SUFFIXES:
+print-% : ; $(info $* is a $(flavor $*) variable set to [$($*)]) @true
