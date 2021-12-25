@@ -1,1 +1,4 @@
-time to bust some cod
+# Building
+* `make -C tools`
+* `make setup`
+* `make`
