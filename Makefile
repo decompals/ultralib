@@ -37,7 +37,7 @@ COMPARE_AR :=
 AR_OLD := $(AR)
 endif
 
-
+BASE_OBJS := $(wildcard $(BASE_DIR)/*.o)
 # Try to find a file corresponding to an archive file in any of src/ asm/ or the base directory, prioritizing src then asm then the original file
 AR_ORDER = $(foreach f,$(shell $(AR) t $(BASE_AR)),$(shell find $(BUILD_DIR)/src $(BUILD_DIR)/asm $(BUILD_DIR)/$(BASE_DIR) -name $f -type f -print -quit))
 MATCHED_OBJS = $(filter-out $(BUILD_DIR)/$(BASE_DIR)/%,$(AR_ORDER))
@@ -95,11 +95,13 @@ $(BUILD_DIR)/src/os/seterrorhandler.marker: OPTFLAGS := -O0
 $(BUILD_DIR)/%.marker: %.c
 	cd $(<D) && $(WORKING_DIR)/$(CC) $(CFLAGS) $(OPTFLAGS) -I $(WORKING_DIR)/include $(<F) -o $(WORKING_DIR)/$(@:.marker=.o)
 ifneq ($(NON_MATCHING),1)
-# patch corrupted bytes
-	python3 tools/fix_objfile.py $(@:.marker=.o) $(BASE_DIR)/$(@F:.marker=.o)
-	@$(COMPARE_OBJ)
-# change file timestamps to match original
-	@touch -r $(BASE_DIR)/$(@F:.marker=.o) $(@:.marker=.o)
+# check if this file is in the archive; patch corrupted bytes and change file timestamps to match original if so
+	@$(if $(findstring $(BASE_DIR)/$(@F:.marker=.o), $(BASE_OBJS)), \
+	 python3 tools/fix_objfile.py $(@:.marker=.o) $(BASE_DIR)/$(@F:.marker=.o) && \
+	 $(COMPARE_OBJ) && \
+	 touch -r $(BASE_DIR)/$(@F:.marker=.o) $(@:.marker=.o), \
+	 echo "Object file $(<F:.marker=.o) is not in the current archive" \
+	)
 # create or update the marker file
 	@touch $@
 endif
