@@ -6,7 +6,7 @@ OSViMode osViModeFpalLpn2 = {
     OS_VI_FPAL_LPN2,  // type
     { // comRegs
         VI_CTRL_TYPE_32 | VI_CTRL_GAMMA_DITHER_ON | VI_CTRL_GAMMA_ON |
-            VI_CTRL_ANTIALIAS_MODE_3 | 0x3000,  // ctrl
+            VI_CTRL_ANTIALIAS_MODE_3 | VI_CTRL_PIXEL_ADV_3,  // ctrl
         WIDTH(320),                             // width
         BURST(58, 30, 4, 69),                   // burst
         VSYNC(625),                             // vSync

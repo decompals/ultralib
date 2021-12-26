@@ -6,7 +6,7 @@ OSViMode osViModeNtscLaf2 = {
     OS_VI_NTSC_LAF2,  // type
     { // comRegs
         VI_CTRL_TYPE_32 | VI_CTRL_GAMMA_DITHER_ON | VI_CTRL_GAMMA_ON |
-            VI_CTRL_DIVOT_ON | VI_CTRL_SERRATE_ON | 0x3000,  // ctrl
+            VI_CTRL_DIVOT_ON | VI_CTRL_SERRATE_ON | VI_CTRL_PIXEL_ADV_3,  // ctrl
         WIDTH(320),                                          // width
         BURST(57, 34, 5, 62),                                // burst
         VSYNC(524),                                          // vSync

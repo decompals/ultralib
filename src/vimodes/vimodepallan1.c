@@ -6,7 +6,7 @@ OSViMode osViModePalLan1 = {
     OS_VI_PAL_LAN1,  // type
     { // comRegs
         VI_CTRL_TYPE_16 | VI_CTRL_GAMMA_DITHER_ON | VI_CTRL_GAMMA_ON |
-            VI_CTRL_DIVOT_ON | VI_CTRL_ANTIALIAS_MODE_1 | 0x3000,  // ctrl
+            VI_CTRL_DIVOT_ON | VI_CTRL_ANTIALIAS_MODE_1 | VI_CTRL_PIXEL_ADV_3,  // ctrl
         WIDTH(320),                                                // width
         BURST(58, 30, 4, 69),                                      // burst
         VSYNC(625),                                                // vSync

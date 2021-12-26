@@ -23,7 +23,7 @@ void osCreateViManager(OSPri pri)
     if (!__osViDevMgr.active) {
         __osTimerServicesInit();
         __additional_scanline = 0;
-        osCreateMesgQueue(&viEventQueue, viEventBuf, 5);
+        osCreateMesgQueue(&viEventQueue, viEventBuf, ARRLEN(viEventBuf));
         viRetraceMsg.hdr.type = OS_MESG_TYPE_VRETRACE;
         viRetraceMsg.hdr.pri = OS_MESG_PRI_NORMAL;
         viRetraceMsg.hdr.retQueue = NULL;
@@ -41,7 +41,7 @@ void osCreateViManager(OSPri pri)
         }
 
         savedMask = __osDisableInt();
-        __osViDevMgr.active = 1;
+        __osViDevMgr.active = TRUE;
         __osViDevMgr.thread = &viThread;
         __osViDevMgr.cmdQueue = &viEventQueue;
         __osViDevMgr.evtQueue = &viEventQueue;

@@ -6,7 +6,7 @@ OSViMode osViModeMpalHpn1 = {
     OS_VI_MPAL_HPN1,  // type
     { // comRegs
         VI_CTRL_TYPE_16 | VI_CTRL_GAMMA_DITHER_ON | VI_CTRL_GAMMA_ON |
-            VI_CTRL_SERRATE_ON | VI_CTRL_ANTIALIAS_MODE_2 | 0x3000,  // ctrl
+            VI_CTRL_SERRATE_ON | VI_CTRL_ANTIALIAS_MODE_2 | VI_CTRL_PIXEL_ADV_3,  // ctrl
         WIDTH(1280),                                                 // width
         BURST(57, 30, 5, 70),                                        // burst
         VSYNC(524),                                                  // vSync
