@@ -15,7 +15,14 @@
 extern "C" {
 #endif
 
-#include "PR/ultratypes.h"
+#include "ultratypes.h"
+#include "os_thread.h"
+#include "os_message.h"
+#include "os_exception.h"
+#include "os_pi.h"
+#include "os_system.h"
+#include "os_flash.h"
+#include "os_convert.h"
 
 #if defined(_LANGUAGE_C) || defined(_LANGUAGE_C_PLUS_PLUS)
 
@@ -25,140 +32,7 @@ extern "C" {
  *
  */
 
-typedef s32	OSPri;
-typedef s32	OSId;
-typedef union	{ struct { f32 f_odd; f32 f_even; } f; f64 d; }	__OSfp;
-
-typedef struct {
-	u64	at, v0, v1, a0, a1, a2, a3;
-	u64	t0, t1, t2, t3, t4, t5, t6, t7;
-	u64	s0, s1, s2, s3, s4, s5, s6, s7;
-	u64	t8, t9,         gp, sp, s8, ra;
-	u64	lo, hi;
-	u32	sr, pc, cause, badvaddr, rcp;
-	u32	fpcsr;
-	__OSfp	 fp0,  fp2,  fp4,  fp6,  fp8, fp10, fp12, fp14;
-	__OSfp	fp16, fp18, fp20, fp22, fp24, fp26, fp28, fp30;
-} __OSThreadContext;
-
-typedef struct OSThread_s {
-	struct OSThread_s	*next;		/* run/mesg queue link */
-	OSPri			priority;	/* run/mesg queue priority */
-	struct OSThread_s	**queue;	/* queue thread is on */
-	struct OSThread_s	*tlnext;	/* all threads queue link */
-	u16			state;		/* OS_STATE_* */
-	u16			flags;		/* flags for rmon */
-	OSId			id;		/* id for debugging */
-	int			fp;		/* thread has used fp unit */
-	__OSThreadContext	context;	/* register/interrupt mask */
-} OSThread;
-
-typedef u32 OSEvent;
-typedef u32 OSIntMask;
 typedef u32 OSPageMask;
-typedef u32 OSHWIntr;
-
-/*
- * Structure for message
- */
-typedef void *	OSMesg;
-
-/*
- * Structure for message queue
- */
-typedef struct OSMesgQueue_s {
-	OSThread	*mtqueue;	/* Queue to store threads blocked
-					   on empty mailboxes (receive) */
-	OSThread	*fullqueue;	/* Queue to store threads blocked
-					   on full mailboxes (send) */
-	s32		validCount;	/* Contains number of valid message */
-	s32		first;		/* Points to first valid message */
-	s32		msgCount;	/* Contains total # of messages */
-	OSMesg		*msg;		/* Points to message buffer array */
-} OSMesgQueue;
-
-/*
- * Structure for Enhanced PI interface
- */
-
-/*
- * OSTranxInfo is set up for Leo Disk DMA. This info will be maintained
- * by exception handler. This is how the PIMGR and the ISR communicate.
- */
-
-typedef struct {
-	u32		errStatus;	/* error status */
-        void     	*dramAddr;      /* RDRAM buffer address (DMA) */
-	void		*C2Addr;	/* C2 buffer address */
-	u32		sectorSize;	/* size of transfering sector */
-	u32		C1ErrNum;	/* total # of C1 errors */
-	u32		C1ErrSector[4];	/* error sectors */
-} __OSBlockInfo;
-
-typedef struct {
-	u32     	cmdType;       	/* for disk only */
-	u16     	transferMode;   /* Block, Track, or sector?   */
-	u16		blockNum;	/* which block is transfering */
-	s32     	sectorNum;      /* which sector is transfering */
-	u32     	devAddr;        /* Device buffer address */
-	u32		bmCtlShadow;	/* asic bm_ctl(510) register shadow ram */
-	u32		seqCtlShadow;	/* asic seq_ctl(518) register shadow ram */
-	__OSBlockInfo	block[2];	/* bolck transfer info */
-} __OSTranxInfo;
-
-
-typedef struct OSPiHandle_s {
-        struct OSPiHandle_s     *next;  /* point to next handle on the table */
-        u8                      type;   /* DEVICE_TYPE_BULK for disk */
-        u8                      latency;        /* domain latency */
-        u8                      pageSize;       /* domain page size */
-        u8                      relDuration;    /* domain release duration */
-        u8                      pulse;          /* domain pulse width */
-	u8			domain;		/* which domain */
-        u32                     baseAddress;    /* Domain address */
-        u32                     speed;          /* for roms only */
-        /* The following are "private" elements" */
-        __OSTranxInfo           transferInfo;	/* for disk only */
-} OSPiHandle;
-
-typedef struct {
-        u8      type;
-        u32     address;
-} OSPiInfo;
-
-/*
- * Structure for I/O message block
- */
-typedef struct {
-        u16 		type;		/* Message type */
-        u8 		pri;		/* Message priority (High or Normal) */
-        u8		status;		/* Return status */
-	OSMesgQueue	*retQueue;	/* Return message queue to notify I/O 
-					 * completion */
-} OSIoMesgHdr;
-
-typedef struct {
-	OSIoMesgHdr	hdr;		/* Message header */
-	void *		dramAddr;	/* RDRAM buffer address (DMA) */
-	u32		devAddr;	/* Device buffer address (DMA) */
-	u32 		size;		/* DMA transfer size in bytes */
-	OSPiHandle	*piHandle;	/* PI device handle */
-} OSIoMesg;
-
-/*
- * Structure for device manager block
- */
-typedef struct {
-        s32             active;		/* Status flag */
-	OSThread	*thread;	/* Calling thread */
-        OSMesgQueue  	*cmdQueue;	/* Command queue */
-        OSMesgQueue  	*evtQueue;	/* Event queue */
-        OSMesgQueue  	*acsQueue;	/* Access queue */
-					/* Raw DMA routine */
-        s32             (*dma)(s32, u32, void *, u32);
-        s32             (*edma)(OSPiHandle *, s32, u32, void *, u32);
-} OSDevMgr;
-
 
 /*
  * Structure to store VI register values that remain the same between 2 fields
@@ -289,114 +163,6 @@ typedef struct {
  *
  */
 
-/* Thread states */
-
-#define OS_STATE_STOPPED	1
-#define OS_STATE_RUNNABLE	2
-#define OS_STATE_RUNNING	4
-#define OS_STATE_WAITING	8
-
-/* Events */
-#ifdef _FINALROM
-#define OS_NUM_EVENTS           15
-#else
-#define OS_NUM_EVENTS           23
-#endif
-
-#define OS_EVENT_SW1              0     /* CPU SW1 interrupt */
-#define OS_EVENT_SW2              1     /* CPU SW2 interrupt */
-#define OS_EVENT_CART             2     /* Cartridge interrupt: used by rmon */
-#define OS_EVENT_COUNTER          3     /* Counter int: used by VI/Timer Mgr */
-#define OS_EVENT_SP               4     /* SP task done interrupt */
-#define OS_EVENT_SI               5     /* SI (controller) interrupt */
-#define OS_EVENT_AI               6     /* AI interrupt */
-#define OS_EVENT_VI               7     /* VI interrupt: used by VI/Timer Mgr */
-#define OS_EVENT_PI               8     /* PI interrupt: used by PI Manager */
-#define OS_EVENT_DP               9     /* DP full sync interrupt */
-#define OS_EVENT_CPU_BREAK        10    /* CPU breakpoint: used by rmon */
-#define OS_EVENT_SP_BREAK         11    /* SP breakpoint:  used by rmon */
-#define OS_EVENT_FAULT            12    /* CPU fault event: used by rmon */
-#define OS_EVENT_THREADSTATUS     13    /* CPU thread status: used by rmon */
-#define OS_EVENT_PRENMI           14    /* Pre NMI interrupt */
-#ifndef _FINALROM
-#define OS_EVENT_RDB_READ_DONE    15    /* RDB read ok event: used by rmon */
-#define OS_EVENT_RDB_LOG_DONE     16    /* read of log data complete */
-#define OS_EVENT_RDB_DATA_DONE    17    /* read of hostio data complete */
-#define OS_EVENT_RDB_REQ_RAMROM   18    /* host needs ramrom access */
-#define OS_EVENT_RDB_FREE_RAMROM  19    /* host is done with ramrom access */
-#define OS_EVENT_RDB_DBG_DONE     20
-#define OS_EVENT_RDB_FLUSH_PROF   21
-#define OS_EVENT_RDB_ACK_PROF     22
-#endif
-
-/* Flags for debugging purpose */
-
-#define	OS_FLAG_CPU_BREAK	1	/* Break exception has occurred */
-#define	OS_FLAG_FAULT		2	/* CPU fault has occurred */
-
-/* Interrupt masks */
-
-#define	OS_IM_NONE	0x00000001
-#define OS_IM_RCP	0x00000401
-#define	OS_IM_SW1	0x00000501
-#define	OS_IM_SW2	0x00000601
-#define	OS_IM_CART	0x00000c01
-#define	OS_IM_PRENMI	0x00001401
-#define OS_IM_RDBWRITE	0x00002401
-#define OS_IM_RDBREAD	0x00004401
-#define	OS_IM_COUNTER	0x00008401
-#define	OS_IM_CPU	0x0000ff01
-#define	OS_IM_SP	0x00010401
-#define	OS_IM_SI	0x00020401
-#define	OS_IM_AI	0x00040401
-#define	OS_IM_VI	0x00080401
-#define	OS_IM_PI	0x00100401
-#define	OS_IM_DP	0x00200401
-#define	OS_IM_ALL	0x003fff01
-#define	RCP_IMASK	0x003f0000
-#define	RCP_IMASKSHIFT	16
-
-/* Recommended thread priorities for the system threads */
-
-#define OS_PRIORITY_MAX		255
-#define OS_PRIORITY_VIMGR	254
-#define OS_PRIORITY_RMON	250
-#define OS_PRIORITY_RMONSPIN	200
-#define OS_PRIORITY_PIMGR	150
-#define OS_PRIORITY_SIMGR	140
-#define	OS_PRIORITY_APPMAX	127
-#define OS_PRIORITY_IDLE	  0	/* Must be 0 */
-
-
-/* Flags to turn blocking on/off when sending/receiving message */
-
-#define	OS_MESG_NOBLOCK		0
-#define	OS_MESG_BLOCK		1
-
-/* Flags to indicate direction of data transfer */
-
-#define	OS_READ			0		/* device -> RDRAM */
-#define	OS_WRITE		1		/* device <- RDRAM */
-#define	OS_OTHERS		2		/* for Leo disk only */
-
-/*
- * I/O message types
- */
-#define OS_MESG_TYPE_BASE	(10)
-#define OS_MESG_TYPE_LOOPBACK	(OS_MESG_TYPE_BASE+0)
-#define OS_MESG_TYPE_DMAREAD	(OS_MESG_TYPE_BASE+1)
-#define OS_MESG_TYPE_DMAWRITE	(OS_MESG_TYPE_BASE+2)
-#define OS_MESG_TYPE_VRETRACE	(OS_MESG_TYPE_BASE+3)
-#define OS_MESG_TYPE_COUNTER	(OS_MESG_TYPE_BASE+4)
-#define OS_MESG_TYPE_EDMAREAD	(OS_MESG_TYPE_BASE+5)
-#define OS_MESG_TYPE_EDMAWRITE	(OS_MESG_TYPE_BASE+6)
-
-/*
- * I/O message priority
- */
-#define OS_MESG_PRI_NORMAL	0
-#define OS_MESG_PRI_HIGH	1
-
 /*
  * Page size argument for TLB routines
  */
@@ -418,13 +184,6 @@ typedef struct {
 #define OS_SIM_STACKSIZE	4096
 
 #define	OS_MIN_STACKSIZE	72
-
-/*
- * Values for osTvType 
- */
-#define	OS_TV_PAL		0
-#define	OS_TV_NTSC		1
-#define	OS_TV_MPAL		2
 
 /*
  * Video Interface (VI) mode type
@@ -846,8 +605,6 @@ extern s32		osPiRawReadIo(u32, u32 *);
 extern s32		osPiRawStartDma(s32, u32, void *, u32);
 extern s32		osPiWriteIo(u32, u32);
 extern s32		osPiReadIo(u32, u32 *);
-extern s32		osPiStartDma(OSIoMesg *, s32, s32, u32, void *, u32,
-				     OSMesgQueue *);
 extern void		osCreatePiManager(OSPri, OSMesgQueue *, OSMesg *, s32);
 
 /* Video interface (Vi) */
@@ -959,7 +716,6 @@ extern void     bzero(void *, int);
 
 /* Miscellaneous operations */
 
-extern void		osInitialize(void);
 extern u32		osGetCount(void);
 extern void		osExit(void);
 extern u32 		osGetMemSize(void);

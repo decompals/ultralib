@@ -4,7 +4,7 @@
 #ident "$Revision: 1.17 $"
 
 s32 __osPiRawStartDma(s32 direction, u32 devAddr, void* dramAddr, size_t size) {
-    register s32 stat;
+    register u32 stat;
 
     WAIT_ON_IOBUSY(stat);
 

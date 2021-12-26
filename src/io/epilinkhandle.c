@@ -1,12 +1,12 @@
 #include "piint.h"
 
-s32 osEPiLinkHandle(OSPiHandle *pihandle)
+s32 osEPiLinkHandle(OSPiHandle *EPiHandle)
 {
-    register s32 mask = __osDisableInt();
+    register s32 saveMask = __osDisableInt();
 
-    pihandle->next = __osPiTable;
-    __osPiTable = pihandle;
+    EPiHandle->next = __osPiTable;
+    __osPiTable = EPiHandle;
 
-    __osRestoreInt(mask);
+    __osRestoreInt(saveMask);
     return 0;
 }
