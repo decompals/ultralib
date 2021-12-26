@@ -11,12 +11,12 @@ void osStartThread(OSThread *t) {
             break;
         case OS_STATE_STOPPED:
             if (t->queue == NULL || t->queue == &__osRunQueue)
-            {
+               {
                 t->state = OS_STATE_RUNNABLE;
                 __osEnqueueThread(&__osRunQueue, t);
             }
             else
-            {
+               {
                 t->state = OS_STATE_WAITING;
                 __osEnqueueThread(t->queue, t);
                 __osEnqueueThread(&__osRunQueue, __osPopThread(t->queue));
