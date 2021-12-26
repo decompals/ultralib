@@ -233,6 +233,21 @@ typedef struct {
 #define OS_VI_MPAL_HPN2		40
 #define OS_VI_MPAL_HPF2		41
 
+#define OS_VI_FPAL_LPN1		42	/* FPAL - Full screen PAL */
+#define OS_VI_FPAL_LPF1		43
+#define OS_VI_FPAL_LAN1		44
+#define OS_VI_FPAL_LAF1		45
+#define OS_VI_FPAL_LPN2		46
+#define OS_VI_FPAL_LPF2		47
+#define OS_VI_FPAL_LAN2		48
+#define OS_VI_FPAL_LAF2		49
+#define OS_VI_FPAL_HPN1		50
+#define OS_VI_FPAL_HPF1		51
+#define OS_VI_FPAL_HAN1		52
+#define OS_VI_FPAL_HAF1		53
+#define OS_VI_FPAL_HPN2		54
+#define OS_VI_FPAL_HPF2		55
+
 /*
  * Video Interface (VI) special features
  */
@@ -500,6 +515,21 @@ extern OSViMode	osViModeMpalHan1;
 extern OSViMode	osViModeMpalHaf1;
 extern OSViMode	osViModeMpalHpn2;
 extern OSViMode	osViModeMpalHpf2;
+
+extern OSViMode osViModeFpalLpn1;	/* Individual VI FPAL modes */
+extern OSViMode osViModeFpalLpf1;
+extern OSViMode osViModeFpalLan1;
+extern OSViMode osViModeFpalLaf1;
+extern OSViMode osViModeFpalLpn2;
+extern OSViMode osViModeFpalLpf2;
+extern OSViMode osViModeFpalLan2;
+extern OSViMode osViModeFpalLaf2;
+extern OSViMode osViModeFpalHpn1;
+extern OSViMode osViModeFpalHpf1;
+extern OSViMode osViModeFpalHan1;
+extern OSViMode osViModeFpalHaf1;
+extern OSViMode osViModeFpalHpn2;
+extern OSViMode osViModeFpalHpf2;
 
 extern s32 	osRomType;	/* Bulk or cartridge ROM. 0=cartridge 1=bulk */
 extern void 	*osRomBase;	/* Rom base address of the game image */
