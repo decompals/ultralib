@@ -42,7 +42,7 @@ void osViSetSpecialFeatures(u32 func) {
         __osViNext->control |= __osViNext->modep->comRegs.ctrl & VI_CTRL_ANTIALIAS_MASK;
     }
     
-    __osViNext->state |= VI_STATE_08;
+    __osViNext->state |= VI_STATE_CTRL_UPDATED;
 
     __osRestoreInt(saveMask);
 }

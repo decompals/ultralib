@@ -14,7 +14,8 @@ AS := tools/kmc-gcc-wrapper/as
 CC := tools/kmc-gcc-wrapper/gcc
 AR_OLD := tools/ar
 
-CFLAGS := -D_LANGUAGE_C -D_MIPS_SZLONG=32 -D_FINALROM -w -nostdinc -c -G 0 -mgp32 -mfp32 -mips3
+CFLAGS := -w -nostdinc -c -G 0 -mgp32 -mfp32 -mips3
+CPPFLAGS := -D_LANGUAGE_C -D_MIPS_SZLONG=32 -D_FINALROM -D__USE_ISOC99 -DNDEBUG -DF3DEX_GBI_2 -I $(WORKING_DIR)/include -I $(WORKING_DIR)/include/gcc
 OPTFLAGS := -O3
 
 SRC_DIRS := $(shell find src -type d)
@@ -93,7 +94,7 @@ $(BUILD_DIR)/src/os/exit.marker: OPTFLAGS := -O0
 $(BUILD_DIR)/src/os/seterrorhandler.marker: OPTFLAGS := -O0
 
 $(BUILD_DIR)/%.marker: %.c
-	cd $(<D) && $(WORKING_DIR)/$(CC) $(CFLAGS) $(OPTFLAGS) -I $(WORKING_DIR)/include $(<F) -o $(WORKING_DIR)/$(@:.marker=.o)
+	cd $(<D) && $(WORKING_DIR)/$(CC) $(CFLAGS) $(CPPFLAGS) $(OPTFLAGS) $(<F) -o $(WORKING_DIR)/$(@:.marker=.o)
 ifneq ($(NON_MATCHING),1)
 # check if this file is in the archive; patch corrupted bytes and change file timestamps to match original if so
 	@$(if $(findstring $(BASE_DIR)/$(@F:.marker=.o), $(BASE_OBJS)), \
