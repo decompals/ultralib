@@ -8,7 +8,7 @@ void *osMalloc(void *region) {
     unsigned char *addr;
 
     if (rp->r_freeList == MAX_BUFCOUNT) {
-        return 0;
+        return NULL;
     }
     
     addr = &rp->r_startBufferAddress[rp->r_freeList * rp->r_bufferSize];
