@@ -2,33 +2,14 @@
 #include "PR/rcp.h"
 #include "piint.h"
 
-struct test
-{
-    u32 test;
-};
-
-// Is this cheating? Too bad!
-#define LOAD_PHYSICAL_ADDR(out, addr)                    \
-    __asm__ __volatile__("lui %0, %1"                    \
-                         : "=r"(out)                     \
-                         : "i"(PHYS_TO_K1(addr) >> 16)); \
-    __asm__ __volatile__("ori %0, %1, %2"                \
-                         : "=r"(out)                     \
-                         : "r"(out), "i"(PHYS_TO_K1(addr) & 0xFFFF));
-
 void __osDevMgrMain(void *args)
 {
-    OSIoMesg *mb;
+    OSIoMesg *mb = NULL;
     OSMesg em;
     OSMesg dummy;
-    s32 ret;
-    OSDevMgr *dm;
-    s32 messageSend;
-
-    messageSend = 0;
-    mb = NULL;
-    ret = 0;
-    dm = (OSDevMgr *)args;
+    s32 ret = 0;
+    OSDevMgr *dm = (OSDevMgr *)args;
+    s32 messageSend = 0;
 
     while (TRUE)
     {

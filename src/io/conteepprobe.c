@@ -2,11 +2,10 @@
 #include "siint.h"
 
 s32 osEepromProbe(OSMesgQueue *mq) {
-    s32 ret;
+    s32 ret = 0;
     u16 type;
     OSContStatus sdata;
 
-    ret = 0;
     __osSiGetAccess();
     ret = __osEepStatus(mq, &sdata);
     type = sdata.type & (CONT_EEPROM | CONT_EEP16K);

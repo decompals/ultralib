@@ -6,17 +6,16 @@
 static void __osPackEepReadData(u8 address);
 OSPifRam __osEepPifRam ALIGNED(16);
 s32 __osEepromRead16K;
+
 s32 osEepromRead(OSMesgQueue *mq, u8 address, u8 *buffer)
 {
-	s32 ret;
-	int i;
+	s32 ret = 0;
+	int i = 0;
 	u16 type;
 	u8 *ptr;
 	OSContStatus sdata;
 	__OSContEepromFormat eepromformat;
 
-	ret = 0;
-	i = 0;
 	ptr = (u8 *)&__osEepPifRam.ramarray;
 	__osSiGetAccess();
 	ret = __osEepStatus(mq, &sdata);
@@ -80,11 +79,9 @@ s32 osEepromRead(OSMesgQueue *mq, u8 address, u8 *buffer)
 }
 
 static void __osPackEepReadData(u8 address) {
-	u8 *ptr;
+	u8 *ptr = (u8 *)&__osEepPifRam.ramarray;
 	__OSContEepromFormat eepromformat;
 	int i;
-
-	ptr = (u8 *)&__osEepPifRam.ramarray;
 
 	__osEepPifRam.pifstatus = CONT_CMD_EXE;
 
