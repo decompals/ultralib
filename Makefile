@@ -10,9 +10,11 @@ WORKING_DIR := $(shell pwd)
 
 CPP := cpp -P
 AR := ar
-AS := tools/kmc-gcc-wrapper/as
-CC := tools/kmc-gcc-wrapper/gcc
-AR_OLD := tools/ar
+AS := tools/gcc/as
+CC := tools/gcc/gcc
+AR_OLD := tools/gcc/ar
+
+export COMPILER_PATH := $(WORKING_DIR)/tools/gcc
 
 CFLAGS := -w -nostdinc -c -G 0 -mgp32 -mfp32 -mips3
 CPPFLAGS := -D_LANGUAGE_C -D_MIPS_SZLONG=32 -D_FINALROM -D__USE_ISOC99 -DNDEBUG -DF3DEX_GBI_2 -I $(WORKING_DIR)/include -I $(WORKING_DIR)/include/gcc
@@ -68,6 +70,7 @@ distclean: clean
 	$(RM) -rf $(BASE_DIR)
 
 setup:
+	$(MAKE) -C tools
 	cd $(BASE_DIR) && $(AR) xo ../$(BASE_AR)
 	chmod -R +rw $(BASE_DIR)
 
