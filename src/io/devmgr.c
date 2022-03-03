@@ -40,7 +40,7 @@ void __osDevMgrMain(void *args)
             __osResetGlobalIntMask(OS_IM_PI);
             __osEPiRawWriteIo(mb->piHandle, LEO_BM_CTL, (info->bmCtlShadow | 0x80000000));
 
-doMessageSend:
+readblock1:
                 osRecvMesg(dm->evtQueue, &em, OS_MESG_BLOCK);
                 info = &mb->piHandle->transferInfo;
                 blockInfo = &info->block[info->blockNum];
@@ -64,7 +64,7 @@ doMessageSend:
 
                 if (messageSend == 1 && mb->piHandle->transferInfo.block[0].errStatus == LEO_ERROR_GOOD) {
                     messageSend = 0;
-                    goto doMessageSend;
+                    goto readblock1;
                 }
             
             osSendMesg(dm->acsQueue, NULL, OS_MESG_NOBLOCK);

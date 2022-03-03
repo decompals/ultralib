@@ -1,4 +1,3 @@
-
 /**************************************************************************
  *
  *  $Revision: 1.149 $
@@ -18,7 +17,6 @@ extern "C" {
 #include "ultratypes.h"
 #include "os_thread.h"
 #include "os_message.h"
-#include "os_cont.h"
 #include "os_exception.h"
 #include "os_pi.h"
 #include "os_system.h"
@@ -89,6 +87,31 @@ typedef struct OSTimer_s {
 	OSMesgQueue		*mq;		/* Message Queue */
 	OSMesg			msg;		/* Message to send */
 } OSTimer;
+
+/*
+ * Structure for controllers 
+ */
+
+typedef struct {
+	u16     type;                   /* Controller Type */
+	u8      status;                 /* Controller status */
+	u8	errno;
+}OSContStatus;
+
+typedef struct {
+	u16     button;
+	s8      stick_x;		/* -80 <= stick_x <= 80 */
+	s8      stick_y;		/* -80 <= stick_y <= 80 */
+	u8	errno;
+} OSContPad;
+
+typedef struct {
+	void    *address;               /* Ram pad Address:  11 bits */
+	u8      databuffer[32];         /* address of the data buffer */
+        u8      addressCrc;             /* CRC code for address */
+	u8      dataCrc;                /* CRC code for data */
+	u8	errno;
+} OSContRamIo;
 
 /*
  * Structure for file system

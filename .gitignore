@@ -16,7 +16,7 @@ base_*/
 build/
 expected/
 notes/
-tools/ar
+tools/gcc
 *.elf
 *.o
 *.a

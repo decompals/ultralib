@@ -53,7 +53,8 @@ typedef struct
     /* 0x1 */ u8 txsize;
     /* 0x2 */ u8 rxsize;
     /* 0x3 */ u8 cmd;
-    /* 0x4 */ u16 address;
+    /* 0x4 */ u8 addrh;
+    /* 0x5 */ u8 addrl;
     /* 0x6 */ u8 data[BLOCKSIZE];
     /* 0x26 */ u8 datacrc;
 } __OSContRamReadFormat;
