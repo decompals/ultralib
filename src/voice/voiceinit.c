@@ -13,37 +13,24 @@ s32 osVoiceInit(OSMesgQueue* mq, OSVoiceHandle* handle, int channel) {
     handle->__mq = mq;
     handle->__mode = 0;
 
-    ret = __osVoiceGetStatus(mq, channel, &stat);
-    if (ret != 0) {
-        return ret;
-    }
+    ERRCK(__osVoiceGetStatus(mq, channel, &stat));
 
     if (__osContChannelReset(mq, channel) != 0) {
         return CONT_ERR_CONTRFAIL;
     }
 
     for (i = 0; i < 5; i++) {
-        ret = __osVoiceSetADConverter(mq, channel, cmd[i]);
-
-        if (ret != 0) {
-            return ret;
-        }
+        ERRCK(__osVoiceSetADConverter(mq, channel, cmd[i]));
     }
 
-    ret = __osVoiceGetStatus(mq, channel, &stat);
-    if (ret != 0) {
-        return ret;
-    }
+    ERRCK(__osVoiceGetStatus(mq, channel, &stat));
     if (stat & 2) {
         return CONT_ERR_VOICE_NO_RESPONSE;
     }
 
     *(u32*)buf = 0x100;
-    ret = __osVoiceContWrite4(mq, channel, 0, buf);
-    if (ret != 0) {
-        return ret;
-    }
-
+    ERRCK(__osVoiceContWrite4(mq, channel, 0, buf));
+    
     ret = __osVoiceCheckResult(handle, &stat);
     if (ret & 0xFF00) {
         ret = CONT_ERR_INVALID;
