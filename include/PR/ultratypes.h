@@ -1,6 +1,37 @@
-#ifndef _ULTRATYPES_H
-#define _ULTRATYPES_H
+#ifndef _ULTRATYPES_H_
+#define _ULTRATYPES_H_
 
+
+/**************************************************************************
+ *                                                                        *
+ *               Copyright (C) 1995, Silicon Graphics, Inc.               *
+ *                                                                        *
+ *  These coded instructions, statements, and computer programs  contain  *
+ *  unpublished  proprietary  information of Silicon Graphics, Inc., and  *
+ *  are protected by Federal copyright law.  They  may  not be disclosed  *
+ *  to  third  parties  or copied or duplicated in any form, in whole or  *
+ *  in part, without the prior written consent of Silicon Graphics, Inc.  *
+ *                                                                        *
+ **************************************************************************/
+
+
+/*************************************************************************
+ *
+ *  File: ultratypes.h
+ *
+ *  This file contains various types used in Ultra64 interfaces.
+ *
+ *  $Revision: 1.6 $
+ *  $Date: 1997/12/17 04:02:06 $
+ *  $Source: /exdisk2/cvs/N64OS/Master/cvsmdev2/PR/include/ultratypes.h,v $
+ *
+ **************************************************************************/
+
+
+
+/**********************************************************************
+ * General data types for R4300
+ */
 #if defined(_LANGUAGE_C) || defined(_LANGUAGE_C_PLUS_PLUS)
 
 typedef unsigned char       u8;     /* unsigned  8-bit */

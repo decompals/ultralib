@@ -1,3 +1,32 @@
+
+/*====================================================================
+ * os_message.h
+ *
+ * Copyright 1995, Silicon Graphics, Inc.
+ * All Rights Reserved.
+ *
+ * This is UNPUBLISHED PROPRIETARY SOURCE CODE of Silicon Graphics,
+ * Inc.; the contents of this file may not be disclosed to third
+ * parties, copied or duplicated in any form, in whole or in part,
+ * without the prior written permission of Silicon Graphics, Inc.
+ *
+ * RESTRICTED RIGHTS LEGEND:
+ * Use, duplication or disclosure by the Government is subject to
+ * restrictions as set forth in subdivision (c)(1)(ii) of the Rights
+ * in Technical Data and Computer Software clause at DFARS
+ * 252.227-7013, and/or in similar or successor clauses in the FAR,
+ * DOD or NASA FAR Supplement. Unpublished - rights reserved under the
+ * Copyright Laws of the United States.
+ *====================================================================*/
+
+/*---------------------------------------------------------------------*
+        Copyright (C) 1998 Nintendo. (Originated by SGI)
+        
+        $RCSfile: os_message.h,v $
+        $Revision: 1.1 $
+        $Date: 1998/10/09 08:01:15 $
+ *---------------------------------------------------------------------*/
+
 #ifndef _OS_MESSAGE_H_
 #define _OS_MESSAGE_H_
 
@@ -9,6 +38,12 @@ extern "C" {
 #include "os_thread.h"
 
 #if defined(_LANGUAGE_C) || defined(_LANGUAGE_C_PLUS_PLUS)
+
+/**************************************************************************
+ *
+ * Type definitions
+ *
+ */
 
 typedef u32 OSEvent;
 
@@ -29,7 +64,14 @@ typedef struct OSMesgQueue_s {
     OSMesg      *msg;           /* Points to message buffer array */
 } OSMesgQueue;
 
+
 #endif /* defined(_LANGUAGE_C) || defined(_LANGUAGE_C_PLUS_PLUS) */
+
+/**************************************************************************
+ *
+ * Global definitions
+ *
+ */
 
 /* Events */
 #ifdef _FINALROM
@@ -69,7 +111,14 @@ typedef struct OSMesgQueue_s {
 #define OS_MESG_NOBLOCK     0
 #define OS_MESG_BLOCK       1
 
+
 #if defined(_LANGUAGE_C) || defined(_LANGUAGE_C_PLUS_PLUS)
+
+/**************************************************************************
+ *
+ * Macro definitions
+ *
+ */
 
 /* Get count of valid messages in queue */
 #define MQ_GET_COUNT(mq)    ((mq)->validCount)
@@ -77,6 +126,20 @@ typedef struct OSMesgQueue_s {
 /* Figure out if message queue is empty or full */
 #define MQ_IS_EMPTY(mq)     (MQ_GET_COUNT(mq) == 0)
 #define MQ_IS_FULL(mq)      (MQ_GET_COUNT(mq) >= (mq)->msgCount)
+
+
+/**************************************************************************
+ *
+ * Extern variables
+ *
+ */
+
+
+/**************************************************************************
+ *
+ * Function prototypes
+ *
+ */
 
 /* Message operations */
 
@@ -88,6 +151,7 @@ extern s32      osRecvMesg(OSMesgQueue *, OSMesg *, s32);
 /* Event operations */
 
 extern void     osSetEventMesg(OSEvent, OSMesgQueue *, OSMesg);
+
 
 #endif  /* defined(_LANGUAGE_C) || defined(_LANGUAGE_C_PLUS_PLUS) */
 
