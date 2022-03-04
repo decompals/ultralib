@@ -5,7 +5,7 @@
 
 static OSPifRam __MotorDataBuf[MAXCONTROLLERS];
 
-s32 __osMotorAccess(OSPfs* pfs, u32 vibrate) {
+s32 __osMotorAccess(OSPfs* pfs, s32 flag) {
     int i;
     s32 ret;
     u8* ptr = (u8*)&__MotorDataBuf[pfs->channel];
@@ -18,7 +18,7 @@ s32 __osMotorAccess(OSPfs* pfs, u32 vibrate) {
     __MotorDataBuf[pfs->channel].pifstatus = CONT_CMD_EXE;
     ptr += pfs->channel;
     for (i = 0; i < BLOCKSIZE; i++) {
-        ((__OSContRamReadFormat*)ptr)->data[i] = vibrate;
+        ((__OSContRamReadFormat*)ptr)->data[i] = flag;
     }
 
     __osContLastCmd = CONT_CMD_END;
@@ -29,7 +29,7 @@ s32 __osMotorAccess(OSPfs* pfs, u32 vibrate) {
 
     ret = ((__OSContRamReadFormat*)ptr)->rxsize & 0xC0;
     if (!ret) {
-        if (!vibrate) {
+        if (!flag) {
             if (((__OSContRamReadFormat*)ptr)->datacrc != 0) {
                 ret = PFS_ERR_CONTRFAIL;
             }

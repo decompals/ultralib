@@ -1,6 +1,29 @@
 #ifndef _RCP_H_
 #define _RCP_H_
 
+/**************************************************************************
+ *                                                                        *
+ *               Copyright (C) 1995, Silicon Graphics, Inc.               *
+ *                                                                        *
+ *  These coded instructions, statements, and computer programs  contain  *
+ *  unpublished  proprietary  information of Silicon Graphics, Inc., and  *
+ *  are protected by Federal copyright law.  They  may  not be disclosed  *
+ *  to  third  parties  or copied or duplicated in any form, in whole or  *
+ *  in part, without the prior written consent of Silicon Graphics, Inc.  *
+ *                                                                        *
+ **************************************************************************/
+
+/**************************************************************************
+ *
+ *  File: rcp.h
+ *
+ *  This file contains register and bit definitions for RCP memory map.
+ *  $Revision: 1.22 $
+ *  $Date: 1999/05/20 03:01:49 $
+ *  $Source: /exdisk2/cvs/N64OS/Master/cvsmdev2/PR/include/rcp.h,v $
+ *
+ **************************************************************************/
+
 #include "R4300.h"
 #include "ultratypes.h"
 
