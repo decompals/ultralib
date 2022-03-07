@@ -145,7 +145,7 @@ typedef struct
 {
     /* 0x0 */ __OSInode inode;
     /* 0x100 */ u8 bank;
-    /* 0x101 */ u8 map[256];
+    /* 0x101 */ u8 map[PFS_INODE_DIST_MAP];
 } __OSInodeCache;
 
 extern s32 __osEepStatus(OSMesgQueue *, OSContStatus *);
@@ -158,7 +158,7 @@ s32 __osCheckId(OSPfs *pfs);
 s32 __osPfsRWInode(OSPfs *pfs, __OSInode *inode, u8 flag, u8 bank);
 s32 __osPfsSelectBank(OSPfs *pfs, u8 bank);
 s32 __osPfsDeclearPage(OSPfs *pfs, __OSInode *inode, int file_size_in_pages, int *first_page, u8 bank, int *decleared, int *last_page);
-s32 __osPfsReleasePages(OSPfs *pfs, __OSInode *inode, u8 start_page, u16 *sum, u8 bank, __OSInodeUnit *last_page, int flag);
+s32 __osPfsReleasePages(OSPfs *pfs, __OSInode *inode, u8 start_page, u8 bank, __OSInodeUnit *last_page);
 s32 __osBlockSum(OSPfs *pfs, u8 page_no, u16 *sum, u8 bank);
 s32 __osContRamRead(OSMesgQueue *mq, int channel, u16 address, u8 *buffer);
 s32 __osContRamWrite(OSMesgQueue *mq, int channel, u16 address, u8 *buffer, int force);
