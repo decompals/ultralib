@@ -15,8 +15,8 @@ s32 __osContRamRead(OSMesgQueue* mq, int channel, u16 address, u8* buffer) {
     do {
         ptr = (u8*)&__osPfsPifRam;
 
-        if ((__osContLastCmd != 2) || (__osPfsLastChannel != channel)) {
-            __osContLastCmd = 2;
+        if ((__osContLastCmd != CONT_CMD_READ_MEMPACK) || (__osPfsLastChannel != channel)) {
+            __osContLastCmd = CONT_CMD_READ_MEMPACK;
             __osPfsLastChannel = channel;
 
             for (i = 0; i < channel; i++) {

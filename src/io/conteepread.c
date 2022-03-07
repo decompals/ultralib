@@ -60,7 +60,7 @@ s32 osEepromRead(OSMesgQueue *mq, u8 address, u8 *buffer)
 	__osContLastCmd = CONT_CMD_READ_EEPROM;
 	osRecvMesg(mq, NULL, OS_MESG_BLOCK);
 	
-	for (i = 0; i < 4; i++) {
+	for (i = 0; i < MAXCONTROLLERS; i++) {
 		//skip the first 4 bytes
 		ptr++;
 	}
@@ -90,8 +90,7 @@ static void __osPackEepReadData(u8 address) {
 	eepromformat.cmd = CONT_CMD_READ_EEPROM;
 	eepromformat.address = address;
 
-	for (i = 0; i < 4; i++) {
-		//skip the first 4 bytes
+	for (i = 0; i < MAXCONTROLLERS; i++) {
 		*ptr++ = 0;
 	}
 	

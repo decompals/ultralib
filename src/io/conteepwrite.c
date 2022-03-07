@@ -90,8 +90,7 @@ static void __osPackEepWriteData(u8 address, u8 *buffer) {
         eepromformat.data[i] = *buffer++;
     }
 
-    for (i = 0; i < 4; i++) {
-        //skip the first 4 bytes
+    for (i = 0; i < MAXCONTROLLERS; i++) {
         *ptr++ = 0;
     }
     
@@ -113,8 +112,11 @@ s32 __osEepStatus(OSMesgQueue *mq, OSContStatus *data) {
 
     __osEepPifRam.pifstatus = CONT_CMD_EXE;
     ptr = (u8 *)__osEepPifRam.ramarray;
-    for (i = 0; i < 4; i++) //zero 4 bytes?
+    
+    for (i = 0; i < MAXCONTROLLERS; i++) {
         *ptr++ = 0;
+    }
+    
     requestformat.dummy = CONT_CMD_NOP;
     requestformat.txsize = CONT_CMD_REQUEST_STATUS_TX;
     requestformat.rxsize = CONT_CMD_REQUEST_STATUS_RX;
@@ -139,7 +141,7 @@ s32 __osEepStatus(OSMesgQueue *mq, OSContStatus *data) {
 
     ptr = (u8 *)&__osEepPifRam;
     
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < MAXCONTROLLERS; i++) {
         *ptr++ = 0;
     }
 
