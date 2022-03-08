@@ -1,3 +1,32 @@
+
+/*====================================================================
+ * os_pi.h
+ *
+ * Copyright 1995, Silicon Graphics, Inc.
+ * All Rights Reserved.
+ *
+ * This is UNPUBLISHED PROPRIETARY SOURCE CODE of Silicon Graphics,
+ * Inc.; the contents of this file may not be disclosed to third
+ * parties, copied or duplicated in any form, in whole or in part,
+ * without the prior written permission of Silicon Graphics, Inc.
+ *
+ * RESTRICTED RIGHTS LEGEND:
+ * Use, duplication or disclosure by the Government is subject to
+ * restrictions as set forth in subdivision (c)(1)(ii) of the Rights
+ * in Technical Data and Computer Software clause at DFARS
+ * 252.227-7013, and/or in similar or successor clauses in the FAR,
+ * DOD or NASA FAR Supplement. Unpublished - rights reserved under the
+ * Copyright Laws of the United States.
+ *====================================================================*/
+
+/*---------------------------------------------------------------------*
+        Copyright (C) 1998 Nintendo. (Originated by SGI)
+        
+        $RCSfile: os_pi.h,v $
+        $Revision: 1.1 $
+        $Date: 1998/10/09 08:01:16 $
+ *---------------------------------------------------------------------*/
+
 #ifndef _OS_PI_H_
 #define	_OS_PI_H_
 
@@ -9,7 +38,14 @@ extern "C" {
 #include "os_thread.h"
 #include "os_message.h"
 
+
 #if defined(_LANGUAGE_C) || defined(_LANGUAGE_C_PLUS_PLUS)
+
+/**************************************************************************
+ *
+ * Type definitions
+ *
+ */
 
 /*
  * Structure for Enhanced PI interface
@@ -39,6 +75,7 @@ typedef struct {
     u32             seqCtlShadow;   /* asic seq_ctl(518) register shadow ram */
     __OSBlockInfo   block[2];       /* bolck transfer info */
 } __OSTranxInfo;
+
 
 typedef struct OSPiHandle_s {
     struct OSPiHandle_s *next;          /* point to next handle on the table */
@@ -91,7 +128,14 @@ typedef struct {
     s32         (*edma)(OSPiHandle *, s32, u32, void *, u32);
 } OSDevMgr;
 
+
 #endif /* defined(_LANGUAGE_C) || defined(_LANGUAGE_C_PLUS_PLUS) */
+
+/**************************************************************************
+ *
+ * Global definitions
+ *
+ */
 
 /* Flags to indicate direction of data transfer */
 
@@ -126,9 +170,27 @@ typedef struct {
 
 #if defined(_LANGUAGE_C) || defined(_LANGUAGE_C_PLUS_PLUS)
 
-extern OSPiHandle *__osPiTable; /* The head of OSPiHandle link list */
+/**************************************************************************
+ *
+ * Macro definitions
+ *
+ */
 
-/* Peripheral interface (PI) */
+
+/**************************************************************************
+ *
+ * Extern variables
+ *
+ */
+
+extern OSPiHandle      *__osPiTable;    /* The head of OSPiHandle link list */
+
+
+/**************************************************************************
+ *
+ * Function prototypes
+ *
+ */
 
 extern u32  osPiGetStatus(void);
 extern s32  osPiGetDeviceType(void);
@@ -148,6 +210,7 @@ extern s32 osEPiWriteIo(OSPiHandle *, u32 , u32 );
 extern s32 osEPiReadIo(OSPiHandle *, u32 , u32 *);
 extern s32 osEPiStartDma(OSPiHandle *, OSIoMesg *, s32);
 extern s32 osEPiLinkHandle(OSPiHandle *);
+
 
 #endif  /* defined(_LANGUAGE_C) || defined(_LANGUAGE_C_PLUS_PLUS) */
 

@@ -13,17 +13,20 @@ AR := ar
 AS := tools/gcc/as
 CC := tools/gcc/gcc
 AR_OLD := tools/gcc/ar
+STRIP := tools/gcc/strip --strip-debug
 
 export COMPILER_PATH := $(WORKING_DIR)/tools/gcc
 
-CFLAGS := -w -nostdinc -c -G 0 -mgp32 -mfp32 -mips3
-CPPFLAGS := -D_LANGUAGE_C -D_MIPS_SZLONG=32 -D_FINALROM -D__USE_ISOC99 -DNDEBUG -DF3DEX_GBI_2 -I $(WORKING_DIR)/include -I $(WORKING_DIR)/include/gcc
+CFLAGS := -w -nostdinc -c -G 0 -mgp32 -mfp32 -mips3 -D_LANGUAGE_C
+ASFLAGS := -w -nostdinc -c -G 0 -mips3 -DMIPSEB -DLANGUAGE_ASSEMBLY -D_MIPS_SIM=1 -D_ULTRA64 -x assembler-with-cpp
+GBIDEFINE := -DF3DEX_GBI_2
+CPPFLAGS = -D_MIPS_SZLONG=32 -D_FINALROM -D__USE_ISOC99 -DNDEBUG -I $(WORKING_DIR)/include -I $(WORKING_DIR)/include/gcc -I $(WORKING_DIR)/include/PR $(GBIDEFINE)
 OPTFLAGS := -O3
 
 SRC_DIRS := $(shell find src -type d)
 ASM_DIRS := $(shell find asm -type d -not -path "asm/non_matchings*")
 C_FILES  := $(foreach dir,$(SRC_DIRS),$(wildcard $(dir)/*.c))
-S_FILES  := $(foreach dir,$(ASM_DIRS),$(wildcard $(dir)/*.s))
+S_FILES  := $(foreach dir,$(SRC_DIRS) $(ASM_DIRS),$(wildcard $(dir)/*.s))
 O_FILES  := $(foreach f,$(S_FILES:.s=.o),$(BUILD_DIR)/$f) \
             $(foreach f,$(C_FILES:.c=.o),$(BUILD_DIR)/$f) \
             $(foreach f,$(wildcard $(BASE_DIR)/*),$(BUILD_DIR)/$f)
@@ -44,8 +47,10 @@ BASE_OBJS := $(wildcard $(BASE_DIR)/*.o)
 # Try to find a file corresponding to an archive file in any of src/ asm/ or the base directory, prioritizing src then asm then the original file
 AR_ORDER = $(foreach f,$(shell $(AR) t $(BASE_AR)),$(shell find $(BUILD_DIR)/src $(BUILD_DIR)/asm $(BUILD_DIR)/$(BASE_DIR) -name $f -type f -print -quit))
 MATCHED_OBJS = $(filter-out $(BUILD_DIR)/$(BASE_DIR)/%,$(AR_ORDER))
+UNMATCHED_OBJS = $(filter-out $(MATCHED_OBJS),$(AR_ORDER))
 NUM_OBJS = $(words $(AR_ORDER))
 NUM_OBJS_MATCHED = $(words $(MATCHED_OBJS))
+NUM_OBJS_UNMATCHED = $(words $(UNMATCHED_OBJS))
 
 $(shell mkdir -p asm $(BASE_DIR) src $(BUILD_DIR)/$(BASE_DIR) $(foreach dir,$(ASM_DIRS) $(SRC_DIRS),$(BUILD_DIR)/$(dir)))
 
@@ -95,6 +100,15 @@ $(BUILD_DIR)/src/os/ackramromread.marker: OPTFLAGS := -O0
 $(BUILD_DIR)/src/os/ackramromwrite.marker: OPTFLAGS := -O0
 $(BUILD_DIR)/src/os/exit.marker: OPTFLAGS := -O0
 $(BUILD_DIR)/src/os/seterrorhandler.marker: OPTFLAGS := -O0
+$(BUILD_DIR)/src/gu/us2dex_emu.marker: GBIDEFINE := -DF3DEX_GBI
+$(BUILD_DIR)/src/sp/sprite.marker: GBIDEFINE := 
+$(BUILD_DIR)/src/sp/spriteex.marker: GBIDEFINE := 
+$(BUILD_DIR)/src/sp/spriteex2.marker: GBIDEFINE := 
+$(BUILD_DIR)/src/sp/spriteex2.marker: GBIDEFINE := 
+$(BUILD_DIR)/src/mgu/%.marker: STRIP := :
+$(BUILD_DIR)/src/mgu/%.marker: export VR4300MUL := OFF
+$(BUILD_DIR)/src/mgu/rotate.marker: export VR4300MUL := ON
+$(BUILD_DIR)/src/gu/%.marker: ASFLAGS += -I $(WORKING_DIR)/src/mgu
 $(BUILD_DIR)/src/voice/%.marker: OPTFLAGS += -DLANG_JAPANESE -I$(WORKING_DIR)/src
 
 $(BUILD_DIR)/%.marker: %.c
@@ -125,6 +139,21 @@ endif
 # # create or update the marker file
 # 	@touch $@
 # endif
+
+$(BUILD_DIR)/%.marker: %.s
+	cd $(<D) && $(WORKING_DIR)/$(CC) $(ASFLAGS) -I. $(OPTFLAGS) $(<F) -o $(WORKING_DIR)/$(@:.marker=.o)
+ifneq ($(NON_MATCHING),1)
+# check if this file is in the archive; patch corrupted bytes and change file timestamps to match original if so
+	@$(if $(findstring $(BASE_DIR)/$(@F:.marker=.o), $(BASE_OBJS)), \
+	 $(STRIP) $(STRIP_FLAGS) $(@:.marker=.o) && \
+	 python3 tools/fix_objfile.py $(@:.marker=.o) $(BASE_DIR)/$(@F:.marker=.o) && \
+	 $(COMPARE_OBJ) && \
+	 touch -r $(BASE_DIR)/$(@F:.marker=.o) $(@:.marker=.o), \
+	 echo "Object file $(<F:.marker=.o) is not in the current archive" \
+	)
+# create or update the marker file
+	@touch $@
+endif
 
 # Disable built-in rules
 .SUFFIXES:
