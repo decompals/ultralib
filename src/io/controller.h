@@ -47,6 +47,15 @@ typedef struct
     /* 0x5 */ u8 status;
 } __OSContRequesFormatShort;
 
+typedef struct {
+    /* 0x00 */ u8 txsize;
+    /* 0x01 */ u8 rxsize;
+    /* 0x02 */ u8 poll;
+    /* 0x03 */ u8 typeh;
+    /* 0x04 */ u8 typel;
+    /* 0x05 */ u8 status;
+} __OSContRequestHeaderAligned; // size = 0x6
+
 typedef struct
 {
     /* 0x0 */ u8 dummy;
