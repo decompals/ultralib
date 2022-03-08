@@ -5,5 +5,6 @@
 extern s32 __osPfsLastChannel;
 
 u8 __osVoiceContDataCrc(u8* data, u32 length);
+s32 __osVoiceCheckResult(OSVoiceHandle* hd, u8* stat);
 
 #endif
