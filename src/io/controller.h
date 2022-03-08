@@ -140,6 +140,17 @@ typedef struct
 #define DIR_STATUS_UNKNOWN 1
 #define DIR_STATUS_OCCUPIED 2
 
+/* Controller error number */
+
+#define CONT_ERR_NO_CONTROLLER      PFS_ERR_NOPACK      /* 1 */
+#define CONT_ERR_CONTRFAIL      CONT_OVERRUN_ERROR  /* 4 */
+#define CONT_ERR_INVALID        PFS_ERR_INVALID     /* 5 */
+#define CONT_ERR_DEVICE         PFS_ERR_DEVICE      /* 11 */
+#define CONT_ERR_NOT_READY      12
+#define CONT_ERR_VOICE_MEMORY       13
+#define CONT_ERR_VOICE_WORD     14
+#define CONT_ERR_VOICE_NO_RESPONSE  15
+
 
 typedef struct
 {

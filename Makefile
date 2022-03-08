@@ -95,6 +95,7 @@ $(BUILD_DIR)/src/os/ackramromread.marker: OPTFLAGS := -O0
 $(BUILD_DIR)/src/os/ackramromwrite.marker: OPTFLAGS := -O0
 $(BUILD_DIR)/src/os/exit.marker: OPTFLAGS := -O0
 $(BUILD_DIR)/src/os/seterrorhandler.marker: OPTFLAGS := -O0
+$(BUILD_DIR)/src/voice/%.marker: OPTFLAGS += -DLANG_JAPANESE -I$(WORKING_DIR)/src
 
 $(BUILD_DIR)/%.marker: %.c
 	cd $(<D) && $(WORKING_DIR)/$(CC) $(CFLAGS) $(CPPFLAGS) $(OPTFLAGS) $(<F) -o $(WORKING_DIR)/$(@:.marker=.o)
@@ -109,6 +110,21 @@ ifneq ($(NON_MATCHING),1)
 # create or update the marker file
 	@touch $@
 endif
+# .SECONDEXPANSION:
+# $(BUILD_DIR)/src/voice/%.marker: src/voice/%.c
+# 	tools/shift-jisconv.py $< $(WORKING_DIR)/$(@:.marker=.c)
+# 	cd $(<D) && $(WORKING_DIR)/$(CC) $(CFLAGS) $(CPPFLAGS) $(OPTFLAGS) $(WORKING_DIR)/$(@:.marker=.c) -o $(WORKING_DIR)/$(@:.marker=.o)
+# ifneq ($(NON_MATCHING),1)
+# # check if this file is in the archive; patch corrupted bytes and change file timestamps to match original if so
+# 	$(if $(findstring $(BASE_DIR)/$(@F:.marker=.o), $(BASE_OBJS)), \
+# 	 python3 tools/fix_objfile.py $(@:.marker=.o) $(BASE_DIR)/$(@F:.marker=.o) && \
+# 	 $(COMPARE_OBJ) && \
+# 	 touch -r $(BASE_DIR)/$(@F:.marker=.o) $(@:.marker=.o), \
+# 	 echo "Object file $(<F:.marker=.o) is not in the current archive" \
+# 	)
+# # create or update the marker file
+# 	@touch $@
+# endif
 
 # Disable built-in rules
 .SUFFIXES:

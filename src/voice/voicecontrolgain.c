@@ -1,5 +1,5 @@
 #include "PR/os_internal.h"
-#include "../io/controller.h"
+#include "io/controller.h"
 #include "PR/os_voice.h"
 
 s32 __osVoiceSetADConverter(OSMesgQueue*, int ch, u8 cmd);
