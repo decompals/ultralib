@@ -12,10 +12,5 @@ ABS(osCicId, 0x80000310)
 ABS(osVersion, 0x80000314)
 ABS(osMemSize, 0x80000318)
 ABS(osAppNMIBuffer, 0x8000031c)
-nop; nop; nop; nop;
-nop; nop; nop; nop;
-nop; nop; nop; nop;
-nop; nop; nop; nop;
-nop; nop; nop; nop;
-nop; nop; nop; nop;
- /* padding to 0x60 because for some reason it's like that */
+.fill 0x60
+/* padded to 0x60 in the object file */

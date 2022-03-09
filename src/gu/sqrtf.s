@@ -20,6 +20,6 @@
 #include "sys/regdef.h"
 
 LEAF(sqrtf)
-    sqrt.s $f0, $f12
+    sqrt.s fv0, fa0
     j ra
 END(sqrtf)

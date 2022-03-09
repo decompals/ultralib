@@ -18,7 +18,7 @@ LEAF(__osProbeTLB)
     nop
     mfc0 t3, C0_INX
     and t3, t3, TLBINX_PROBE
-    bnez t3, .L_a8
+    bnez t3, 3f
     nop
     tlbr
     nop
@@ -28,26 +28,26 @@ LEAF(__osProbeTLB)
     addi t3, t3, DCACHE_SIZE
     srl t3, t3, 0x1
     and ta0, t3, a0
-    bnez ta0, .L_78
+    bnez ta0, 1f
     addi t3, t3,-1
     mfc0 v0, C0_ENTRYLO0
-    b .L_7c
+    b 2f
     nop
-.L_78:
+1:
     mfc0 v0, C0_ENTRYLO1
-.L_7c:
+2:
     andi ta1, v0,TLBLO_V
-    beqz ta1, .L_a8
+    beqz ta1, 3f
     nop
-    and v0, v0,TLBLO_PFNMASK
-    sll v0, v0,TLBLO_PFNSHIFT
-    and ta1, a0,t3
-    add v0, v0,ta1
-    b .L_ac
+    and v0, v0, TLBLO_PFNMASK
+    sll v0, v0, TLBLO_PFNSHIFT
+    and ta1, a0, t3
+    add v0, v0, ta1
+    b 4f
     nop
-.L_a8:
+3:
     li v0, -1
-.L_ac:
+4:
     mtc0 t0, C0_ENTRYHI
     jr ra
     nop	

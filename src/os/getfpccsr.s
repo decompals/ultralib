@@ -4,7 +4,7 @@
 
 .text
 LEAF(__osGetFpcCsr)
-    STAY2(cfc1 v0, $31)
+    STAY2(cfc1 v0, fcr31)
     jr ra
 END(__osGetFpcCsr)
 .globl __osGetSR

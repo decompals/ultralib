@@ -62,15 +62,16 @@ EXPORT(__osPiIntTable)
 .text
 
 LEAF(__osExceptionPreamble)
-    lui k0, %hi(__osException)
-    addiu k0, k0, %lo(__osException)
+    la k0, __osException
     jr k0
 END(__osExceptionPreamble)
 
 LEAF(__osException) 
     la k0, __osThreadSave
     /* save AT */
-.set noat; sd AT, 32(k0); .set at
+.set noat
+    sd AT, THREAD_AT(k0);
+.set at
     /* save sr */
     STAY2(mfc0 k1, C0_SR)
     sw k1, THREAD_SR(k0)
@@ -100,9 +101,6 @@ savecontext:
     sd t1, THREAD_T1(k0)
     ld t1, THREAD_T2(t0)
     sd t1, THREAD_T2(k0)
-
-3: /* this is probably left over from debug, not referenced but required for instruction ordering to match */
-
     sd v0, THREAD_V0(k0)
     sd v1, THREAD_V1(k0)
     sd a0, THREAD_A0(k0)
@@ -141,7 +139,7 @@ savecontext:
 /*if any interrupts are enabled*/
     la t0, __OSGlobalIntMask
     lw t0, 0(t0)
-    xor t2, t0, -1 /* not except not using not */
+    xor t2, t0, ~0 /* not except not using not */
     andi t2, t2, SR_IMASK
     or ta0, t1, t2
     and t3, k1, ~SR_IMASK
@@ -161,7 +159,7 @@ savercp:
     lw t0, 0(t0)
 
     srl t0, t0, 0x10
-    xor t0, t0, -1
+    xor t0, t0, ~0
     andi t0, t0, 0x3f
     lw ta0, THREAD_RCP(k0)
     and t0, t0, ta0
@@ -172,7 +170,7 @@ endrcp:
     sw t0, THREAD_PC(k0)
     lw t0, THREAD_FP(k0)
     beqz t0, 1f
-    cfc1 t0, $31
+    cfc1 t0, fcr31
     nop
     sw t0, THREAD_FPCSR(k0)
     sdc1 $f0, THREAD_FP0(k0)
@@ -513,8 +511,7 @@ LEAF(handle_CpU) /* coprocessor error */
 END(handle_CpU)
 
 LEAF(__osEnqueueAndYield)
-    lui a1, %hi(__osRunningThread)
-    lw a1, %lo(__osRunningThread)(a1)
+    lw a1, __osRunningThread
     STAY2(mfc0 t0, C0_SR)
     ori t0, t0, SR_EXL
     sw t0, THREAD_SR(a1)
@@ -533,7 +530,7 @@ LEAF(__osEnqueueAndYield)
     sw ra, THREAD_PC(a1)
     lw k1, THREAD_FP(a1)
     beqz k1, 1f
-    cfc1 k1, $31
+    cfc1 k1, fcr31
     sw k1, THREAD_FPCSR(a1)
     sdc1 $f20, THREAD_FP20(a1)
     sdc1 $f22, THREAD_FP22(a1)
@@ -548,7 +545,7 @@ LEAF(__osEnqueueAndYield)
 
     la t0, __OSGlobalIntMask
     lw t0, 0(t0)
-    xor t0, t0, -1
+    xor t0, t0, ~0
     andi t0, t0, SR_IMASK
     or t1, t1, t0
     and k1, k1, ~SR_IMASK
@@ -562,7 +559,7 @@ LEAF(__osEnqueueAndYield)
     lw k0, 0(k0)
 
     srl k0, k0, 0x10
-    xor k0, k0, -1
+    xor k0, k0, ~0
     andi k0, k0, 0x3f
     lw t0, THREAD_RCP(a1)
     and k0, k0, t0
@@ -666,7 +663,7 @@ __osDispatchThreadSave:
     beqz k1, 1f
     
     lw k1, THREAD_FPCSR(k0)
-    STAY2(ctc1 k1, $31)
+    STAY2(ctc1 k1, fcr31)
     ldc1 $f0, THREAD_FP0(k0)
     ldc1 $f2, THREAD_FP2(k0)
     ldc1 $f4, THREAD_FP4(k0)
