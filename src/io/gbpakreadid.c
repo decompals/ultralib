@@ -24,7 +24,7 @@ s32 osGbpakReadId(OSPfs* pfs, OSGbpakId* id, u8* status) {
             ERRCK(osGbpakPower(pfs, OS_GBPAK_POWER_ON));
         }
 
-        ERRCK(osGbpakReadWrite(pfs, OS_READ, 0x100U, buf, (u16) 0x60));
+        ERRCK(osGbpakReadWrite(pfs, OS_READ, 0x100U, buf, ARRLEN(buf)));
 
         ret = osGbpakGetStatus(pfs, status);
 

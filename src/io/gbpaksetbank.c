@@ -14,13 +14,13 @@ s32 __osGbpakSetBank(OSPfs* pfs, u8 bank) {
         temp[i] = bank;
     }
 
-    ret = __osContRamWrite(pfs->queue, pfs->channel, 0x500U, temp, FALSE);
+    ret = __osContRamWrite(pfs->queue, pfs->channel, CONT_BLOCK_GB_BANK, temp, FALSE);
 
     if (ret == PFS_ERR_NEW_PACK) {
         ret = osGbpakInit(pfs->queue, pfs, pfs->channel);
 
         if (ret == 0) {
-            ret = __osContRamWrite(pfs->queue, pfs->channel, 0x500U, temp, FALSE);
+            ret = __osContRamWrite(pfs->queue, pfs->channel, CONT_BLOCK_GB_BANK, temp, FALSE);
             if (ret == PFS_ERR_NEW_PACK) {
                 ret = PFS_ERR_CONTRFAIL;
             }

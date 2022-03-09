@@ -6,13 +6,13 @@ s32 osGbpakGetStatus(OSPfs* pfs, u8* status) {
     s32 i;
     u32 temp[BLOCKSIZE / sizeof(u32)];
 
-    ret = __osContRamRead(pfs->queue, pfs->channel, 0x400U, (u8*)temp);
+    ret = __osContRamRead(pfs->queue, pfs->channel, CONT_BLOCK_GB_POWER, (u8*)temp);
 
-    if ((ret == PFS_ERR_NEW_PACK) || (((u8*)temp)[BLOCKSIZE - 1] != 0x84)) {
+    if ((ret == PFS_ERR_NEW_PACK) || (((u8*)temp)[BLOCKSIZE - 1] != GB_POWER_ON)) {
         ERRCK(osGbpakInit(pfs->queue, pfs, pfs->channel));
     }
 
-    ret = __osContRamRead(pfs->queue, pfs->channel, 0x580U, (u8*)temp);
+    ret = __osContRamRead(pfs->queue, pfs->channel, CONT_BLOCK_GB_STATUS, (u8*)temp);
 
     if (ret == 0) {
         ERRCK(__osPfsGetStatus(pfs->queue, pfs->channel));

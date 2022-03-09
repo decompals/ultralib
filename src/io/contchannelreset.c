@@ -10,7 +10,7 @@ s32 __osContChannelReset(OSMesgQueue* mq, int channel) {
     __osPfsPifRam.pifstatus = CONT_CMD_EXE;
 
     for (i = 0; i < channel; i++) {
-        *ptr++ = 0;
+        *ptr++ = CONT_CMD_REQUEST_STATUS;
     }
 
     *ptr++ = CONT_CMD_CHANNEL_RESET;

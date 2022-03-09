@@ -36,10 +36,10 @@ s32 osContInit(OSMesgQueue* mq, u8* bitpattern, OSContStatus* data) {
 
     __osPackRequestData(CONT_CMD_REQUEST_STATUS);
 
-    ret = __osSiRawStartDma(OS_WRITE, &__osContPifRam);
+    ret = __osSiRawStartDma(OS_WRITE, __osContPifRam.ramarray);
     osRecvMesg(mq, &dummy, OS_MESG_BLOCK);
 
-    ret = __osSiRawStartDma(OS_READ, &__osContPifRam);
+    ret = __osSiRawStartDma(OS_READ, __osContPifRam.ramarray);
     osRecvMesg(mq, &dummy, OS_MESG_BLOCK);
 
     __osContGetInitData(bitpattern, data);
@@ -57,7 +57,7 @@ void __osContGetInitData(u8* pattern, OSContStatus* data) {
     u8 bits;
 
     bits = 0;
-    ptr = (u8*)__osContPifRam.ramarray;
+    ptr = __osContPifRam.ramarray;
     for (i = 0; i < __osMaxControllers; i++, ptr += sizeof(requestHeader), data++) {
         requestHeader = *(__OSContRequesFormat*)ptr;
         data->errno = CHNL_ERR(requestHeader);
@@ -81,7 +81,7 @@ void __osPackRequestData(u8 cmd) {
     }
 
     __osContPifRam.pifstatus = CONT_CMD_EXE;
-    ptr = (u8*)__osContPifRam.ramarray;
+    ptr = __osContPifRam.ramarray;
     requestHeader.dummy = CONT_CMD_NOP;
     requestHeader.txsize = CONT_CMD_RESET_TX;
     requestHeader.rxsize = CONT_CMD_RESET_RX;
