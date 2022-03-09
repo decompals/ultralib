@@ -51,7 +51,7 @@ void __osPfsRequestOneChannel(int channel, u8 cmd) {
     requestformat.status = CONT_CMD_NOP;
 
     for (i = 0; i < channel; i++) {
-        *ptr++ = 0;
+        *ptr++ = CONT_CMD_REQUEST_STATUS;
     }
 
     *(__OSContRequesFormatShort *)ptr = requestformat;

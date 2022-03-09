@@ -106,7 +106,7 @@ s32 __osRepairPackId(OSPfs *pfs, __OSPackId *badid, __OSPackId *newid) {
         ERRCK(__osContRamWrite(pfs->queue, pfs->channel, index[i], (u8*)newid, TRUE));
     }
     
-    ERRCK(__osContRamRead(pfs->queue, pfs->channel, 1, (u8*)temp));
+    ERRCK(__osContRamRead(pfs->queue, pfs->channel, PFS_ID_0AREA, (u8*)temp));
     
     for (i = 0; i < BLOCKSIZE; i++) {
         if (temp[i] != ((u8 *)newid)[i]) {
