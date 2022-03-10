@@ -33,17 +33,17 @@
     if (0 < (n))                                 \
     {                                            \
         if ((arg = (*prout)(arg, s, n)) != NULL) \
-            x.size += (n);                       \
+            x.nchar += (n);                      \
         else                                     \
-            return x.size;                       \
+            return x.nchar;                      \
     }
 static char spaces[] = "                                ";
 static char zeroes[] = "00000000000000000000000000000000";
 
-static void _Putfld(printf_struct *pf, va_list *pap, char code, char *ac);
+static void _Putfld(_Pft *pf, va_list *pap, char code, char *ac);
 
 int _Printf(outfun prout, char *arg, const char *fmt, va_list args) {
-    printf_struct x;
+    _Pft x;
     const char *s;
     char c;
     const char *t;
@@ -51,7 +51,7 @@ int _Printf(outfun prout, char *arg, const char *fmt, va_list args) {
     static const int fbit[] = {FLAGS_SPACE, FLAGS_PLUS, FLAGS_MINUS, FLAGS_HASH, FLAGS_ZERO, 0};
     char ac[32];
     
-    x.size = 0;
+    x.nchar = 0;
 
     for (;;) {
         s = fmt;
@@ -63,7 +63,7 @@ int _Printf(outfun prout, char *arg, const char *fmt, va_list args) {
         PUT(fmt, s - fmt);
         
         if (c == 0) {
-            return x.size;
+            return x.nchar;
         }
         
         fmt = ++s;
@@ -85,34 +85,34 @@ int _Printf(outfun prout, char *arg, const char *fmt, va_list args) {
         }
 
         if (*s != '.') {
-            x.precision = -1;
+            x.prec = -1;
         } else if (*++s == '*') {
-            x.precision = va_arg(args, int);
+            x.prec = va_arg(args, int);
             ++s;
         } else {
-            ATOI(x.precision, s);
+            ATOI(x.prec, s);
         }
 
-        x.length = strchr("hlL", *s) ? *s++ : '\0';
+        x.qual = strchr("hlL", *s) ? *s++ : '\0';
         
-        if (x.length == 'l' && *s == 'l') {
-            x.length = 'L';
+        if (x.qual == 'l' && *s == 'l') {
+            x.qual = 'L';
             ++s;
         }
 
         _Putfld(&x, &args, *s, ac);
-        x.width -= x.n0 + x.num_leading_zeros + x.part2_len + x.num_mid_zeros + x.part3_len + x.num_trailing_zeros;
+        x.width -= x.n0 + x.nz0 + x.n1 + x.nz1 + x.n2 + x.nz2;
         
         if (!(x.flags & FLAGS_MINUS)) {
             PAD(spaces, x.width);
         }
         
         PUT(ac, x.n0);
-        PAD(zeroes, x.num_leading_zeros);
-        PUT(x.buff, x.part2_len);
-        PAD(zeroes, x.num_mid_zeros);
-        PUT(x.buff + x.part2_len, x.part3_len);
-        PAD(zeroes, x.num_trailing_zeros);
+        PAD(zeroes, x.nz0);
+        PUT(x.s, x.n1);
+        PAD(zeroes, x.nz1);
+        PUT(x.s + x.n1, x.n2);
+        PAD(zeroes, x.nz2);
         
         if (x.flags & FLAGS_MINUS) {
             PAD(spaces, x.width);
@@ -123,9 +123,9 @@ int _Printf(outfun prout, char *arg, const char *fmt, va_list args) {
     return 0;
 }
 
-static void _Putfld(printf_struct *x, va_list *args, char type, char *buff) {
-    x->n0 = x->num_leading_zeros = x->part2_len = x->num_mid_zeros = x->part3_len =
-        x->num_trailing_zeros = 0;
+static void _Putfld(_Pft *x, va_list *args, char type, char *buff) {
+    x->n0 = x->nz0 = x->n1 = x->nz1 = x->n2 =
+        x->nz2 = 0;
 
     switch (type) {
         case 'c':
@@ -133,19 +133,19 @@ static void _Putfld(printf_struct *x, va_list *args, char type, char *buff) {
             break;
         case 'd':
         case 'i':
-            if (x->length == 'l') {
-                x->value.s64 = va_arg(*args, int);
-            } else if (x->length == 'L') {
-                x->value.s64 = va_arg(*args, s64);
+            if (x->qual == 'l') {
+                x->v.ll = va_arg(*args, int);
+            } else if (x->qual == 'L') {
+                x->v.ll = va_arg(*args, s64);
             } else {
-                x->value.s64 = va_arg(*args, int);
+                x->v.ll = va_arg(*args, int);
             }
 
-            if (x->length == 'h') {
-                x->value.s64 = (s16)x->value.s64;
+            if (x->qual == 'h') {
+                x->v.ll = (s16)x->v.ll;
             }
 
-            if (x->value.s64 < 0) {
+            if (x->v.ll < 0) {
                 buff[x->n0++] = '-';
             } else if (x->flags & FLAGS_PLUS) {
                 buff[x->n0++] = '+';
@@ -153,7 +153,7 @@ static void _Putfld(printf_struct *x, va_list *args, char type, char *buff) {
                 buff[x->n0++] = ' ';
             }
 
-            x->buff = (char *)&buff[x->n0];
+            x->s = (char *)&buff[x->n0];
 
             _Litob(x, type);
             break;
@@ -161,18 +161,18 @@ static void _Putfld(printf_struct *x, va_list *args, char type, char *buff) {
         case 'X':
         case 'u':
         case 'o':
-            if (x->length == 'l') {
-                x->value.s64 = va_arg(*args, int);
-            } else if (x->length == 'L') {
-                x->value.s64 = va_arg(*args, s64);
+            if (x->qual == 'l') {
+                x->v.ll = va_arg(*args, int);
+            } else if (x->qual == 'L') {
+                x->v.ll = va_arg(*args, s64);
             } else {
-                x->value.s64 = va_arg(*args, int);
+                x->v.ll = va_arg(*args, int);
             }
 
-            if (x->length == 'h') {
-                x->value.s64 = (u16)x->value.s64;
-            } else if (x->length == 0) {
-                x->value.s64 = (unsigned int)x->value.s64;
+            if (x->qual == 'h') {
+                x->v.ll = (u16)x->v.ll;
+            } else if (x->qual == 0) {
+                x->v.ll = (unsigned int)x->v.ll;
             }
 
             if (x->flags & FLAGS_HASH) {
@@ -183,7 +183,7 @@ static void _Putfld(printf_struct *x, va_list *args, char type, char *buff) {
                 }
             }
 
-            x->buff = (char *)&buff[x->n0];
+            x->s = (char *)&buff[x->n0];
             _Litob(x, type);
             break;
         case 'e':
@@ -192,42 +192,42 @@ static void _Putfld(printf_struct *x, va_list *args, char type, char *buff) {
         case 'E':
         case 'G':
             //... okay?
-            x->value.f64 = x->length == 'L' ? va_arg(*args, f64) : va_arg(*args, f64);
+            x->v.ld = x->qual == 'L' ? va_arg(*args, f64) : va_arg(*args, f64);
 
-            if (LDSIGN(x->value.f64))
+            if (LDSIGN(x->v.ld))
                 buff[x->n0++] = '-';
             else if (x->flags & FLAGS_PLUS)
                 buff[x->n0++] = '+';
             else if (x->flags & FLAGS_SPACE)
                 buff[x->n0++] = ' ';
 
-            x->buff = (char *)&buff[x->n0];
+            x->s = (char *)&buff[x->n0];
             _Ldtob(x, type);
             break;
 
         case 'n':
-            if (x->length == 'h') {
-                *(va_arg(*args, u16 *)) = x->size;
-            } else if (x->length == 'l') {
-                *va_arg(*args, unsigned int *) = x->size;
-            } else if (x->length == 'L') {
-                *va_arg(*args, u64 *) = x->size;
+            if (x->qual == 'h') {
+                *(va_arg(*args, u16 *)) = x->nchar;
+            } else if (x->qual == 'l') {
+                *va_arg(*args, unsigned int *) = x->nchar;
+            } else if (x->qual == 'L') {
+                *va_arg(*args, u64 *) = x->nchar;
             } else {
-                *va_arg(*args, unsigned int *) = x->size;
+                *va_arg(*args, unsigned int *) = x->nchar;
             }
 
             break;
         case 'p':
-            x->value.s64 = (long)va_arg(*args, void *);
-            x->buff = (char *)&buff[x->n0];
+            x->v.ll = (long)va_arg(*args, void *);
+            x->s = (char *)&buff[x->n0];
             _Litob(x, 'x');
             break;
         case 's':
-            x->buff = va_arg(*args, char *);
-            x->part2_len = strlen(x->buff);
+            x->s = va_arg(*args, char *);
+            x->n1 = strlen(x->s);
             
-            if (x->precision >= 0 && x->part2_len > x->precision) {
-                x->part2_len = x->precision;
+            if (x->prec >= 0 && x->n1 > x->prec) {
+                x->n1 = x->prec;
             }
             
             break;
