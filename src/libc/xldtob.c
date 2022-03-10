@@ -9,8 +9,8 @@
 
 #define BUFF_LEN 0x20
 
-static short _Ldunscale(short *, printf_struct *);
-static void _Genld(printf_struct *, char, char *, short, short);
+static s16 _Ldunscale(s16* pex, _Pft* px);
+static void _Genld(_Pft* px, char code, u8* p, s16 nsig, s16 xexp);
 
 static const double pows[] = {10e0L, 10e1L, 10e3L, 10e7L, 10e15L, 10e31L, 10e63L, 10e127L, 10e255L};
 
@@ -41,37 +41,35 @@ static const double pows[] = {10e0L, 10e1L, 10e3L, 10e7L, 10e15L, 10e31L, 10e63L
 #define _D2 2
 #define _D3 3
 
-void _Ldtob(printf_struct *args, char type) {
+void _Ldtob(_Pft* px, char code) {
     char buff[BUFF_LEN];
     char *p;
     f64 ldval;
-    short err;
-    short nsig;
-    short exp;
+    s16 err;
+    s16 nsig;
+    s16 xexp;
 
     // char unused[0x4];
     p = buff;
-    ldval = args->value.f64;
+    ldval = px->v.ld;
 
-    if (args->precision < 0) {
-        args->precision = 6;
-    } else {
-        if (args->precision == 0 && (type == 'g' || type == 'G')) {
-            args->precision = 1;
-        }
+    if (px->prec < 0) {
+        px->prec = 6;
+    }
+    else if (px->prec == 0 && (code == 'g' || code == 'G')) {
+        px->prec = 1;
     }
 
-    err = _Ldunscale(&exp, args);
-    
+    err = _Ldunscale(&xexp, px);
     if (err > 0) {
-        memcpy(args->buff, err == 2 ? "NaN" : "Inf", args->part2_len = 3);
+        memcpy(px->s, err == 2 ? "NaN" : "Inf", px->n1 = 3);
         return;
     }
-    
-    if (err == 0) {
+    else if (err == 0) {
         nsig = 0;
-        exp = 0;
-    } else {
+        xexp = 0;
+    }
+    else {
         int i;
         int n;
 
@@ -79,24 +77,23 @@ void _Ldtob(printf_struct *args, char type) {
             ldval = -ldval;
         }
 
-        exp = exp * 30103 / 100000 - 4;
-        
-        if (exp < 0) {
-            n = ((-exp + 3) & ~3);
-            exp = -n;
+        // what
+        if ((xexp = xexp * 30103 / 100000 - 4) < 0) {
+            n = ((-xexp + 3) & ~3), xexp = -n;
 
             for (i = 0; n > 0; n >>= 1, i++) {
-                if ((n & 1) != 0) {
+                if (n & 1) {
                     ldval *= pows[i];
                 }
             }
-        } else if (exp > 0) {
+        }
+        else if (xexp > 0) {
             f64 factor = 1;
             
-            exp &= ~3;
+            xexp &= ~3;
             
-            for (n = exp, i = 0; n > 0; n >>= 1, i++) {
-                if ((n & 1) != 0) {
+            for (n = xexp, i = 0; n > 0; n >>= 1, i++) {
+                if (n & 1) {
                     factor *= pows[i];
                 }
             }
@@ -104,80 +101,89 @@ void _Ldtob(printf_struct *args, char type) {
             ldval /= factor;
         }
         {
-            int gen = args->precision + ((type == 'f') ? 10 + exp : 6);
+            int gen = px->prec + ((code == 'f') ? 10 + xexp : 6);
             
             if (gen > 0x13) {
                 gen = 0x13;
             }
             
-            *p++ = '0';
-
-            while (gen > 0 && 0 < ldval) {
+            for (*p++ = '0'; gen > 0 && 0 < ldval; p += 8) {
                 int j;
                 int lo = ldval;
                 
                 if ((gen -= 8) > 0) {
-                    ldval = (ldval - lo) * 1.0e8;
+                    ldval = (ldval - lo) * 1e8;
                 }
-                
-                p = p + 8;
-                
-                for (j = 8; lo > 0 && --j >= 0;) {
+
+                for (p += 8, j = 8; lo > 0 && --j >= 0;) {
                     ldiv_t qr = ldiv(lo, 10);
-                    *--p = qr.rem + '0';
-                    lo = qr.quot;
+                    *--p = qr.rem + '0', lo = qr.quot;
                 }
                 
                 while (--j >= 0) {
-                    p--;
-                    *p = '0';
+                    *--p = '0';
                 }
-                p += 8;
             }
 
             gen = p - &buff[1];
 
-            for (p = &buff[1], exp += 7; *p == '0'; p++) {
-                --gen, --exp;
+            for (p = &buff[1], xexp += 7; *p == '0'; p++) {
+                --gen, --xexp;
             }
 
-            nsig = args->precision + ((type == 'f') ? exp + 1 : ((type == 'e' || type == 'E') ? 1 : 0));
+            nsig = px->prec + ((code == 'f') ? xexp + 1 : ((code == 'e' || code == 'E') ? 1 : 0));
             
             if (gen < nsig) {
                 nsig = gen;
             }
 
             if (nsig > 0) {
-                char drop;
+                char drop = nsig < gen && '5' <= p[nsig] ? '9' : '0';
                 int n;
 
-                if (nsig < gen && p[nsig] > '4')
-                {
-                    drop = '9';
-                } else {
-                    drop = '0';
-                }
-
                 for (n = nsig; p[--n] == drop;) {
-                    nsig--;
+                    --nsig;
                 }
 
                 if (drop == '9') {
-                    p[n]++;
+                    ++p[n];
                 }
                 
                 if (n < 0) {
-                    --p, ++nsig, ++exp;
+                    --p, ++nsig, ++xexp;
                 }
             }
         }
     }
-    _Genld(args, type, p, nsig, exp);
+
+    _Genld(px, code, p, nsig, xexp);
 }
 
-// _Ldunscale
+s16 _Ldunscale(s16* pex, _Pft* px) {
+    u16* ps = px;
+    s16 xchar = (ps[_D0] & _DMASK) >> _DOFF;
 
-void _Genld(_Pft* px, u8 code, u8* p, s16 nsig, s16 xexp) {
+
+    if (xchar == _DMAX) {
+        *pex = 0;
+
+        return (ps[_D0] & _DFRAC) || ps[_D1] || ps[_D2] || ps[_D3] ? 2 : 1;
+    }
+    else if (xchar > 0) {
+        ps[_D0] = (ps[_D0] & ~_DMASK) | 0x3FF0;
+        *pex = xchar - 0x3FE;
+        return -1;
+    }
+    else if (xchar < 0) {
+        return 2;
+    }
+    else {
+        *pex = 0;
+        return 0;
+    }
+}
+
+void _Genld(_Pft* px, char code, u8* p, s16 nsig, s16 xexp) {
     const unsigned char point = '.';
 
     if (nsig <= 0) {
@@ -301,7 +307,7 @@ void _Genld(_Pft* px, u8 code, u8* p, s16 nsig, s16 xexp) {
         *p++ = (xexp / 10) + '0', xexp %= 10; // , memes
 
         *p++ = xexp + '0';
-        px->n2 = p - &px->s[px->n1];
+        px->n2 = (size_t)p - ((size_t)px->s + px->n1);
     }
 
     if ((px->flags & 0x14) == 0x10) {
