@@ -60,13 +60,13 @@ label_loop:
 
 	and	t2, t0, mask_hi	/* integral part */
 	srl	t3, t1, 16
-	or	t4, t2, t3
-	sw	t4, 0(ptr_mtx)
+	or	ta0, t2, t3
+	sw	ta0, 0(ptr_mtx)
 
-	sll	t5, t0, 16	/* decimal part */
-	and	t6, t1, MASK_LOW
-	or	t7, t5, t6
-	sw	t7, HALF_SIZE_MTX(ptr_mtx)
+	sll	ta1, t0, 16	/* decimal part */
+	and	ta2, t1, MASK_LOW
+	or	ta3, ta1, ta2
+	sw	ta3, HALF_SIZE_MTX(ptr_mtx)
 
 	addu	ptr_mtx, ptr_mtx, 4
 	addu	ptr_fl, ptr_fl, 8
