@@ -262,7 +262,7 @@ cart:
 rcp:
     lw s1, PHYS_TO_K1(MI_INTR_REG)
     la t0, __OSGlobalIntMask
-    lw t0, HWINTR_CALLBACK(t0)
+    lw t0, (t0)
 
     srl t0, t0, 0x10
     and s1, s1, t0
