@@ -41,6 +41,8 @@ static const double pows[] = {10e0L, 10e1L, 10e3L, 10e7L, 10e15L, 10e31L, 10e63L
 #define _D2 2
 #define _D3 3
 
+#define	ALIGN(s, align)	(((u32)(s) + ((align)-1)) & ~((align)-1))
+
 void _Ldtob(_Pft* px, char code) {
     char buff[BUFF_LEN];
     char *p;
@@ -55,8 +57,7 @@ void _Ldtob(_Pft* px, char code) {
 
     if (px->prec < 0) {
         px->prec = 6;
-    }
-    else if (px->prec == 0 && (code == 'g' || code == 'G')) {
+    } else if (px->prec == 0 && (code == 'g' || code == 'G')) {
         px->prec = 1;
     }
 
@@ -64,12 +65,10 @@ void _Ldtob(_Pft* px, char code) {
     if (err > 0) {
         memcpy(px->s, err == 2 ? "NaN" : "Inf", px->n1 = 3);
         return;
-    }
-    else if (err == 0) {
+    } else if (err == 0) {
         nsig = 0;
         xexp = 0;
-    }
-    else {
+    } else {
         int i;
         int n;
 
@@ -79,15 +78,14 @@ void _Ldtob(_Pft* px, char code) {
 
         // what
         if ((xexp = xexp * 30103 / 100000 - 4) < 0) {
-            n = ((-xexp + 3) & ~3), xexp = -n;
+            n = ALIGN(-xexp, 4), xexp = -n;
 
             for (i = 0; n > 0; n >>= 1, i++) {
                 if (n & 1) {
                     ldval *= pows[i];
                 }
             }
-        }
-        else if (xexp > 0) {
+        } else if (xexp > 0) {
             f64 factor = 1;
             
             xexp &= ~3;
@@ -168,16 +166,13 @@ s16 _Ldunscale(s16* pex, _Pft* px) {
         *pex = 0;
 
         return (ps[_D0] & _DFRAC) || ps[_D1] || ps[_D2] || ps[_D3] ? 2 : 1;
-    }
-    else if (xchar > 0) {
+    } else if (xchar > 0) {
         ps[_D0] = (ps[_D0] & ~_DMASK) | 0x3FF0;
         *pex = xchar - 0x3FE;
         return -1;
-    }
-    else if (xchar < 0) {
+    } else if (xchar < 0) {
         return 2;
-    }
-    else {
+    } else {
         *pex = 0;
         return 0;
     }
@@ -223,8 +218,7 @@ void _Genld(_Pft* px, char code, u8* p, s16 nsig, s16 xexp) {
 
             memcpy(&px->s[px->n1], p, px->n2 = nsig); // , memes (this one is insane)
             px->nz2 = px->prec - nsig;
-        }
-        else if (nsig < xexp) {
+        } else if (nsig < xexp) {
             memcpy(&px->s[px->n1], p, nsig);
             px->n1 += nsig;
             px->nz1 = xexp - nsig;
@@ -234,8 +228,7 @@ void _Genld(_Pft* px, char code, u8* p, s16 nsig, s16 xexp) {
             }
 
             px->nz2 = px->prec;
-        }
-        else {
+        } else {
             memcpy(&px->s[px->n1], p, xexp);
             px->n1 += xexp;
             nsig -= xexp;
@@ -252,8 +245,7 @@ void _Genld(_Pft* px, char code, u8* p, s16 nsig, s16 xexp) {
             px->n1 += nsig;
             px->nz1 = px->prec - nsig;
         }
-    }
-    else {
+    } else {
         if (code == 'g' || code == 'G') {
             if (nsig < px->prec) {
                 px->prec = nsig;
@@ -265,8 +257,7 @@ void _Genld(_Pft* px, char code, u8* p, s16 nsig, s16 xexp) {
 
             if (code == 'g') {
                 code = 'e';
-            }
-            else {
+            } else {
                 code = 'E';
             }
         }
@@ -292,14 +283,13 @@ void _Genld(_Pft* px, char code, u8* p, s16 nsig, s16 xexp) {
 
         if (xexp >= 0) {
             *p++ = '+';
-        }
-        else {
+        } else {
             *p++ = '-';
             xexp = -xexp;
         }
 
-        if (xexp >= 0x64) {
-            if (xexp >= 0x3E8) {
+        if (xexp >= 100) {
+            if (xexp >= 1000) {
                 *p++ = (xexp / 1000) + '0', xexp %= 1000; // , memes
             }
             *p++ = (xexp / 100) + '0', xexp %= 100; // , memes
