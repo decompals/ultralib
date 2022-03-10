@@ -16,10 +16,10 @@
  * seperate Makefile rules
  */
 
-#include <asm.h>
-#include <regdef.h>
+#include "sys/asm.h"
+#include "sys/regdef.h"
 
 LEAF(sqrtf)
-	sqrt.s $f0, $f12
-	j	ra
-	END(sqrtf)
+    sqrt.s fv0, fa0
+    j ra
+END(sqrtf)

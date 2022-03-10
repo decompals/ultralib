@@ -6,7 +6,7 @@
 
 //should go somewhere else but
 #define ARRLEN(x) ((s32)(sizeof(x) / sizeof(x[0])))
-#define CHNL_ERR(format) ((format.rxsize & CHNL_ERR_MASK) >> 4)
+#define CHNL_ERR(format) (((format).rxsize & CHNL_ERR_MASK) >> 4)
 
 typedef struct
 {
@@ -116,30 +116,34 @@ typedef struct
     /* 0x4 */ u8 data[EEPROM_BLOCK_SIZE];
 } __OSContEepromFormat;
 
+// Joybus commands
 //from: http://en64.shoutwiki.com/wiki/SI_Registers_Detailed#CONT_CMD_Usage
 #define CONT_CMD_REQUEST_STATUS 0
-#define CONT_CMD_READ_BUTTON 1
-#define CONT_CMD_READ_MEMPACK 2
-#define CONT_CMD_WRITE_MEMPACK 3
-#define CONT_CMD_READ_EEPROM 4
-#define CONT_CMD_WRITE_EEPROM 5
-#define CONT_CMD_RESET 0xff
+#define CONT_CMD_READ_BUTTON    1
+#define CONT_CMD_READ_PAK       2
+#define CONT_CMD_WRITE_PAK      3
+#define CONT_CMD_READ_EEPROM    4
+#define CONT_CMD_WRITE_EEPROM   5
+#define CONT_CMD_CHANNEL_RESET  0xFD
+#define CONT_CMD_RESET          0xFF
 
+// Bytes transmitted for each joybus command
 #define CONT_CMD_REQUEST_STATUS_TX 1
-#define CONT_CMD_READ_BUTTON_TX 1
-#define CONT_CMD_READ_MEMPACK_TX 3
-#define CONT_CMD_WRITE_MEMPACK_TX 35
-#define CONT_CMD_READ_EEPROM_TX 2
-#define CONT_CMD_WRITE_EEPROM_TX 10
-#define CONT_CMD_RESET_TX 1
+#define CONT_CMD_READ_BUTTON_TX    1
+#define CONT_CMD_READ_PAK_TX       3
+#define CONT_CMD_WRITE_PAK_TX      35
+#define CONT_CMD_READ_EEPROM_TX    2
+#define CONT_CMD_WRITE_EEPROM_TX   10
+#define CONT_CMD_RESET_TX          1
 
+// Bytes received for each joybus command
 #define CONT_CMD_REQUEST_STATUS_RX 3
-#define CONT_CMD_READ_BUTTON_RX 4
-#define CONT_CMD_READ_MEMPACK_RX 33
-#define CONT_CMD_WRITE_MEMPACK_RX 1
-#define CONT_CMD_READ_EEPROM_RX 8
-#define CONT_CMD_WRITE_EEPROM_RX 1
-#define CONT_CMD_RESET_RX 3
+#define CONT_CMD_READ_BUTTON_RX    4
+#define CONT_CMD_READ_PAK_RX       33
+#define CONT_CMD_WRITE_PAK_RX      1
+#define CONT_CMD_READ_EEPROM_RX    8
+#define CONT_CMD_WRITE_EEPROM_RX   1
+#define CONT_CMD_RESET_RX          3
 
 #define CONT_CMD_NOP 0xff
 #define CONT_CMD_END 0xfe //indicates end of a command
@@ -159,6 +163,35 @@ typedef struct
 #define CONT_ERR_VOICE_MEMORY       13
 #define CONT_ERR_VOICE_WORD     14
 #define CONT_ERR_VOICE_NO_RESPONSE  15
+
+// Controller accessory addresses
+// https://github.com/joeldipops/TransferBoy/blob/master/docs/TransferPakReference.md
+
+// Accesory detection
+#define CONT_ADDR_DETECT    0x8000
+// Rumble
+#define CONT_ADDR_RUMBLE    0xC000
+// Controller Pak
+// Transfer Pak
+#define CONT_ADDR_GB_POWER  0x8000 // Same as the detection address, but semantically different
+#define CONT_ADDR_GB_BANK   0xA000
+#define CONT_ADDR_GB_STATUS 0xB000
+
+// Addresses sent to controller accessories are in blocks, not bytes
+#define CONT_BLOCKS(x) ((x) / BLOCKSIZE)
+
+// Block addresses of the above
+#define CONT_BLOCK_DETECT    CONT_BLOCKS(CONT_ADDR_DETECT)
+#define CONT_BLOCK_RUMBLE    CONT_BLOCKS(CONT_ADDR_RUMBLE)
+#define CONT_BLOCK_GB_POWER  CONT_BLOCKS(CONT_ADDR_GB_POWER)
+#define CONT_BLOCK_GB_BANK   CONT_BLOCKS(CONT_ADDR_GB_BANK)
+#define CONT_BLOCK_GB_STATUS CONT_BLOCKS(CONT_ADDR_GB_STATUS)
+
+
+// Transfer pak
+
+#define GB_POWER_ON  0x84
+#define GB_POWER_OFF 0xFE
 
 
 typedef struct

@@ -90,12 +90,12 @@ static s32 __osPfsCheckRamArea(OSPfs* pfs) {
         temp1[i] = i;
     }
 
-    ERRCK(__osContRamWrite(pfs->queue, pfs->channel, 0, temp1, 0));
+    ERRCK(__osContRamWrite(pfs->queue, pfs->channel, 0, temp1, FALSE));
     ERRCK(__osContRamRead(pfs->queue, pfs->channel, 0, temp2));
 
     if (bcmp(temp1, temp2, BLOCKSIZE) != 0) {
         return PFS_ERR_DEVICE;
     }
 
-    return __osContRamWrite(pfs->queue, pfs->channel, 0, save, 0);
+    return __osContRamWrite(pfs->queue, pfs->channel, 0, save, FALSE);
 }

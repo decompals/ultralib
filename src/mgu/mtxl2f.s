@@ -51,17 +51,17 @@ label_loop:
 	
 	and	t2, t0, mask_hi
 	srl	t3, t1, 16
-	or	t4, t2, t3
+	or	ta0, t2, t3
 
-	sll	t5, t0, 16
-	and	t6, t1, MASK_LOW
-	or	t7, t5, t6
+	sll	ta1, t0, 16
+	and	ta2, t1, MASK_LOW
+	or	ta3, ta1, ta2
 
-	mtc1	t4, ft0	/* FIX32TOF( ) */
+	mtc1	ta0, ft0	/* FIX32TOF( ) */
 	cvt.s.w	ft1, ft0
 	mul.s	ft2, ft1, magni
 
-	mtc1	t7, ft3	/* FIX32TOF( ) */
+	mtc1	ta3, ft3	/* FIX32TOF( ) */
 	cvt.s.w	ft4, ft3
 	mul.s	ft5, ft4, magni
 

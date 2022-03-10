@@ -13,12 +13,11 @@ AR := ar
 AS := tools/gcc/as
 CC := tools/gcc/gcc
 AR_OLD := tools/gcc/ar
-STRIP := tools/gcc/strip --strip-debug
 
 export COMPILER_PATH := $(WORKING_DIR)/tools/gcc
 
-CFLAGS := -w -nostdinc -c -G 0 -mgp32 -mfp32 -mips3 -D_LANGUAGE_C
-ASFLAGS := -w -nostdinc -c -G 0 -mips3 -DMIPSEB -DLANGUAGE_ASSEMBLY -D_MIPS_SIM=1 -D_ULTRA64 -x assembler-with-cpp
+CFLAGS := -w -nostdinc -c -G 0 -mgp32 -mfp32 -mips3 -D_LANGUAGE_C 
+ASFLAGS := -w -nostdinc -c -G 0 -mgp32 -mfp32 -mips3 -DMIPSEB -D_LANGUAGE_ASSEMBLY -D_MIPS_SIM=1 -D_ULTRA64 -x assembler-with-cpp
 GBIDEFINE := -DF3DEX_GBI_2
 CPPFLAGS = -D_MIPS_SZLONG=32 -D_FINALROM -D__USE_ISOC99 -DNDEBUG -I $(WORKING_DIR)/include -I $(WORKING_DIR)/include/gcc -I $(WORKING_DIR)/include/PR $(GBIDEFINE)
 OPTFLAGS := -O3
@@ -105,10 +104,11 @@ $(BUILD_DIR)/src/sp/sprite.marker: GBIDEFINE :=
 $(BUILD_DIR)/src/sp/spriteex.marker: GBIDEFINE := 
 $(BUILD_DIR)/src/sp/spriteex2.marker: GBIDEFINE := 
 $(BUILD_DIR)/src/sp/spriteex2.marker: GBIDEFINE := 
-$(BUILD_DIR)/src/mgu/%.marker: STRIP := :
 $(BUILD_DIR)/src/mgu/%.marker: export VR4300MUL := OFF
 $(BUILD_DIR)/src/mgu/rotate.marker: export VR4300MUL := ON
-$(BUILD_DIR)/src/gu/%.marker: ASFLAGS += -I $(WORKING_DIR)/src/mgu
+$(BUILD_DIR)/src/os/%.marker: ASFLAGS += -P
+$(BUILD_DIR)/src/gu/%.marker: ASFLAGS += -P
+$(BUILD_DIR)/src/libc/%.marker: ASFLAGS += -P
 $(BUILD_DIR)/src/voice/%.marker: OPTFLAGS += -DLANG_JAPANESE -I$(WORKING_DIR)/src
 
 $(BUILD_DIR)/%.marker: %.c
@@ -124,28 +124,12 @@ ifneq ($(NON_MATCHING),1)
 # create or update the marker file
 	@touch $@
 endif
-# .SECONDEXPANSION:
-# $(BUILD_DIR)/src/voice/%.marker: src/voice/%.c
-# 	tools/shift-jisconv.py $< $(WORKING_DIR)/$(@:.marker=.c)
-# 	cd $(<D) && $(WORKING_DIR)/$(CC) $(CFLAGS) $(CPPFLAGS) $(OPTFLAGS) $(WORKING_DIR)/$(@:.marker=.c) -o $(WORKING_DIR)/$(@:.marker=.o)
-# ifneq ($(NON_MATCHING),1)
-# # check if this file is in the archive; patch corrupted bytes and change file timestamps to match original if so
-# 	$(if $(findstring $(BASE_DIR)/$(@F:.marker=.o), $(BASE_OBJS)), \
-# 	 python3 tools/fix_objfile.py $(@:.marker=.o) $(BASE_DIR)/$(@F:.marker=.o) && \
-# 	 $(COMPARE_OBJ) && \
-# 	 touch -r $(BASE_DIR)/$(@F:.marker=.o) $(@:.marker=.o), \
-# 	 echo "Object file $(<F:.marker=.o) is not in the current archive" \
-# 	)
-# # create or update the marker file
-# 	@touch $@
-# endif
 
 $(BUILD_DIR)/%.marker: %.s
-	cd $(<D) && $(WORKING_DIR)/$(CC) $(ASFLAGS) -I. $(OPTFLAGS) $(<F) -o $(WORKING_DIR)/$(@:.marker=.o)
+	cd $(<D) && $(WORKING_DIR)/$(CC) $(ASFLAGS) $(CPPFLAGS) -I. $(OPTFLAGS) $(<F) -o $(WORKING_DIR)/$(@:.marker=.o)
 ifneq ($(NON_MATCHING),1)
 # check if this file is in the archive; patch corrupted bytes and change file timestamps to match original if so
 	@$(if $(findstring $(BASE_DIR)/$(@F:.marker=.o), $(BASE_OBJS)), \
-	 $(STRIP) $(STRIP_FLAGS) $(@:.marker=.o) && \
 	 python3 tools/fix_objfile.py $(@:.marker=.o) $(BASE_DIR)/$(@F:.marker=.o) && \
 	 $(COMPARE_OBJ) && \
 	 touch -r $(BASE_DIR)/$(@F:.marker=.o) $(@:.marker=.o), \

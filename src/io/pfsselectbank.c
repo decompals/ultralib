@@ -10,7 +10,7 @@ s32 __osPfsSelectBank(OSPfs* pfs, u8 bank) {
         temp[i] = bank;
     }
 
-    ret = __osContRamWrite(pfs->queue, pfs->channel, 0x8000 / BLOCKSIZE, temp, 0);
+    ret = __osContRamWrite(pfs->queue, pfs->channel, CONT_BLOCK_DETECT, temp, FALSE);
 
     if (ret == 0) {
         pfs->activebank = bank;
