@@ -4,27 +4,6 @@
 #include "stdlib.h"
 #include "stdarg.h"
 
-// TODO: replace with _Pft
-//typedef struct
-//{
-//    union {
-//        /* 00 */ long long s64;
-//        double f64;
-//    } value;
-//    /* 08 */ char *buff;
-//    /* 0c */ int n0;
-//    /* 10 */ int num_leading_zeros;
-//    /* 14 */ int part2_len;
-//    /* 18 */ int num_mid_zeros;
-//    /* 1c */ int part3_len;
-//    /* 20 */ int num_trailing_zeros;
-//    /* 24 */ int precision;
-//    /* 28 */ int width;
-//    /* 2c */ unsigned int size;
-//    /* 30 */ unsigned int flags;
-//    /* 34 */ char length;
-//} printf_struct;
-
 typedef struct {
     /* 0x0 */ union {
         /* 0x0 */ long long ll;
