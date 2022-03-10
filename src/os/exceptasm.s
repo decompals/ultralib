@@ -4,6 +4,7 @@
 #include "PR/os.h"
 #include "PR/rcp.h"
 #include "exceptasm.h"
+#include "threadasm.h"
 
 .rdata
 #define REDISPATCH 0x00
@@ -70,7 +71,7 @@ LEAF(__osException)
     la k0, __osThreadSave
     /* save AT */
 .set noat
-    sd AT, THREAD_AT(k0);
+    sd $1, THREAD_GP1(k0);
 .set at
     /* save sr */
     STAY2(mfc0 k1, C0_SR)
@@ -79,9 +80,9 @@ LEAF(__osException)
     and k1, k1, -4
     STAY2(mtc0 k1, C0_SR)
     /* save other regs */
-    sd t0, THREAD_T0(k0)
-    sd t1, THREAD_T1(k0)
-    sd t2, THREAD_T2(k0)
+    sd $8, THREAD_GP8(k0)
+    sd $9, THREAD_GP9(k0)
+    sd $10, THREAD_GP10(k0)
     /* say fp has not been used */
     sw zero, THREAD_FP(k0)
     /* this instruction is probably useless, leftover because of bad placement of an ifdef for the debug version */
@@ -91,41 +92,41 @@ savecontext:
     move t0, k0
     lw k0, __osRunningThread 
     
-    ld t1, THREAD_AT(t0)
-    sd t1, THREAD_AT(k0)
+    ld t1, THREAD_GP1(t0)
+    sd t1, THREAD_GP1(k0)
     ld t1, THREAD_SR(t0)
     sd t1, THREAD_SR(k0)
-    ld t1, THREAD_T0(t0)
-    sd t1, THREAD_T0(k0)
-    ld t1, THREAD_T1(t0)
-    sd t1, THREAD_T1(k0)
-    ld t1, THREAD_T2(t0)
-    sd t1, THREAD_T2(k0)
-    sd v0, THREAD_V0(k0)
-    sd v1, THREAD_V1(k0)
-    sd a0, THREAD_A0(k0)
-    sd a1, THREAD_A1(k0)
-    sd a2, THREAD_A2(k0)
-    sd a3, THREAD_A3(k0)
-    sd t3, THREAD_T3(k0)
-    sd ta0, THREAD_T4(k0)
-    sd ta1, THREAD_T5(k0)
-    sd ta2, THREAD_T6(k0)
-    sd ta3, THREAD_T7(k0)
-    sd s0, THREAD_S0(k0)
-    sd s1, THREAD_S1(k0)
-    sd s2, THREAD_S2(k0)
-    sd s3, THREAD_S3(k0)
-    sd s4, THREAD_S4(k0)
-    sd s5, THREAD_S5(k0)
-    sd s6, THREAD_S6(k0)
-    sd s7, THREAD_S7(k0)
-    sd t8, THREAD_T8(k0)
-    sd t9, THREAD_T9(k0)
-    sd gp, THREAD_GP(k0)
-    sd sp, THREAD_SP(k0)
-    sd s8, THREAD_S8(k0)
-    sd ra, THREAD_RA(k0)
+    ld t1, THREAD_GP8(t0)
+    sd t1, THREAD_GP8(k0)
+    ld t1, THREAD_GP9(t0)
+    sd t1, THREAD_GP9(k0)
+    ld t1, THREAD_GP10(t0)
+    sd t1, THREAD_GP10(k0)
+    sd $2, THREAD_GP2(k0)
+    sd $3, THREAD_GP3(k0)
+    sd $4, THREAD_GP4(k0)
+    sd $5, THREAD_GP5(k0)
+    sd $6, THREAD_GP6(k0)
+    sd $7, THREAD_GP7(k0)
+    sd $11, THREAD_GP11(k0)
+    sd $12, THREAD_GP12(k0)
+    sd $13, THREAD_GP13(k0)
+    sd $14, THREAD_GP14(k0)
+    sd $15, THREAD_GP15(k0)
+    sd $16, THREAD_GP16(k0)
+    sd $17, THREAD_GP17(k0)
+    sd $18, THREAD_GP18(k0)
+    sd $19, THREAD_GP19(k0)
+    sd $20, THREAD_GP20(k0)
+    sd $21, THREAD_GP21(k0)
+    sd $22, THREAD_GP22(k0)
+    sd $23, THREAD_GP23(k0)
+    sd $24, THREAD_GP24(k0)
+    sd $25, THREAD_GP25(k0)
+    sd $28, THREAD_GP28(k0)
+    sd $29, THREAD_GP29(k0)
+    sd $30, THREAD_GP30(k0)
+    sd $31, THREAD_GP31(k0)
 
     mflo t0
     sd t0, THREAD_LO(k0)
@@ -211,7 +212,7 @@ next_interrupt:
     srl t2, t1, 0xc
     bnez t2, 1f
     
-    srl t2, t1, 0x8
+    srl t2, t1, SR_IMASKSHIFT
     addi t2, t2, 16
 1:
 
@@ -242,12 +243,12 @@ cart:
     and s0, s0, ~CAUSE_IP4
 
     la t1, __osHwIntTable
-    add t1, 8
-    lw t2, (t1)
+    add t1, HWINTR_SIZE
+    lw t2, HWINTR_CALLBACK(t1)
 
     beqz t2, 1f
 
-    lw sp, 4(t1)
+    lw sp, HWINTR_SP(t1)
     jalr t2
     
     beqz v0, 1f
@@ -261,7 +262,7 @@ cart:
 rcp:
     lw s1, PHYS_TO_K1(MI_INTR_REG)
     la t0, __OSGlobalIntMask
-    lw t0, 0(t0)
+    lw t0, HWINTR_CALLBACK(t0)
 
     srl t0, t0, 0x10
     and s1, s1, t0
@@ -515,18 +516,18 @@ LEAF(__osEnqueueAndYield)
     STAY2(mfc0 t0, C0_SR)
     ori t0, t0, SR_EXL
     sw t0, THREAD_SR(a1)
-    sd s0, THREAD_S0(a1)
-    sd s1, THREAD_S1(a1)
-    sd s2, THREAD_S2(a1)
-    sd s3, THREAD_S3(a1)
-    sd s4, THREAD_S4(a1)
-    sd s5, THREAD_S5(a1)
-    sd s6, THREAD_S6(a1)
-    sd s7, THREAD_S7(a1)
-    sd gp, THREAD_GP(a1)
-    sd sp, THREAD_SP(a1)
-    sd s8, THREAD_S8(a1)
-    sd ra, THREAD_RA(a1)
+    sd s0, THREAD_GP16(a1)
+    sd s1, THREAD_GP17(a1)
+    sd s2, THREAD_GP18(a1)
+    sd s3, THREAD_GP19(a1)
+    sd s4, THREAD_GP20(a1)
+    sd s5, THREAD_GP21(a1)
+    sd s6, THREAD_GP22(a1)
+    sd s7, THREAD_GP23(a1)
+    sd gp, THREAD_GP28(a1)
+    sd sp, THREAD_GP29(a1)
+    sd s8, THREAD_GP30(a1)
+    sd ra, THREAD_GP31(a1)
     sw ra, THREAD_PC(a1)
     lw k1, THREAD_FP(a1)
     beqz k1, 1f
@@ -621,36 +622,36 @@ __osDispatchThreadSave:
     or k1, k1, t1
     STAY2(mtc0 k1, C0_SR)
 .set noat
-    ld AT, THREAD_AT(k0)
+    ld $1, THREAD_GP1(k0)
 .set at
-    ld v0, THREAD_V0(k0)
-    ld v1, THREAD_V1(k0)
-    ld a0, THREAD_A0(k0)
-    ld a1, THREAD_A1(k0)
-    ld a2, THREAD_A2(k0)
-    ld a3, THREAD_A3(k0)
-    ld t0, THREAD_T0(k0)
-    ld t1, THREAD_T1(k0)
-    ld t2, THREAD_T2(k0)
-    ld t3, THREAD_T3(k0)
-    ld ta0, THREAD_T4(k0)
-    ld ta1, THREAD_T5(k0)
-    ld ta2, THREAD_T6(k0)
-    ld ta3, THREAD_T7(k0)
-    ld s0, THREAD_S0(k0)
-    ld s1, THREAD_S1(k0)
-    ld s2, THREAD_S2(k0)
-    ld s3, THREAD_S3(k0)
-    ld s4, THREAD_S4(k0)
-    ld s5, THREAD_S5(k0)
-    ld s6, THREAD_S6(k0)
-    ld s7, THREAD_S7(k0)
-    ld t8, THREAD_T8(k0)
-    ld t9, THREAD_T9(k0)
-    ld gp, THREAD_GP(k0)
-    ld sp, THREAD_SP(k0)
-    ld s8, THREAD_S8(k0)
-    ld ra, THREAD_RA(k0)
+    ld $2, THREAD_GP2(k0)
+    ld $3, THREAD_GP3(k0)
+    ld $4, THREAD_GP4(k0)
+    ld $5, THREAD_GP5(k0)
+    ld $6, THREAD_GP6(k0)
+    ld $7, THREAD_GP7(k0)
+    ld $8, THREAD_GP8(k0)
+    ld $9, THREAD_GP9(k0)
+    ld $10, THREAD_GP10(k0)
+    ld $11, THREAD_GP11(k0)
+    ld $12, THREAD_GP12(k0)
+    ld $13, THREAD_GP13(k0)
+    ld $14, THREAD_GP14(k0)
+    ld $15, THREAD_GP15(k0)
+    ld $16, THREAD_GP16(k0)
+    ld $17, THREAD_GP17(k0)
+    ld $18, THREAD_GP18(k0)
+    ld $19, THREAD_GP19(k0)
+    ld $20, THREAD_GP20(k0)
+    ld $21, THREAD_GP21(k0)
+    ld $22, THREAD_GP22(k0)
+    ld $23, THREAD_GP23(k0)
+    ld $24, THREAD_GP24(k0)
+    ld $25, THREAD_GP25(k0)
+    ld $28, THREAD_GP28(k0)
+    ld $29, THREAD_GP29(k0)
+    ld $30, THREAD_GP30(k0)
+    ld $31, THREAD_GP31(k0)
     ld k1, THREAD_LO(k0)
     mtlo k1
     ld k1, THREAD_HI(k0)
