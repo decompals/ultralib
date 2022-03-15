@@ -13,10 +13,10 @@ s32 osVoiceControlGain(OSVoiceHandle *hd, s32 analog, s32 digital) {
 
     ERRCK(__osVoiceSetADConverter(hd->__mq,hd->__channel, cmd));
     
-    if ((digital < 8) && (digital >= 0)) {
+    if ((digital < ARRLEN(digital_table)) && (digital >= 0)) {
         cmd = digital_table[digital] + 2;
     } else {
-        return 5;
+        return CONT_ERR_INVALID;
     }
 
     ERRCK(__osVoiceSetADConverter(hd->__mq,hd->__channel, cmd));

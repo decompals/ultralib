@@ -2,6 +2,9 @@
 #include "io/controller.h"
 #include "PR/os_voice.h"
 #include "voiceinternal.h"
+#include "controller_voice.h"
+
+#define READ36FORMAT(p) ((__OSVoiceRead36Format*)(ptr))
 
 s32 __osVoiceContRead36(OSMesgQueue* mq, s32 channel, u16 address, u8* buffer) {
     s32 ret;
@@ -14,40 +17,41 @@ s32 __osVoiceContRead36(OSMesgQueue* mq, s32 channel, u16 address, u8* buffer) {
 
     do {
 
-        ptr = (u8*)&__osPfsPifRam;
+        ptr = (u8*)&__osPfsPifRam.ramarray;
 
-        if ((__osContLastCmd != 9) || (__osPfsLastChannel != channel)) {
-            __osContLastCmd = 9;
+        if ((__osContLastCmd != CONT_CMD_READ36_VOICE) || (__osPfsLastChannel != channel)) {
+            __osContLastCmd = CONT_CMD_READ36_VOICE;
             __osPfsLastChannel = channel;
 
             for (i = 0; i < channel; i++) {
                 *ptr++ = 0;
             }
 
-            __osPfsPifRam.pifstatus = CONT_CMD_READ_BUTTON;
+            __osPfsPifRam.pifstatus = CONT_CMD_EXE;
 
-            ptr[0] = 0xFF;
-            ptr[1] = 3;
-            ptr[2] = 0x25;
-            ptr[3] = 9;
-            ptr[0x2A] = 0xFF;
-            ptr[0x2B] = 0xFE;
+            READ36FORMAT(ptr)->dummy = CONT_CMD_NOP;
+            READ36FORMAT(ptr)->txsize = CONT_CMD_READ36_VOICE_TX;
+            READ36FORMAT(ptr)->rxsize = CONT_CMD_READ36_VOICE_RX;
+            READ36FORMAT(ptr)->cmd = CONT_CMD_READ36_VOICE;
+            READ36FORMAT(ptr)->datacrc = 0xFF;
+
+            ptr[sizeof(__OSVoiceRead36Format)] = CONT_CMD_END;
         } else {
             ptr = (u8*)&__osPfsPifRam + channel;
         }
 
-        ptr[4] = address >> 3;
-        ptr[5] = __osContAddressCrc(address) | (address << 5);
+        READ36FORMAT(ptr)->addrh = address >> 3;
+        READ36FORMAT(ptr)->addrl = __osContAddressCrc(address) | (address << 5);
 
         __osSiRawStartDma(OS_WRITE, &__osPfsPifRam);
         osRecvMesg(mq, NULL, OS_MESG_BLOCK);
         __osSiRawStartDma(OS_READ, &__osPfsPifRam);
         osRecvMesg(mq, NULL, OS_MESG_BLOCK);
 
-        ret = (ptr[2] & 0xC0) >> 4;
+        ret = (READ36FORMAT(ptr)->rxsize & 0xC0) >> 4;
 
         if (ret == 0) {
-            if (__osVoiceContDataCrc(&ptr[6], 36) != ptr[42]) {
+            if (__osVoiceContDataCrc(&READ36FORMAT(ptr)->data, 36) != READ36FORMAT(ptr)->datacrc) {
                 ret = __osVoiceGetStatus(mq, channel, &status);
                 if (ret != 0) {
                     break;
@@ -55,7 +59,7 @@ s32 __osVoiceContRead36(OSMesgQueue* mq, s32 channel, u16 address, u8* buffer) {
 
                 ret = CONT_ERR_CONTRFAIL;
             } else {
-                bcopy(&ptr[6], buffer, 36);
+                bcopy(&READ36FORMAT(ptr)->data, buffer, 36);
             }
         } else {
             ret = CONT_ERR_NO_CONTROLLER;
