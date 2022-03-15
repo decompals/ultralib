@@ -43,13 +43,21 @@ void osVoiceCountSyllables(u8 *data, u32 *syllable) {
     *syllable = 1;
     for (k = 0; data[k] != 0; k += 2) {
         sjis = data[k + 1] + (data[k] << 8);
-        if ((sjis == 0x82A0) || (sjis == 0x82A2) || (sjis == 0x82A4) || (sjis == 0x82A6) || (sjis == 0x82A8) || (sjis == 0x8341) || (sjis == 0x8343) || (sjis == 0x8345) || (sjis == 0x8347) || (sjis == 0x8349)) {
+        if ((sjis == 0x82A0) || (sjis == 0x82A2) || (sjis == 0x82A4) || (sjis == 0x82A6) || (sjis == 0x82A8)
+         || (sjis == 0x8341) || (sjis == 0x8343) || (sjis == 0x8345) || (sjis == 0x8347) || (sjis == 0x8349)
+        ) {
             if (k == 0) {
                 *syllable += 2;
             } else {
                 *syllable += 1;
             }
-        } else if ((sjis == 0x82A9) || (sjis == 0x82AB) || (sjis == 0x82AD) || (sjis == 0x82AF) || (sjis == 0x82B1) || (sjis == 0x82BD) || (sjis == 0x82BF) || (sjis == 0x82C2) || (sjis == 0x82C4) || (sjis == 0x82C6) || (sjis == 0x82CF) || (sjis == 0x82D2) || (sjis == 0x82D5) || (sjis == 0x82D8) || (sjis == 0x82DB) || (sjis == 0x834A) || (sjis == 0x834C) || (sjis == 0x834E) || (sjis == 0x8350) || (sjis == 0x8352) || (sjis == 0x835E) || (sjis == 0x8360) || (sjis == 0x8363) || (sjis == 0x8365) || (sjis == 0x8367) || (sjis == 0x8370) || (sjis == 0x8373) || (sjis == 0x8376) || (sjis == 0x8379) || (sjis == 0x837C)) {
+        } else if ((sjis == 0x82A9) || (sjis == 0x82AB) || (sjis == 0x82AD) || (sjis == 0x82AF) || (sjis == 0x82B1)
+                || (sjis == 0x82BD) || (sjis == 0x82BF) || (sjis == 0x82C2) || (sjis == 0x82C4) || (sjis == 0x82C6)
+                || (sjis == 0x82CF) || (sjis == 0x82D2) || (sjis == 0x82D5) || (sjis == 0x82D8) || (sjis == 0x82DB)
+                || (sjis == 0x834A) || (sjis == 0x834C) || (sjis == 0x834E) || (sjis == 0x8350) || (sjis == 0x8352)
+                || (sjis == 0x835E) || (sjis == 0x8360) || (sjis == 0x8363) || (sjis == 0x8365) || (sjis == 0x8367)
+                || (sjis == 0x8370) || (sjis == 0x8373) || (sjis == 0x8376) || (sjis == 0x8379) || (sjis == 0x837C)
+        ) {
             if (k == 0) {
                 *syllable += 2;
             } else if ((old == 0x82C1) || (old == 0x8362)) {
@@ -57,8 +65,14 @@ void osVoiceCountSyllables(u8 *data, u32 *syllable) {
             } else {
                 *syllable += 3;
             }
-        } else if ((sjis == 0x829F) || (sjis == 0x82A1) || (sjis == 0x82A3) || (sjis == 0x82A5) || (sjis == 0x82A7) || (sjis == 0x82E1) || (sjis == 0x82E3) || (sjis == 0x82E5) || (sjis == 0x82EC) || (sjis == 0x8340) || (sjis == 0x8342) || (sjis == 0x8344) || (sjis == 0x8346) || (sjis == 0x8348) || (sjis == 0x8383) || (sjis == 0x8385) || (sjis == 0x8387) || (sjis == 0x838E) || (sjis == 0x8395) || (sjis == 0x8396)) {
-            if ((old == 0x82A0) || (old == 0x82A2) || (old == 0x82A4) || (old == 0x82A6) || (old == 0x82A8) || (old == 0x8341) || (old == 0x8343) || (old == 0x8345) || (old == 0x8347) || (old == 0x8349)) {
+        } else if ((sjis == 0x829F) || (sjis == 0x82A1) || (sjis == 0x82A3) || (sjis == 0x82A5) || (sjis == 0x82A7)
+                || (sjis == 0x82E1) || (sjis == 0x82E3) || (sjis == 0x82E5) || (sjis == 0x82EC) || (sjis == 0x8340)
+                || (sjis == 0x8342) || (sjis == 0x8344) || (sjis == 0x8346) || (sjis == 0x8348) || (sjis == 0x8383)
+                || (sjis == 0x8385) || (sjis == 0x8387) || (sjis == 0x838E) || (sjis == 0x8395) || (sjis == 0x8396)
+        ) {
+            if ((old == 0x82A0) || (old == 0x82A2) || (old == 0x82A4) || (old == 0x82A6) || (old == 0x82A8)
+             || (old == 0x8341) || (old == 0x8343) || (old == 0x8345) || (old == 0x8347) || (old == 0x8349)
+            ) {
                 *syllable += 1;
             }
         } else if ((sjis == 0x82F1) || (sjis == 0x815B) || (sjis == 0x82C1) || (sjis == 0x8393) || (sjis == 0x8362)) {

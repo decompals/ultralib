@@ -27,7 +27,7 @@ s32 __osVoiceSetADConverter(OSMesgQueue* mq, s32 channel, u8 data) {
                 *ptr++ = 0;
             }
 
-            __osPfsPifRam.pifstatus = CONT_CMD_READ_BUTTON;
+            __osPfsPifRam.pifstatus = CONT_CMD_EXE;
 
             ptr[0] = 3;
             ptr[1] = 1;
