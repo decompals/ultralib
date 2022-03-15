@@ -4,10 +4,10 @@
 #include "voiceinternal.h"
 
 s32 __osVoiceGetStatus(OSMesgQueue* mq, s32 port, u8* status) {
-    __OSContRequestHeaderAligned header;
+    __OSContRequesFormatShort header;
     s32 ret = 0;
     s32 i;
-    u8* ptr = (u8*)&__osContPifRam;
+    u8* ptr = (u8*)&__osContPifRam.ramarray;
     s32 retry = 2;
 
     __osSiGetAccess();
@@ -33,9 +33,9 @@ s32 __osVoiceGetStatus(OSMesgQueue* mq, s32 port, u8* status) {
         ret = __osSiRawStartDma(OS_READ, &__osContPifRam);
         osRecvMesg(mq, NULL, OS_MESG_BLOCK);
 
-        ptr = (u8*)&__osContPifRam + port;
+        ptr = (u8*)&__osContPifRam.ramarray + port;
 
-        header = *((__OSContRequestHeaderAligned*)ptr);
+        header = *((__OSContRequesFormatShort*)ptr);
 
         ret = (u8)((header.rxsize & 0xC0) >> 4);
         *status = header.status;

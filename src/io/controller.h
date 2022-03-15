@@ -47,15 +47,6 @@ typedef struct
     /* 0x5 */ u8 status;
 } __OSContRequesFormatShort;
 
-typedef struct {
-    /* 0x00 */ u8 txsize;
-    /* 0x01 */ u8 rxsize;
-    /* 0x02 */ u8 poll;
-    /* 0x03 */ u8 typeh;
-    /* 0x04 */ u8 typel;
-    /* 0x05 */ u8 status;
-} __OSContRequestHeaderAligned; // size = 0x6
-
 typedef struct
 {
     /* 0x0 */ u8 dummy;
@@ -152,17 +143,6 @@ typedef struct
 #define DIR_STATUS_EMPTY 0
 #define DIR_STATUS_UNKNOWN 1
 #define DIR_STATUS_OCCUPIED 2
-
-/* Controller error number */
-
-#define CONT_ERR_NO_CONTROLLER      PFS_ERR_NOPACK      /* 1 */
-#define CONT_ERR_CONTRFAIL      CONT_OVERRUN_ERROR  /* 4 */
-#define CONT_ERR_INVALID        PFS_ERR_INVALID     /* 5 */
-#define CONT_ERR_DEVICE         PFS_ERR_DEVICE      /* 11 */
-#define CONT_ERR_NOT_READY      12
-#define CONT_ERR_VOICE_MEMORY       13
-#define CONT_ERR_VOICE_WORD     14
-#define CONT_ERR_VOICE_NO_RESPONSE  15
 
 // Controller accessory addresses
 // https://github.com/joeldipops/TransferBoy/blob/master/docs/TransferPakReference.md
