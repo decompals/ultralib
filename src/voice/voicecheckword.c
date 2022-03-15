@@ -2,6 +2,34 @@
 #include "io/controller.h"
 #include "PR/os_voice.h"
 
+// macro hell
+
+#define IS_HIRAGANA_VOWEL(s) ((s == 'あ') || (s == 'い') || (s == 'う') || (s == 'え') || (s == 'お'))
+#define IS_HIRAGANA_VOWEL_SMALL(s) ((s == 'ぁ') || (s == 'ぃ') || (s == 'ぅ') || (s == 'ぇ') || (s == 'ぉ'))
+#define IS_KATAKANA_VOWEL(s) ((s == 'ア') || (s == 'イ') || (s == 'ウ') || (s == 'エ') || (s == 'オ'))
+#define IS_KATAKANA_VOWEL_SMALL(s) ((s == 'ァ') || (s == 'ィ') || (s == 'ゥ') || (s == 'ェ') || (s == 'ォ'))
+#define IS_VOWEL(s) (IS_HIRAGANA_VOWEL((s)) || IS_KATAKANA_VOWEL((s)))
+
+// The manual describes these cases as "Romanized by k, t, c, or p"
+#define IS_HIRAGANA_K(s) ((s == 'か') || (s == 'き') || (s == 'く') || (s == 'け') || (s == 'こ'))
+#define IS_KATAKANA_K(s) ((s == 'カ') || (s == 'キ') || (s == 'ク') || (s == 'ケ') || (s == 'コ'))
+#define IS_HIRAGANA_T(s) ((s == 'た') || (s == 'ち') || (s == 'つ') || (s == 'て') || (s == 'と'))
+#define IS_KATAKANA_T(s) ((s == 'タ') || (s == 'チ') || (s == 'ツ') || (s == 'テ') || (s == 'ト'))
+#define IS_HIRAGANA_P(s) ((s == 'ぱ') || (s == 'ぴ') || (s == 'ぷ') || (s == 'ぺ') || (s == 'ぽ'))
+#define IS_KATAKANA_P(s) ((s == 'パ') || (s == 'ピ') || (s == 'プ') || (s == 'ペ') || (s == 'ポ'))
+
+// Includes ゎ/ヮ, if theres a better way to categorize those pls let me know
+#define IS_HIRAGANA_Y_SMALL(s) ((s == 'ゃ') || (s == 'ゅ') || (s == 'ょ') || (s == 'ゎ'))
+#define IS_KATAKANA_Y_SMALL(s) ((s == 'ャ') || (s == 'ュ') || (s == 'ョ') || (s == 'ヮ'))
+
+#define IS_HARD_CONSONANT(s) (IS_HIRAGANA_K((s)) || IS_HIRAGANA_T((s)) || IS_HIRAGANA_P((s)) || IS_KATAKANA_K((s)) || IS_KATAKANA_T((s)) || IS_KATAKANA_P((s)))
+
+// This definitely has a better name
+#define IS_ENDING_GLYPH(s) ((s == 'ん') || (s == 'ー') || (s == 'っ') || (s == 'ン') || (s == 'ッ'))
+
+#define IS_DIPTHONG(s) (IS_HIRAGANA_VOWEL_SMALL((s)) || IS_HIRAGANA_Y_SMALL((s)) || IS_KATAKANA_VOWEL_SMALL((s)) || IS_KATAKANA_Y_SMALL((s)) || (s == 0x8395) || (s == 0x8396))
+
+
 s32 osVoiceCheckWord(u8* word) {
     s32 k;
     s32 ret = 0;
@@ -96,7 +124,7 @@ s32 osVoiceCheckWord(u8* word) {
         old = sjis;
     }
 
-    if ((sjis == 0x82C1) || (sjis == 0x8362)) {
+    if ((sjis == 'っ') || (sjis == 'ッ')) {
         ret = CONT_ERR_VOICE_WORD;
     }
 

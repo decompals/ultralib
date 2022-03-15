@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import sys
 
 # Converts a file with UTF-8 Japanese glyphs in char literals,
 #  into one that uses u16 constants
@@ -98,7 +99,7 @@ sjis_table = {
 	"ロ": 0x0000,
 
 	# W
-	"ワ": 0x83BF,
+	"ワ": 0x838F,
 	"ヰ": 0x8390,
 	"ヱ": 0x8391,
 	"ヲ": 0x8392,
@@ -106,7 +107,8 @@ sjis_table = {
 	# N
 	"ン": 0x8393,
 
-
+	"ヵ": 0x8395,
+	"ヶ": 0x8396,
 
 # Hiragana
 
@@ -133,9 +135,9 @@ sjis_table = {
 	# T
 	"タ": 0x835E,
 	"チ": 0x8360,
-	"ツ": 0x8362,
-	"テ": 0x8364,
-	"ト": 0x8366,
+	"ツ": 0x8363,
+	"テ": 0x8365,
+	"ト": 0x8367,
 
 	# H
 	"ハ": 0x836E,
@@ -187,42 +189,33 @@ sjis_table = {
 	"ォ": 0x8348,
 
 	# Y (small)
-	"ャ": 0x83B3,
-	"ュ": 0x83B5,
-	"ョ": 0x83B7,
+	"ャ": 0x8383,
+	"ュ": 0x8385,
+	"ョ": 0x8387,
 
 	"ッ": 0x8362,
-	"ヮ": 0x83BE,
+	"ヮ": 0x838E,
 
 	
 
 }
 
-import sys, os
-
-fb = []
-
-if len(sys.argv) == 1:
-	print("Usage: shift-jisconv.py in_file out_file")
-
-with open(sys.argv[1]) as f:
-	fb = f.read()
-
 skipTimer = 0
 
+def sjis_process(buf, outfile):
+	global skipTimer
 
-with open(sys.argv[2], "w+") as f:
-	for i, char in enumerate(fb):
+	for i, char in enumerate(buf):
 		if skipTimer > 0:
 			skipTimer -= 1
 			continue
-		if char == "'" and fb[i+1] in sjis_table:
-			if sjis_table[fb[i+1]] == 0:
-				print("Error: Please map %s in tools/shift-jisconv.py" % fb[i+1])
+		if char == "'" and buf[i+1] in sjis_table:
+			if sjis_table[buf[i+1]] == 0:
+				print("Error: Please map %s in %s" % (buf[i+1], sys.argv[0]))
 				exit(1)
-			f.write("0x%X" % sjis_table[fb[i+1]])
+			outfile.write("0x%X" % sjis_table[buf[i+1]])
 			skipTimer = 2
 		else:
-			f.write(char)
+			outfile.write(char)
 
 
