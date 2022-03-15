@@ -2,7 +2,7 @@
 #include "io/controller.h"
 #include "PR/os_voice.h"
 #include "voiceinternal.h"
-#include "controller_voice.h"
+#include "io/controller_voice.h"
 
 #define WRITE4FORMAT(p) ((__OSVoiceWrite4Format*)(ptr))
 
