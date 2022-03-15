@@ -1,6 +1,8 @@
 NON_MATCHING ?= 0
 
-TARGET := libgultra_rom
+#TARGET := libgultra_rom
+
+TARGET := libgultra_d
 BASE_DIR := base_$(TARGET)
 BASE_AR := $(TARGET).a
 BUILD_DIR := build
@@ -20,7 +22,14 @@ CFLAGS := -w -nostdinc -c -G 0 -mgp32 -mfp32 -mips3 -D_LANGUAGE_C
 ASFLAGS := -w -nostdinc -c -G 0 -mgp32 -mfp32 -mips3 -DMIPSEB -D_LANGUAGE_ASSEMBLY -D_MIPS_SIM=1 -D_ULTRA64 -x assembler-with-cpp
 GBIDEFINE := -DF3DEX_GBI_2
 CPPFLAGS = -D_MIPS_SZLONG=32 -D__USE_ISOC99 -I $(WORKING_DIR)/include -I $(WORKING_DIR)/include/gcc -I $(WORKING_DIR)/include/PR $(GBIDEFINE)
+
+ifeq ($(TARGET),libgultra_rom)
 OPTFLAGS := -O3
+CPPFLAGS += -DNDEBUG -D_FINALROM
+else ifeq ($(TARGET),libgultra_d)
+OPTFLAGS := -O0
+CPPFLAGS += -D_DEBUG
+endif
 
 ifeq ($(findstring _d,$(TARGET)),_d)
 CPPFLAGS += -D_DEBUG
@@ -133,7 +142,7 @@ ifneq ($(NON_MATCHING),1)
 endif
 
 $(BUILD_DIR)/%.marker: %.s
-	cd $(<D) && $(WORKING_DIR)/$(CC) $(ASFLAGS) $(CPPFLAGS) -I. $(OPTFLAGS) $(<F) -o $(WORKING_DIR)/$(@:.marker=.o)
+	cd $(<D) && $(WORKING_DIR)/$(CC) $(ASFLAGS) $(CPPFLAGS) -I. $(<F) -o $(WORKING_DIR)/$(@:.marker=.o)
 ifneq ($(NON_MATCHING),1)
 # check if this file is in the archive; patch corrupted bytes and change file timestamps to match original if so
 	@$(if $(findstring $(BASE_DIR)/$(@F:.marker=.o), $(BASE_OBJS)), \
