@@ -2,6 +2,9 @@
 #include "io/controller.h"
 #include "PR/os_voice.h"
 #include "voiceinternal.h"
+#include "controller_voice.h"
+
+#define SWRITEFORMAT(p) ((__OSVoiceSWriteFormat*)(p))
 
 s32 __osVoiceSetADConverter(OSMesgQueue* mq, s32 channel, u8 data) {
     s32 ret;
@@ -19,8 +22,8 @@ s32 __osVoiceSetADConverter(OSMesgQueue* mq, s32 channel, u8 data) {
 
         ptr = (u8*)__osPfsPifRam.ramarray;
 
-        if ((__osContLastCmd != 0xD) || (__osPfsLastChannel != channel)) {
-            __osContLastCmd = 0xD;
+        if ((__osContLastCmd != CONT_CMD_SWRITE_VOICE) || (__osPfsLastChannel != channel)) {
+            __osContLastCmd = CONT_CMD_SWRITE_VOICE;
             __osPfsLastChannel = channel;
 
             for (i = 0; i < channel; i++) {
@@ -29,17 +32,18 @@ s32 __osVoiceSetADConverter(OSMesgQueue* mq, s32 channel, u8 data) {
 
             __osPfsPifRam.pifstatus = CONT_CMD_EXE;
 
-            ptr[0] = 3;
-            ptr[1] = 1;
-            ptr[2] = 0xD;
-            ptr[5] = 0;
-            ptr[6] = 0xFE;
+            SWRITEFORMAT(ptr)->txsize = CONT_CMD_SWRITE_VOICE_TX;
+            SWRITEFORMAT(ptr)->rxsize = CONT_CMD_SWRITE_VOICE_RX;
+            SWRITEFORMAT(ptr)->cmd = CONT_CMD_SWRITE_VOICE;
+            SWRITEFORMAT(ptr)->datacrc = 0;
+
+            ptr[sizeof(__OSVoiceSWriteFormat)] = CONT_CMD_END;
         } else {
             ptr = (u8*)&__osPfsPifRam + channel;
         }
 
-        ptr[3] = data;
-        ptr[4] = __osContAddressCrc(data * 8);
+        SWRITEFORMAT(ptr)->data = data;
+        SWRITEFORMAT(ptr)->scrc = __osContAddressCrc(data * 8);
 
         __osSiRawStartDma(OS_WRITE, &__osPfsPifRam);
         osRecvMesg(mq, NULL, OS_MESG_BLOCK);
@@ -49,7 +53,7 @@ s32 __osVoiceSetADConverter(OSMesgQueue* mq, s32 channel, u8 data) {
         ret = (ptr[1] & 0xC0) >> 4;
 
         if (ret == 0) {
-            if (ptr[5] & 1) {
+            if (SWRITEFORMAT(ptr)->datacrc & 1) {
                 ret = __osVoiceGetStatus(mq, channel, &status);
                 if (ret != 0) {
                     break;

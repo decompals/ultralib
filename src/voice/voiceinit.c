@@ -19,7 +19,7 @@ s32 osVoiceInit(OSMesgQueue* mq, OSVoiceHandle* handle, int channel) {
         return CONT_ERR_CONTRFAIL;
     }
 
-    for (i = 0; i < 5; i++) {
+    for (i = 0; i < ARRLEN(cmd); i++) {
         ERRCK(__osVoiceSetADConverter(mq, channel, cmd[i]));
     }
 
