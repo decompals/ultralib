@@ -48,10 +48,10 @@ s32 __osVoiceContRead36(OSMesgQueue* mq, s32 channel, u16 address, u8* buffer) {
         __osSiRawStartDma(OS_READ, &__osPfsPifRam);
         osRecvMesg(mq, NULL, OS_MESG_BLOCK);
 
-        ret = (READ36FORMAT(ptr)->rxsize & 0xC0) >> 4;
+        ret = CHNL_ERR(*READ36FORMAT(ptr));
 
         if (ret == 0) {
-            if (__osVoiceContDataCrc(&READ36FORMAT(ptr)->data, 36) != READ36FORMAT(ptr)->datacrc) {
+            if (__osVoiceContDataCrc(&READ36FORMAT(ptr)->data, ARRLEN(READ36FORMAT(ptr)->data)) != READ36FORMAT(ptr)->datacrc) {
                 ret = __osVoiceGetStatus(mq, channel, &status);
                 if (ret != 0) {
                     break;
@@ -59,7 +59,7 @@ s32 __osVoiceContRead36(OSMesgQueue* mq, s32 channel, u16 address, u8* buffer) {
 
                 ret = CONT_ERR_CONTRFAIL;
             } else {
-                bcopy(&READ36FORMAT(ptr)->data, buffer, 36);
+                bcopy(&READ36FORMAT(ptr)->data, buffer, ARRLEN(READ36FORMAT(ptr)->data));
             }
         } else {
             ret = CONT_ERR_NO_CONTROLLER;

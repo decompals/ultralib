@@ -4,8 +4,6 @@
 
 s32 __osVoiceSetADConverter(OSMesgQueue*, int ch, u8 cmd);
 
-#define ACOUNT(a) (sizeof((a)) / sizeof((a[0])))
-
 s32 osVoiceControlGain(OSVoiceHandle *hd, s32 analog, s32 digital) {
     s32 ret;
     u8 cmd = (u8) (analog == 0 ? 0x18 : 0x98);

@@ -11,12 +11,9 @@ s32 __osVoiceSetADConverter(OSMesgQueue* mq, s32 channel, u8 data) {
     int i;
     u8* ptr;
     u8 status;
-    // u16 sp48;
     int retry = 2;
 
     __osSiGetAccess();
-
-    // sp48 = data * 8;
 
     do {
 
@@ -50,7 +47,7 @@ s32 __osVoiceSetADConverter(OSMesgQueue* mq, s32 channel, u8 data) {
         __osSiRawStartDma(OS_READ, &__osPfsPifRam);
         osRecvMesg(mq, NULL, OS_MESG_BLOCK);
 
-        ret = (ptr[1] & 0xC0) >> 4;
+        ret = CHNL_ERR(*SWRITEFORMAT(ptr));
 
         if (ret == 0) {
             if (SWRITEFORMAT(ptr)->datacrc & 1) {

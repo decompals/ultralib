@@ -20,8 +20,8 @@ s32 __osVoiceGetStatus(OSMesgQueue* mq, s32 port, u8* status) {
                 ;
             }
 
-            *ptr++ = 1;
-            *ptr++ = 3;
+            *ptr++ = CONT_CMD_REQUEST_STATUS_TX;
+            *ptr++ = CONT_CMD_REQUEST_STATUS_RX;
             *ptr = CONT_CMD_REQUEST_STATUS;
             ptr += 4;
             *ptr = CONT_CMD_END;
@@ -37,7 +37,7 @@ s32 __osVoiceGetStatus(OSMesgQueue* mq, s32 port, u8* status) {
 
         header = *((__OSContRequesFormatShort*)ptr);
 
-        ret = (u8)((header.rxsize & 0xC0) >> 4);
+        ret = CHNL_ERR(header);
         *status = header.status;
 
         if (ret == 0) {
@@ -59,3 +59,4 @@ s32 __osVoiceGetStatus(OSMesgQueue* mq, s32 port, u8* status) {
 
     return ret;
 }
+

@@ -22,17 +22,17 @@ s32 osVoiceMaskDictionary(OSVoiceHandle* hd, u8* pattern, int size) {
         j = size;
     }
 
-    bzero(&buf, 20);
+    bzero(&buf, ARRLEN(buf));
 
     buf[18 - j] = 4;
 
     for (i = 0; i < j; i += 2) {
-        buf[i + 20 - j] = pattern[i];
-        buf[i + 20 - j + 1] = pattern[i + 1];
+        buf[i + ARRLEN(buf) - j] = pattern[i];
+        buf[i + ARRLEN(buf) - j + 1] = pattern[i + 1];
     }
 
     if (size & 1) {
-        buf[19] = 0;
+        buf[ARRLEN(buf) - 1] = 0;
     }
 
     ret = __osVoiceContWrite20(hd->__mq, hd->__channel, 0, &buf);

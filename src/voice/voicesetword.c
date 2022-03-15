@@ -16,17 +16,15 @@ s32 osVoiceSetWord(OSVoiceHandle *hd, u8 *word) {
     for (k = 0; word[k] != 0; k += 2) {
         ;
     }
-    // if (k >= 0x22) {
-    //     return 0xE;
-    // }
-    bzero(buf, 40);
+
+    bzero(buf, ARRLEN(buf));
 
     for (j = 0; j < k; j += 2) {
-        buf[39 - k + j] = word[j];
-        buf[39 - k + j - 1] = word[j + 1];
+        buf[ARRLEN(buf) - 1 - k + j] = word[j];
+        buf[ARRLEN(buf) - 1 - k + j - 1] = word[j + 1];
     }
 
-    buf[39 - j - 5] = 3;
+    buf[ARRLEN(buf) - 1 - j - 5] = 3;
 
     if (k >= 15) {
         ERRCK(__osVoiceContWrite20(hd->__mq, hd->__channel, 0, buf));
@@ -35,11 +33,11 @@ s32 osVoiceSetWord(OSVoiceHandle *hd, u8 *word) {
     ret = __osVoiceCheckResult(hd, &stat);
     if (ret != 0) {
         if (ret & 0x100) {
-            ret = 0xD;
+            ret = CONT_ERR_VOICE_MEMORY;
         } else if (ret & 0x200) {
-            ret = 0xE;
+            ret = CONT_ERR_VOICE_WORD;
         } else if (ret & 0xFF00) {
-            ret = 5;
+            ret = CONT_ERR_INVALID;
         }
     }
     return ret;
