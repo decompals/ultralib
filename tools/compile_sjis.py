@@ -8,6 +8,7 @@ WORKING_DIR = os.getcwd()
 
 fb = []
 original_c_file = [i for i in sys.argv if ".c" in i][0]
+CC = [i for i in sys.argv if "-D__CC=" in i][0][7:]
 
 output_c_file = original_c_file
 
@@ -24,4 +25,4 @@ with open(output_c_file, "w+") as outf:
 	sjis_process(fb, outf)
 
 # print(WORKING_DIR + "/tools/gcc/gcc %s" % " ".join(sys.argv[1:]))
-os.system(WORKING_DIR + "/tools/gcc/gcc %s" % " ".join(sys.argv[1:]))
+os.system("%s %s" % (CC, " ".join(sys.argv[1:])))
