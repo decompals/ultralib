@@ -24,5 +24,4 @@ os.chdir("build/src/voice")
 with open(output_c_file, "w+") as outf:
 	sjis_process(fb, outf)
 
-# print(WORKING_DIR + "/tools/gcc/gcc %s" % " ".join(sys.argv[1:]))
 os.system("%s %s" % (CC, " ".join(sys.argv[1:])))
