@@ -109,6 +109,8 @@ $(BUILD_DIR)/src/mgu/rotate.marker: export VR4300MUL := ON
 $(BUILD_DIR)/src/os/%.marker: ASFLAGS += -P
 $(BUILD_DIR)/src/gu/%.marker: ASFLAGS += -P
 $(BUILD_DIR)/src/libc/%.marker: ASFLAGS += -P
+$(BUILD_DIR)/src/voice/%.marker: OPTFLAGS += -DLANG_JAPANESE -I$(WORKING_DIR)/src -I$(WORKING_DIR)/src/voice
+$(BUILD_DIR)/src/voice/%.marker: CC := tools/compile_sjis.py -D__CC=$(WORKING_DIR)/$(CC)
 
 $(BUILD_DIR)/%.marker: %.c
 	cd $(<D) && $(WORKING_DIR)/$(CC) $(CFLAGS) $(CPPFLAGS) $(OPTFLAGS) $(<F) -o $(WORKING_DIR)/$(@:.marker=.o)
