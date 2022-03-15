@@ -75,4 +75,3 @@ s32 __osVoiceContWrite20(OSMesgQueue* mq, int channel, u16 address, u8* buffer) 
 
     return ret;
 }
-

@@ -57,4 +57,3 @@ void osVoiceCountSyllables(u8 *data, u32 *syllable) {
         old = sjis;
     }
 }
-
