@@ -11,7 +11,7 @@ s32 osVoiceSetWord(OSVoiceHandle *hd, u8 *word) {
 
     ERRCK(__osVoiceGetStatus(hd->__mq, hd->__channel, &stat));
     if (stat & 2) {
-        return 0xF;
+        return CONT_ERR_VOICE_NO_RESPONSE;
     }
     for (k = 0; word[k] != 0; k += 2) {
         ;
