@@ -51,7 +51,7 @@ class MipsDisasm:
         for section in self.elf_file.sections:
             local_labels = self.section_local_labels.get(section.name, None)
             # debug_log(section)
-            if section.name in ['', '.strtab', '.shstrtab', '.symtab', '.reginfo', '.comment', '.note', '.options', '.mdebug'] or \
+            if section.name in ['', '.strtab', '.shstrtab', '.symtab', '.reginfo', '.comment', '.note', '.options', '.mdebug', '.gptab.data'] or \
                 (section.sh_type == SHT_REL or section.sh_type == SHT_RELA):
                 continue
             if section.sh_size == 0:

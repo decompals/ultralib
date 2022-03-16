@@ -499,6 +499,10 @@ class EcoffSymr:
             EcoffTq.CONST : "const",
         }
 
+        if self.index == 0xFFFFF:
+            # no type info
+            return "", None
+
         aux = self.fdr.auxs[self.index + ind]
         ind += 1
         type_str = ""
