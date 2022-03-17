@@ -62,12 +62,9 @@ __osIntTable:
 
 #ifndef NDEBUG
 EXPORT(__osCauseTable_pt)
-    .byte 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
-    .byte 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
-    .byte 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01
-    .byte 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x00
-    .byte 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
-    .byte 0x00, 0x00, 0x00, 0x00
+    .byte 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0
+    .byte 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0
+    .byte 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 #endif
 
 .data
@@ -269,7 +266,7 @@ HandData:
     lw      t2, __osRdb_Read_Data_Ct
     subu    t2, t2, t1
     sw      t2, __osRdb_Read_Data_Ct
-    sd      t3, 0x70(k0)
+    sd      t3, THREAD_GP11(k0)
     lw      t3, __osRdb_Read_Data_Buf
     srl     t2, t0, 0x10
     andi    t2, t2, 0xff
@@ -288,7 +285,7 @@ HandData:
     addi    t3, t3, 1
 doneData:
     sw      t3, __osRdb_Read_Data_Buf
-    ld      t3, 0x70(k0)
+    ld      t3, THREAD_GP11(k0)
     lw      t2, __osRdb_Read_Data_Ct
     bne     zero, t2, rdbout
     li      t2, 0x78
@@ -301,10 +298,10 @@ HandDbg:
     lw      t2, __osRdb_DbgRead_Ct
     subu    t2, t2, t1
     sw      t2, __osRdb_DbgRead_Ct
-    sd      t3, 0x70(k0)
+    sd      t3, THREAD_GP11(k0)
     lw      t3, __osRdb_DbgRead_Buf
     bne     zero, t3, 1f
-    ld      t3, 0x70(k0)
+    ld      t3, THREAD_GP11(k0)
     b       rdbout
 1:
     srl     t2, t0, 0x10
@@ -324,7 +321,7 @@ HandDbg:
     addi    t3, t3, 1
 doneDbg:
     sw      t3, __osRdb_DbgRead_Buf
-    ld      t3, 0x70(k0)
+    ld      t3, THREAD_GP11(k0)
     lw      t2, __osRdb_DbgRead_Ct
     bne     zero, t2, rdbout
     li      t2, 0xa0
@@ -363,13 +360,13 @@ STAY2(mfc0  t0, C0_CAUSE)
     lui     t0, (RDB_BASE_REG >> 16)
     sw      t2, (RDB_BASE_REG & 0xFFFF)(t0)
 rdbout:
-    ld      t0, 0x58(k0)
-    ld      t1, 0x60(k0)
-    ld      t2, 0x68(k0)
+    ld      t0, THREAD_GP8(k0)
+    ld      t1, THREAD_GP9(k0)
+    ld      t2, THREAD_GP10(k0)
 .set noat
-    ld      $1, 0x20(k0)
+    ld      $1, THREAD_GP1(k0)
 .set at
-    lw      k1, 0x118(k0)
+    lw      k1, THREAD_SR(k0)
 STAY2(mtc0  k1, C0_SR)
     nop
     nop
