@@ -1025,9 +1025,9 @@ class MdebugSection(Section):
                 return fdr
         return None
 
-    def fdr_foraddr(self, addr, c_only=True):
+    def fdr_foraddr(self, addr, extensions=('.c')):
         for fdr in self.fdrs:
-            if fdr.adr == addr and (not c_only or fdr.name.endswith(".c")):
+            if fdr.adr == addr and any((fdr.name.endswith(ext) for ext in extensions)):
                 return fdr
         return None
 

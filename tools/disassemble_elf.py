@@ -6,6 +6,7 @@
 import argparse, struct, sys
 
 from libelf import *
+from mdebug import *
 from mips_isa import *
 from util import *
 
@@ -50,7 +51,7 @@ class MipsDisasm:
         for section in self.elf_file.sections:
             local_labels = self.section_local_labels.get(section.name, None)
             # debug_log(section)
-            if section.name in ['', '.strtab', '.shstrtab', '.symtab', '.reginfo', '.comment', '.note'] or \
+            if section.name in ['', '.strtab', '.shstrtab', '.symtab', '.reginfo', '.comment', '.note', '.options', '.mdebug', '.gptab.data'] or \
                 (section.sh_type == SHT_REL or section.sh_type == SHT_RELA):
                 continue
             if section.sh_size == 0:
@@ -112,6 +113,16 @@ class MipsDisasm:
 .balign {section.sh_addralign}
 """
 
+    def get_label_name(self, addr, pdr=None, optional=False):
+        if pdr is not None:
+            sym = pdr.lookup_sym(addr, EcoffSt.LABEL)
+            if sym is not None:
+                return sym.name
+        if not optional:
+            return f".L{addr:08X}"
+        else:
+            return None
+
     def get_comment_string(self, start):
         comment_section = self.elf_file.find_section_by_name(".comment")
         end = comment_section.data.find(b'\0', start)
@@ -156,16 +167,17 @@ class MipsDisasm:
             src_inf = ""
             if self.has_mdebug:
                 # Get new fdr if there is one
-                fdr = self.mdebug.fdr_foraddr(i * 4)
+                fdr = self.mdebug.fdr_foraddr(i * 4, extensions=('.c', '.s'))
                 if fdr is not None:
                     # debug_log(fdr.name)
                     cur_fdr = fdr
 
                 # Get new pdr if there is one
-                pdr = cur_fdr.pdr_foraddr(i * 4)
-                if pdr is not None:
-                    # debug_log(pdr)
-                    cur_pdr = pdr
+                if cur_fdr is not None:
+                    pdr = cur_fdr.pdr_foraddr(i * 4)
+                    if pdr is not None:
+                        # debug_log(pdr)
+                        cur_pdr = pdr
 
                 # Line numbers
                 if cur_pdr is not None:
@@ -211,8 +223,9 @@ class MipsDisasm:
                     print(f"    .type {sym.name}, @{'function' if sym.type == ST_FUNC else 'object'}\n")
 
             # Print branch labels
-            if insn.vaddr in branch_labels:
-                print(f".L{insn.vaddr:08X}:")
+            lbl = self.get_label_name(insn.vaddr, pdr=cur_pdr, optional=not insn.vaddr in branch_labels)
+            if lbl is not None:
+                print(f"{lbl}:")
 
             # Relocations for this address
             rels = section.get_rel(i * 4)
@@ -263,12 +276,12 @@ class MipsDisasm:
                 op_str_parts = []
                 for field in insn.fields:
                     if field == 'offset':
-                        op_str_parts.append(f".L{insn.offset:08X}")
+                        op_str_parts.append(self.get_label_name(insn.offset, cur_pdr))
                     else:
                         op_str_parts.append(insn.format_field(field))
                 op_str = ", ".join(op_str_parts)
             elif insn.id == MIPS_INS_J:
-                op_str = f".L{insn.target:08X}"
+                op_str = self.get_label_name(insn.target, cur_pdr)
 
             print(f"/* {section.sh_offset + i * 4:06X} {insn.vaddr:08X} {insn.raw:08X}{src_inf} */  {mnemonic:12}{op_str:35}".rstrip())
         self.print_end(section.sh_addr + section.sh_size, eof)

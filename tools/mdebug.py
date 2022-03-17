@@ -447,6 +447,8 @@ class EcoffSymr:
             # TODO the typedef may already be absorbed into a struct or similar, check before emitting
             type_str, _ = self.process_type_information(0)
             self.c_repr = f"typedef {type_str} {self.name};"
+        elif self.st == EcoffSt.LABEL:
+            self.c_repr = f"{self.name}:"
 
     def process_type_information(self, ind):
         c_bt_names = {
@@ -496,6 +498,10 @@ class EcoffSymr:
             EcoffTq.VOL   : "volatile",
             EcoffTq.CONST : "const",
         }
+
+        if self.index == 0xFFFFF:
+            # no type info
+            return "", None
 
         aux = self.fdr.auxs[self.index + ind]
         ind += 1
@@ -651,6 +657,12 @@ class EcoffPdr:
                 self.lines.append(line_no)
 
             line_data += len(liner.data)
+
+    def lookup_sym(self, value, type=-1):
+        for sym in self.symrs:
+            if sym.value == value and (type == -1 or type == sym.st):
+                return sym
+        return None
 
     def __str__(self) -> str:
         return f"""= EcoffPdr ===============
