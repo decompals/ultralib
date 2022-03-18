@@ -10,9 +10,7 @@ s32 __osGbpakSetBank(OSPfs* pfs, u8 bank) {
         return PFS_ERR_INVALID;
     }
 
-    for (i = 0; i < BLOCKSIZE; i++) {
-        temp[i] = bank;
-    }
+    for (i = 0; i < BLOCKSIZE; temp[i++] = bank);
 
     ret = __osContRamWrite(pfs->queue, pfs->channel, CONT_BLOCK_GB_BANK, temp, FALSE);
 
