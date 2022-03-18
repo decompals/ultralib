@@ -114,6 +114,7 @@ $(BUILD_DIR)/src/os/ackramromread.marker: OPTFLAGS := -O0
 $(BUILD_DIR)/src/os/ackramromwrite.marker: OPTFLAGS := -O0
 $(BUILD_DIR)/src/os/exit.marker: OPTFLAGS := -O0
 $(BUILD_DIR)/src/os/seterrorhandler.marker: OPTFLAGS := -O0
+$(BUILD_DIR)/src/gu/parse_gbi.marker: GBIDEFINE := 
 $(BUILD_DIR)/src/gu/us2dex_emu.marker: GBIDEFINE := -DF3DEX_GBI
 $(BUILD_DIR)/src/sp/sprite.marker: GBIDEFINE := 
 $(BUILD_DIR)/src/sp/spriteex.marker: GBIDEFINE := 
