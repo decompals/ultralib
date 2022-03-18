@@ -1,5 +1,6 @@
 #include <macros.h>
 #include <PR/os_internal.h>
+#include <PR/ultraerror.h>
 #include <PR/rcp.h>
 #include "viint.h"
 #include "../os/osint.h"
@@ -17,10 +18,19 @@ static void viMgrMain(void *arg);
 void osCreateViManager(OSPri pri)
 {
     u32 savedMask;
-    OSPri myPri;
     OSPri oldPri;
+    OSPri myPri;
 
-    if (!__osViDevMgr.active) {
+#ifdef _DEBUG
+    if ((pri < OS_PRIORITY_IDLE) || (pri > OS_PRIORITY_MAX)) {
+	__osError(ERR_OSCREATEVIMANAGER, 1, pri);
+	return 0;
+    }
+#endif
+
+    if (__osViDevMgr.active) {
+        return 0;
+    }
         __osTimerServicesInit();
         __additional_scanline = 0;
         osCreateMesgQueue(&viEventQueue, viEventBuf, ARRLEN(viEventBuf));
@@ -56,7 +66,6 @@ void osCreateViManager(OSPri pri)
         if (oldPri != -1) {
             osSetThreadPri(0, oldPri);
         }
-    }
 }
 
 static void viMgrMain(void *arg) {
@@ -104,6 +113,8 @@ static void viMgrMain(void *arg) {
                 break;
             case OS_MESG_TYPE_COUNTER:
                 __osTimerInterrupt();
+                break;
+            default:
                 break;
         }
     }
