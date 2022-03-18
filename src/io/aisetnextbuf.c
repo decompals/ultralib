@@ -13,10 +13,22 @@ s32 osAiSetNextBuffer(void *bufPtr, u32 size) {
 		return -1;
 	}
 
+#ifndef _FINALROM
+    if ((u32)bufPtr & (8 - 1)) {
+        __osError(0xF, 1, bufPtr);
+        return -1;
+    }
+
+    if ((u32)size & (8 - 1)) {
+        __osError(0x10, 1, size);
+        return -1;
+    }
+#endif
+
     bptr = bufPtr;
 
 	if (hdwrBugFlag) {
-		bptr -= 0x2000;
+		bptr = (u8*)bufPtr - 0x2000;
 	}
 
 	if ((((u32)bufPtr + size) & 0x1fff) == 0) {
