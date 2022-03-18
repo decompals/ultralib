@@ -1,4 +1,5 @@
 #include "PR/rcp.h"
+#include "PR/ultraerror.h"
 #include "../os/osint.h"
 
 // TODO: this comes from a header
@@ -12,17 +13,17 @@ s32 osAiSetFrequency(u32 frequency) {
 #ifdef _DEBUG
     if (osViClock == VI_PAL_CLOCK) {
         if (frequency < AI_PAL_MIN_FREQ || frequency > AI_PAL_MAX_FREQ) {
-            __osError(0xE, 3, AI_PAL_MIN_FREQ, AI_PAL_MAX_FREQ, frequency);
+            __osError(ERR_OSAISETFREQUENCY, 3, AI_PAL_MIN_FREQ, AI_PAL_MAX_FREQ, frequency);
             return -1;
         }
     } else if (osViClock == VI_MPAL_CLOCK) {
         if (frequency < AI_MPAL_MIN_FREQ || frequency > AI_MPAL_MAX_FREQ) {
-            __osError(0xE, 3, AI_MPAL_MIN_FREQ, AI_MPAL_MAX_FREQ, frequency);
+            __osError(ERR_OSAISETFREQUENCY, 3, AI_MPAL_MIN_FREQ, AI_MPAL_MAX_FREQ, frequency);
             return -1;
         }
     } else {
         if (frequency < AI_NTSC_MIN_FREQ || frequency > AI_NTSC_MAX_FREQ) {
-            __osError(0xE, 3, AI_NTSC_MIN_FREQ, AI_NTSC_MAX_FREQ, frequency);
+            __osError(ERR_OSAISETFREQUENCY, 3, AI_NTSC_MIN_FREQ, AI_NTSC_MAX_FREQ, frequency);
             return -1;
         }
     }

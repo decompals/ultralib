@@ -1,4 +1,5 @@
 #include "PR/os_internal.h"
+#include "PR/ultraerror.h"
 #include "PR/rcp.h"
 #include "../os/osint.h"
 
@@ -13,14 +14,14 @@ s32 osAiSetNextBuffer(void *bufPtr, u32 size) {
 		return -1;
 	}
 
-#ifndef _FINALROM
+#ifdef _DEBUG
     if ((u32)bufPtr & (8 - 1)) {
-        __osError(0xF, 1, bufPtr);
+        __osError(ERR_OSAISETNEXTBUFFER_ADDR, 1, bufPtr);
         return -1;
     }
 
     if ((u32)size & (8 - 1)) {
-        __osError(0x10, 1, size);
+        __osError(ERR_OSAISETNEXTBUFFER_SIZE, 1, size);
         return -1;
     }
 #endif
