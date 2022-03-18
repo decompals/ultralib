@@ -3,7 +3,7 @@
 #include "controller.h"
 #include "siint.h"
 
-static OSPifRam __MotorDataBuf[MAXCONTROLLERS];
+static OSPifRam __MotorDataBuf[MAXCONTROLLERS] ALIGNED(8);
 
 #define READFORMAT(ptr) ((__OSContRamReadFormat*)(ptr))
 
