@@ -7,11 +7,11 @@ OSYieldResult osSpTaskYielded(OSTask *tp) {
     OSYieldResult result;
     
     status = __osSpGetStatus();
-    result = status >> 8; 
-    result &= 1;
+    result = (status >> 8) & 1;
 
     if (status & SP_STATUS_YIELD) {
-        tp->t.flags = ~(OS_TASK_DP_WAIT) & (tp->t.flags | result);
+        tp->t.flags |= result;
+        tp->t.flags &= ~(OS_TASK_DP_WAIT);
     }
     
     return result;
