@@ -53,15 +53,15 @@ s32 osContInit(OSMesgQueue* mq, u8* bitpattern, OSContStatus* data) {
 void __osContGetInitData(u8* pattern, OSContStatus* data) {
     u8* ptr;
     __OSContRequesFormat requestHeader;
-    s32 i;
-    u8 bits;
+    int i;
+    u8 bits = 0;
 
-    bits = 0;
     ptr = __osContPifRam.ramarray;
     for (i = 0; i < __osMaxControllers; i++, ptr += sizeof(requestHeader), data++) {
         requestHeader = *(__OSContRequesFormat*)ptr;
         data->errno = CHNL_ERR(requestHeader);
-        if (data->errno == 0) {
+        if (data->errno != 0) {
+        } else {
             data->type = requestHeader.typel << 8 | requestHeader.typeh;
             data->status = requestHeader.status;
 
