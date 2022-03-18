@@ -9,7 +9,7 @@ s32 __osAiDeviceBusy(void) {
     
     if (status & AI_STATUS_FIFO_FULL) {
         return TRUE;
+    } else {
+        return FALSE;
     }
-
-    return FALSE;
 }
