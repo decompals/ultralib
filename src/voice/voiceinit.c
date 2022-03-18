@@ -15,7 +15,8 @@ s32 osVoiceInit(OSMesgQueue* mq, OSVoiceHandle* handle, int channel) {
 
     ERRCK(__osVoiceGetStatus(mq, channel, &stat));
 
-    if (__osContChannelReset(mq, channel) != 0) {
+    ret = __osContChannelReset(mq, channel);
+    if (ret != 0) {
         return CONT_ERR_CONTRFAIL;
     }
 
