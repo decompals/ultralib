@@ -3,6 +3,30 @@
 
 #include "dbgdefs.h"
 
+#define KK_REV 2
+
+#define TV_ERROR_NO_ERROR               0
+#define TV_ERROR_ILLEGAL_CALL           -1
+#define TV_ERROR_INVALID_ID             -2
+#define TV_ERROR_INVALID_TYPE           -3
+#define TV_ERROR_OPERATIONS_PROTECTED   -4
+#define TV_ERROR_INVALID_ADDRESS        -5
+#define TV_ERROR_INVALID_PRIORITY       -6
+#define TV_ERROR_INVALID_FLAGS          -7
+#define TV_ERROR_INVALID_CAPABILITY     -8
+#define TV_ERROR_NO_HANDLER             -9
+#define TV_ERROR_NO_MORE_IDS            -10
+#define TV_ERROR_NO_MORE_MESSAGES       -11
+#define TV_ERROR_NO_MORE_PROCESSES      -12
+#define TV_ERROR_NO_MORE_THREADS        -13
+#define TV_ERROR_NO_MORE_REGIONS        -14
+#define TV_ERROR_NO_MORE_TIMERS         -15
+#define TV_ERROR_NO_MORE_LOCKS          -16
+#define TV_ERROR_NO_MORE_QUEUES         -17
+#define TV_ERROR_NO_MORE_SETS           -18
+#define TV_ERROR_NO_MORE_MEMORY         -19
+#define TV_ERROR_NOT_LOCKED             -20
+
 typedef struct __KKTimeStruct {
     long seconds;
     long nanoseconds;
@@ -32,6 +56,9 @@ typedef struct __KKThreadStatusStruct {
     int rv;
     unsigned int args[6];
 } KKThreadStatus;
+
+#define KK_RUN_SSTEP (1 << 0)
+#define KK_RUN_SETPC (1 << 1)
 
 typedef struct __KKRunStruct {
     int flags;
@@ -105,6 +132,13 @@ typedef struct __KKProcUsageStruct {
     TVid pid;
     KKTimeStruct states[10];
 } KKProcUsage;
+
+#define KK_TYPE_REQUEST      0
+#define KK_TYPE_REPLY        1
+#define KK_TYPE_EXCEPTION    2
+#define KK_TYPE_THREAD_EXIT  3
+#define KK_TYPE_PROCESS_EXIT 4
+#define KK_TYPE_CONSOLE      5
 
 typedef struct __KKHeaderStruct {
     int length;

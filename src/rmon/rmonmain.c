@@ -21,16 +21,16 @@ static u8 cmdoutptr;
 static int state;
 static char* inPointer;
 
-void __rmonSendHeader(KKHeader* const block, u32 blockSize, u32 type) {
+void __rmonSendHeader(const KKHeader* block, u32 blockSize, u32 type) {
     int sent;
     char* cPtr = (char*)block;
 
-    block->rev = 2;
+    block->rev = KK_REV;
     block->type = type;
 
     sent = 0;
     while (sent < blockSize) {
-        sent += __osRdbSend(cPtr + sent, blockSize - sent, 8);
+        sent += __osRdbSend(cPtr + sent, blockSize - sent, RDB_TYPE_GtoH_DEBUG);
     }
 }
 
@@ -41,12 +41,12 @@ void __rmonSendReply(KKHeader* const block, u32 blockSize, u32 replyType) {
     block->length = blockSize;
     cPtr = (char*)&blockSize;
 
-    // Send size
-    while (sent < 4) {
-        sent += __osRdbSend(cPtr + sent, 4 - sent, 8);
+    /* send size */
+    while (sent < (signed)sizeof(blockSize)) {
+        sent += __osRdbSend(cPtr + sent, sizeof(blockSize) - sent, RDB_TYPE_GtoH_DEBUG);
     }
 
-    // Send packet
+    /* send data */
     __rmonSendHeader(block, blockSize, replyType);
     __rmonIOflush();
 }
@@ -62,7 +62,7 @@ void __rmonSendData(char* const block, unsigned int blockSize) {
 
     if (((u32)block & 3) == 0) {
         while (wordCount--) {
-            if ((u32)blockPointer >= SP_DMEM_START && (u32)blockPointer < 0x05000000) {
+            if (blockPointer >= (void*)SP_DMEM_START && blockPointer < (void*)0x05000000) {
                 __osSpRawReadIo(blockPointer++, &data);
                 __rmonIOputw(data);
             } else {

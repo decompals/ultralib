@@ -7,7 +7,7 @@
 #ident "$Revision: 1.4 $"
 
 static int NotImplemented(KKHeader* dummy) {
-    return -1;
+    return TV_ERROR_ILLEGAL_CALL;
 }
 
 static FUNPTR dispatchTable[] = {
@@ -36,10 +36,10 @@ int __rmonExecute(KKHeader* request) {
     }
 
     retval = dispatchTable[request->code](request);
-    if (retval < 0) {
+    if (retval < TV_ERROR_NO_ERROR) {
         reply.code = request->code;
         reply.error = retval;
-        __rmonSendReply(&reply, sizeof(KKHeader), 1);
+        __rmonSendReply(&reply, sizeof(KKHeader), KK_TYPE_REPLY);
     }
     return retval;
 }

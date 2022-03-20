@@ -30,16 +30,16 @@ void __rmonSendFault(OSThread* thread) {
     tPtr = (u8*)thread;
 
     while (sent < sizeof(OSThread)) {
-        sent += __osRdbSend(tPtr + sent, sizeof(OSThread) - sent, 2);
+        sent += __osRdbSend(tPtr + sent, sizeof(OSThread) - sent, RDB_TYPE_GtoH_FAULT);
     }
 }
 
-void __rmonIOflush() {
+void __rmonIOflush(void) {
     int sent = 0;
     char tstr[4];
 
     while (sent <= 0) {
-        sent += __osRdbSend(tstr, 1, 10);
+        sent += __osRdbSend(tstr, 1, RDB_TYPE_GtoH_DEBUG_DONE);
     }
 }
 
@@ -48,7 +48,7 @@ void __rmonIOputw(u32 word) {
     char* cPtr = (u8*)&word;
 
     while (sent < 4) {
-        sent += __osRdbSend(cPtr + sent, 4 - sent, 8);
+        sent += __osRdbSend(cPtr + sent, 4 - sent, RDB_TYPE_GtoH_DEBUG);
     }
 }
 
@@ -68,7 +68,7 @@ void __rmonIOhandler(void) {
 
         sent = 0;
         while (sent <= 0) {
-            sent += __osRdbSend(tstr, 1, 11);
+            sent += __osRdbSend(tstr, 1, RDB_TYPE_GtoH_DEBUG_READY);
         }
     }
 }

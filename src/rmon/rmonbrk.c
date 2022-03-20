@@ -36,6 +36,7 @@ static void SetTempBreakpoint(u32* addr1, u32* addr2) {
     if (addr2 != NULL) {
         ((void)" and %08x");
     }
+    ((void)"\n");
 
     // Save the word at the target address to be restored later
     breakpoints[0].oldInstruction = *addr1;
@@ -53,7 +54,6 @@ static void SetTempBreakpoint(u32* addr1, u32* addr2) {
         osInvalICache(addr2, sizeof(*addr2));
         altBreak.breakAddress = addr2;
     }
-    ((void)"\n");
 }
 
 static void ClearTempBreakpoint(void) {
@@ -121,16 +121,16 @@ int __rmonSetBreak(KKHeader* req) {
 
     // No breakpoints available
     if (whichBreak == lastBreak) {
-        return -10;
+        return TV_ERROR_NO_MORE_IDS;
     }
 
     if (whichBreak->breakAddress == NULL) {
         if (req->method == RMON_RSP) {
             whichBreak->oldInstruction = __rmonReadWordAt(request->addr);
-            __rmonWriteWordTo(request->addr, MIPS_BREAK((whichBreak - breakBase) + NUM_BREAKPOINTS));
+            __rmonWriteWordTo(request->addr, MIPS_BREAK((whichBreak - breakBase) + 16));
         } else {
             whichBreak->oldInstruction = *(u32*)request->addr;
-            *(u32*)request->addr = MIPS_BREAK((whichBreak - breakBase) + NUM_BREAKPOINTS);
+            *(u32*)request->addr = MIPS_BREAK((whichBreak - breakBase) + 16);
             osWritebackDCache(request->addr, sizeof(whichBreak->oldInstruction));
             osInvalICache(request->addr, sizeof(whichBreak->oldInstruction));
         }
@@ -139,18 +139,18 @@ int __rmonSetBreak(KKHeader* req) {
 
     // Send reply
     reply.header.code = request->header.code;
-    reply.header.error = 0;
+    reply.header.error = TV_ERROR_NO_ERROR;
     reply.object = request->object;
     reply.bp = whichBreak - breakBase;
     reply.instruction = whichBreak->oldInstruction;
-    __rmonSendReply(&reply.header, sizeof(reply), 1);
-    return 0;
+    __rmonSendReply(&reply.header, sizeof(reply), KK_TYPE_REPLY);
+    return TV_ERROR_NO_ERROR;
 }
 
 int __rmonListBreak(KKHeader* request) {
     ((void)"ListBreak\n");
 
-    return -1;
+    return TV_ERROR_ILLEGAL_CALL;
 }
 
 int __rmonClearBreak(KKHeader* req) {
@@ -163,13 +163,13 @@ int __rmonClearBreak(KKHeader* req) {
 
     // Check valid breakpoint index
     if (request->bp >= NUM_BREAKPOINTS) {
-        return -2;
+        return TV_ERROR_INVALID_ID;
     }
 
     if (req->method == RMON_RSP) {
         whichBreak = &RCPbreakpoints[request->bp];
         if (whichBreak->breakAddress == NULL) {
-            return -2;
+            return TV_ERROR_INVALID_ID;
         }
         inst = __rmonReadWordAt(whichBreak->breakAddress);
         if ((inst & MIPS_BREAK_MASK) == MIPS_BREAK_OPCODE) {
@@ -178,7 +178,7 @@ int __rmonClearBreak(KKHeader* req) {
     } else {
         whichBreak = &breakpoints[request->bp];
         if (whichBreak->breakAddress == NULL) {
-            return -2;
+            return TV_ERROR_INVALID_ID;
         }
         inst = *whichBreak->breakAddress;
         if ((inst & MIPS_BREAK_MASK) == MIPS_BREAK_OPCODE) {
@@ -190,18 +190,18 @@ int __rmonClearBreak(KKHeader* req) {
     whichBreak->breakAddress = NULL;
 
     reply.header.code = request->header.code;
-    reply.header.error = 0;
+    reply.header.error = TV_ERROR_NO_ERROR;
     reply.object = request->object;
     reply.bp = request->bp;
-    __rmonSendReply(&reply.header, sizeof(reply), 1);
-    return 0;
+    __rmonSendReply(&reply.header, sizeof(reply), KK_TYPE_REPLY);
+    return TV_ERROR_NO_ERROR;
 }
 
 u32 __rmonGetBranchTarget(int method, int thread, char* addr) {
     int inst;
-    
+
     if (method == RMON_RSP) {
-        inst = __rmonReadWordAt(addr);
+        inst = __rmonReadWordAt((u32*)addr);
     } else {
         inst = *(u32*)addr;
     }
@@ -284,20 +284,24 @@ static int IsJump(u32 inst) {
 }
 
 int __rmonSetSingleStep(int thread, u32* instptr) {
-    u32 branchTarget = __rmonGetBranchTarget(FALSE, thread, instptr);
+    u32 branchTarget = __rmonGetBranchTarget(RMON_CPU, thread, instptr);
 
     ((void)"SingleStep\n");
 
     if ((branchTarget & 3) != 0) {
+        /* no branch target, set breakpoint at next pc */
         SetTempBreakpoint(instptr + 1, NULL);
     } else if (branchTarget == instptr) {
-        return 0;
+        /* branch target is this instruction, can't single step here */
+        return FALSE;
     } else if (IsJump(*instptr) || branchTarget == instptr + 2) {
+        /* unconditional branch, set at branch target */
         SetTempBreakpoint(branchTarget, NULL);
     } else {
+        /* set two breakpoints for conditional branching */
         SetTempBreakpoint(branchTarget, instptr + 2);
     }
-    return 1;
+    return TRUE;
 }
 
 void __rmonGetExceptionStatus(KKStatusEvent* reply) {
@@ -307,8 +311,8 @@ void __rmonGetExceptionStatus(KKStatusEvent* reply) {
     reply->status.rv = 0;
     reply->status.info.major = 2;
     reply->status.info.minor = 4;
-    reply->header.code = 4;
-    reply->header.error = 0;
+    reply->header.code = 4; /* thread status */
+    reply->header.error = TV_ERROR_NO_ERROR;
     reply->header.length = sizeof(*reply);
 }
 
@@ -317,7 +321,7 @@ static void rmonSendBreakMessage(s32 whichThread, int breakNumber) {
 
     ((void)"Break %d in thread %d\n");
 
-    __rmonGetThreadStatus(RMON_CPU, (whichThread != 0) ? whichThread : 1003, &reply);
+    __rmonGetThreadStatus(RMON_CPU, (whichThread != 0) ? whichThread : RMON_TID_NOTHREAD, &reply);
     __rmonGetExceptionStatus(&reply);
 
     if (breakNumber == 15) {
@@ -332,7 +336,7 @@ static void rmonSendBreakMessage(s32 whichThread, int breakNumber) {
     if (breakNumber != 0) {
         reply.status.instr = MIPS_BREAK_OPCODE;
     }
-    __rmonSendReply(&reply.header, sizeof(reply), 2);
+    __rmonSendReply(&reply.header, sizeof(reply), KK_TYPE_EXCEPTION);
 }
 
 void __rmonHitBreak(void) {
@@ -351,7 +355,7 @@ void __rmonHitSpBreak(void) {
     __rmonWriteWordTo((u32*)SP_PC_REG, __rmonReadWordAt((u32*)SP_PC_REG) - 4);
     __rmonGetThreadStatus(RMON_RSP, RMON_TID_RSP, &exceptionReply);
     __rmonGetExceptionStatus(&exceptionReply);
-    __rmonSendReply(&exceptionReply.header, sizeof(exceptionReply), 2);
+    __rmonSendReply(&exceptionReply.header, sizeof(exceptionReply), KK_TYPE_EXCEPTION);
     __rmonRcpAtBreak = TRUE;
 }
 

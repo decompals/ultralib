@@ -4,27 +4,14 @@
 #include "dbgproto.h"
 #include "PR/os_internal.h"
 
+#define MIPS_LWC2_OPCODE 50
+#define MIPS_SWC2_OPCODE 58
+
 #define MIPS_BREAK_OPCODE 0xD
 #define MIPS_BREAK_MASK 0xFC00003F
 
 #define MIPS_BREAK(code) \
     ((((code) & 0xFFFFF) << 6) | MIPS_BREAK_OPCODE)
-
-void __rmonIOhandler(void);
-
-void __rmonWriteWordTo(u32* addr, u32 val);
-u32 __rmonReadWordAt(u32* addr);
-
-void __rmonCopyWords(u32* dest, u32* srce, u32 count);
-
-OSThread* __rmonGetTCB(int threadNumber);
-
-extern u8 __rmonUtilityBuffer[256];
-extern u8 __rmonRcpAtBreak;
-extern OSMesgQueue __rmonMQ;
-
-#define RMON_RUNTHREAD_SSTEP (1 << 0)
-#define RMON_RUNTHREAD_SETPC (1 << 1)
 
 #define RMON_MESG_CPU_BREAK 2
 #define RMON_MESG_SP_BREAK 4
@@ -36,8 +23,73 @@ extern OSMesgQueue __rmonMQ;
 /* "thread id" for rsp */
 #define RMON_TID_RSP 1000
 
+/* "thread id" for no thread running */
+#define RMON_TID_NOTHREAD 1003
+
 #define RMON_PID_CPU 1002
 #define RMON_PID_RSP 1001
+
+/* rmonmain */
+
+void __rmonSendHeader(const KKHeader* block, u32 blockSize, u32 type);
+void __rmonSendReply(KKHeader* const block, u32 blockSize, u32 replyType);
+void __rmonSendData(char* const block, unsigned int blockSize);
+
+extern int __rmonActive;
+
+/* rmonmisc */
+
+void __rmonInit(void);
+void __rmonPanic(void);
+
+extern OSMesgQueue __rmonMQ;
+
+/* rmonmem */
+
+void __rmonWriteWordTo(u32* addr, u32 val);
+u32 __rmonReadWordAt(u32* addr);
+void __rmonMemcpy(u8* dest, u8* srce, u32 count);
+void __rmonCopyWords(u32* dest, u32* srce, u32 count);
+
+extern u8 __rmonUtilityBuffer[256];
+
+/* rmonsio */
+
+void __rmonSendFault(OSThread* thread);
+void __rmonIOflush(void);
+void __rmonIOputw(u32 word);
+void __rmonIOhandler(void);
+
+extern void* __osRdb_DbgRead_Buf;
+extern u8 rmonRdbReadBuf[];
+
+/* rmonbrk */
+
+u32 __rmonGetBranchTarget(int method, int thread, char* addr);
+int __rmonSetSingleStep(int thread, u32* instptr);
+void __rmonGetExceptionStatus(KKStatusEvent* reply);
+void __rmonHitBreak(void);
+void __rmonHitSpBreak(void);
+void __rmonHitCpuFault(void);
+
+extern u8 __rmonRcpAtBreak;
+
+/* rmonregs */
+
+u32 __rmonGetRegisterContents(int method, int threadNumber, int regNumber);
+
+/* rmontask */
+
+void __rmonMaskIdleThreadInts(void);
+OSThread* __rmonGetTCB(int threadNumber);
+int __rmonStopUserThreads(int whichThread);
+int __rmonGetThreadStatus(int method, int id, KKStatusEvent* reply);
+
+/* rmoncmds */
+
+int __rmonExecute(KKHeader* request);
+
+/* commands */
 
 typedef int (*FUNPTR)();
 

@@ -97,6 +97,7 @@ int __rmonListThreads(KKHeader* req) {
         reply->objs.objects[0] = RMON_TID_RSP;
     } else {
         register OSThread* tptr = __osGetActiveQueue();
+
         reply->objs.number = 0;
 
         while (tptr->priority != -1) {
@@ -108,10 +109,9 @@ int __rmonListThreads(KKHeader* req) {
         }
     }
     reply->header.code = request->header.code;
-    reply->header.error = 0;
-    __rmonSendReply(&reply->header, sizeof(*reply) + sizeof(reply->objs.objects[0]) * (reply->objs.number - 1),
-                    1);
-    return 0;
+    reply->header.error = TV_ERROR_NO_ERROR;
+    __rmonSendReply(&reply->header, sizeof(*reply) + sizeof(reply->objs.objects[0]) * (reply->objs.number - 1), KK_TYPE_REPLY);
+    return TV_ERROR_NO_ERROR;
 
 }
 
@@ -131,6 +131,7 @@ int __rmonGetThreadStatus(int method, int id, KKStatusEvent* reply) {
     if (method == RMON_RSP) {
         reply->status.start = SP_IMEM_START;
         reply->status.priority = 42;
+
         if (__rmonRCPrunning()) {
             reply->status.flags = OS_STATE_RUNNING;
             reply->status.info.addr = 0;
@@ -159,7 +160,7 @@ int __rmonGetThreadStatus(int method, int id, KKStatusEvent* reply) {
             tptr = tptr->tlnext;
         }
         if (tptr->priority == -1) {
-            return -2;
+            return TV_ERROR_INVALID_ID;
         }
 
         reply->status.priority = tptr->priority;
@@ -168,7 +169,7 @@ int __rmonGetThreadStatus(int method, int id, KKStatusEvent* reply) {
 
         inst = *(u32*)(tptr->context.pc);
         if ((inst & MIPS_BREAK_MASK) == MIPS_BREAK_OPCODE) {
-            inst = 0xD;
+            inst = MIPS_BREAK_OPCODE;
         }
 
         reply->status.instr = inst;
@@ -185,21 +186,21 @@ int __rmonGetThreadStatus(int method, int id, KKStatusEvent* reply) {
         }
     }
 
-    return 0;
+    return TV_ERROR_NO_ERROR;
 }
 
 int __rmonThreadStatus(KKHeader* req) {
     KKObjectRequest* request = (KKObjectRequest*)req;
     KKStatusEvent reply;
 
-    if (__rmonGetThreadStatus(req->method, request->object, &reply) != 0) {
-        return -2;
+    if (__rmonGetThreadStatus(req->method, request->object, &reply) != TV_ERROR_NO_ERROR) {
+        return TV_ERROR_INVALID_ID;
     }
 
     reply.header.code = request->header.code;
-    reply.header.error = 0;
-    __rmonSendReply(&reply.header, sizeof(reply), 1);
-    return 0;
+    reply.header.error = TV_ERROR_NO_ERROR;
+    __rmonSendReply(&reply.header, sizeof(reply), KK_TYPE_REPLY);
+    return TV_ERROR_NO_ERROR;
 }
 
 int __rmonStopThread(KKHeader* req) {
@@ -216,31 +217,31 @@ int __rmonStopThread(KKHeader* req) {
         case RMON_RSP:
             if (__rmonRCPrunning()) {
                 __rmonIdleRCP();
-                pc = __rmonReadWordAt(SP_PC_REG);
+                pc = (u32*)__rmonReadWordAt(SP_PC_REG);
                 if (pc == NULL) {
                     break;
                 }
                 pc--;
-                if ((u32)__rmonGetBranchTarget(TRUE, RMON_TID_RSP, (u32)pc + SP_IMEM_START) % 4 == 0) {
+                if (__rmonGetBranchTarget(RMON_RSP, RMON_TID_RSP, (u32*)((u32)pc + SP_IMEM_START)) % 4 == 0) {
                     __rmonStepRCP();
                 }
             }
             break;
         default:
-            return -4;
+            return TV_ERROR_OPERATIONS_PROTECTED;
     }
 
-    if (__rmonGetThreadStatus(req->method, request->object, &reply) != 0) {
-        return -2;
+    if (__rmonGetThreadStatus(req->method, request->object, &reply) != TV_ERROR_NO_ERROR) {
+        return TV_ERROR_INVALID_ID;
     }
     reply.header.code = request->header.code;
-    reply.header.error = 0;
-    __rmonSendReply(&reply.header, sizeof(reply), 1);
+    reply.header.error = TV_ERROR_NO_ERROR;
+    __rmonSendReply(&reply.header, sizeof(reply), KK_TYPE_REPLY);
     if (reply.status.flags == OS_STATE_STOPPED) {
-        reply.header.code = 4;
-        __rmonSendReply(&reply.header, sizeof(reply), 2);
+        reply.header.code = 4; /* thread status */
+        __rmonSendReply(&reply.header, sizeof(reply), KK_TYPE_EXCEPTION);
     }
-    return 0;
+    return TV_ERROR_NO_ERROR;
 
 }
 
@@ -264,30 +265,29 @@ int __rmonRunThread(KKHeader* req) {
             }
 
             if (tptr->priority == -1) {
-                return -2;
+                return TV_ERROR_INVALID_ID;
             }
             if (tptr->state != OS_STATE_STOPPED) {
-                return -4;
+                return TV_ERROR_OPERATIONS_PROTECTED;
             }
             tptr->flags &= ~(OS_FLAG_CPU_BREAK | OS_FLAG_FAULT);
-            if (request->actions.flags & RMON_RUNTHREAD_SETPC) {
+            if (request->actions.flags & KK_RUN_SETPC) {
                 tptr->context.pc = request->actions.vaddr;
             }
-            if ((request->actions.flags & RMON_RUNTHREAD_SSTEP) &&
-                __rmonSetSingleStep(request->tid, (u32*)tptr->context.pc) == 0) {
-                return -4;
+            if ((request->actions.flags & KK_RUN_SSTEP) && !__rmonSetSingleStep(request->tid, (u32*)tptr->context.pc)) {
+                return TV_ERROR_OPERATIONS_PROTECTED;
             }
             runNeeded = TRUE;
             break;
         case RMON_RSP:
             if (__rmonRCPrunning()) {
-                return -4;
+                return TV_ERROR_OPERATIONS_PROTECTED;
             }
-            if (request->actions.flags & RMON_RUNTHREAD_SETPC) {
+            if (request->actions.flags & KK_RUN_SETPC) {
                 __rmonWriteWordTo(SP_PC_REG, request->actions.vaddr - SP_IMEM_START);
             }
-            if (request->actions.flags & RMON_RUNTHREAD_SSTEP) {
-                if ((u32)__rmonGetBranchTarget(TRUE, RMON_TID_RSP, __rmonReadWordAt(SP_PC_REG) + SP_IMEM_START) % 4 == 0) {
+            if (request->actions.flags & KK_RUN_SSTEP) {
+                if (__rmonGetBranchTarget(RMON_RSP, RMON_TID_RSP, (u32*)(__rmonReadWordAt(SP_PC_REG) + SP_IMEM_START)) % 4 == 0) {
                     __rmonStepRCP();
                 }
                 __rmonStepRCP();
@@ -297,23 +297,23 @@ int __rmonRunThread(KKHeader* req) {
                 __rmonRunRCP();
             }
             reply.header.code = request->header.code;
-            reply.header.error = 0;
+            reply.header.error = TV_ERROR_NO_ERROR;
             reply.object = request->tid;
-            __rmonSendReply(&reply.header, sizeof(reply), 1);
-            if (request->actions.flags & RMON_RUNTHREAD_SSTEP) {
+            __rmonSendReply(&reply.header, sizeof(reply), KK_TYPE_REPLY);
+            if (request->actions.flags & KK_RUN_SSTEP) {
                 __rmonGetThreadStatus(RMON_RSP, RMON_TID_RSP, &exceptionReply);
                 __rmonGetExceptionStatus(&exceptionReply);
-                __rmonSendReply(&exceptionReply.header, sizeof(exceptionReply), 2);
+                __rmonSendReply(&exceptionReply.header, sizeof(exceptionReply), KK_TYPE_EXCEPTION);
             }
-            return 0;
+            return TV_ERROR_NO_ERROR;
         default:
-            return -4;
+            return TV_ERROR_OPERATIONS_PROTECTED;
     }
 
     reply.header.code = request->header.code;
-    reply.header.error = 0;
+    reply.header.error = TV_ERROR_NO_ERROR;
     reply.object = request->tid;
-    __rmonSendReply(&reply.header, sizeof(reply), 1);
+    __rmonSendReply(&reply.header, sizeof(reply), KK_TYPE_REPLY);
 
     if (runNeeded) {
         osStartThread(tptr);

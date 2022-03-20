@@ -19,12 +19,11 @@ int __rmonSetFault(KKHeader* req) {
     ((void)"SetFault\n");
 
     reply.header.code = request->header.code;
-    reply.header.error = 0;
+    reply.header.error = TV_ERROR_NO_ERROR;
     reply.object = request->tid;
 
-    __rmonSendReply(&reply.header, sizeof(reply), 1);
-    return 0;
-
+    __rmonSendReply(&reply.header, sizeof(reply), KK_TYPE_REPLY);
+    return TV_ERROR_NO_ERROR;
 }
 
 static OSThread rmonIOThread ALIGNED(8);
@@ -60,11 +59,11 @@ int __rmonSetComm(KKHeader* req) {
 
     reply.header.code = req->code;
     reply.object = 0;
-    reply.header.error = 0;
+    reply.header.error = TV_ERROR_NO_ERROR;
 
-    __rmonSendReply(&reply.header, sizeof(reply), 1);
+    __rmonSendReply(&reply.header, sizeof(reply), KK_TYPE_REPLY);
 
-    return 0;
+    return TV_ERROR_NO_ERROR;
 }
 
 #endif

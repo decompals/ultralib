@@ -88,15 +88,15 @@ int __rmonGetGRegisters(KKHeader* req) {
 
     reply.tid = request->object;
     reply.header.code = request->header.code;
-    reply.header.error = 0;
+    reply.header.error = TV_ERROR_NO_ERROR;
 
     if (request->header.method == RMON_CPU) {
         OSThread* tptr = __rmonGetTCB(request->object);
         u64* tcbregptr;
         register s32 i;
-        
+
         if (tptr == NULL) {
-            return -2;
+            return TV_ERROR_INVALID_ID;
         }
 
         for (i = 1, tcbregptr = &tptr->context.at; i < 26; i++, tcbregptr++) {
@@ -111,13 +111,13 @@ int __rmonGetGRegisters(KKHeader* req) {
         reply.registers.gregs[36] = tptr->context.sr;
         reply.registers.gregs[0] = 0;
     } else {
-        return -2;
+        return TV_ERROR_INVALID_ID;
     }
-    __rmonSendReply(&reply.header, sizeof(reply), 1);
-    return 0;
+    __rmonSendReply(&reply.header, sizeof(reply), KK_TYPE_REPLY);
+    return TV_ERROR_NO_ERROR;
 }
 
-int __rmonSetGRegisters(KKHeader* req) {    
+int __rmonSetGRegisters(KKHeader* req) {
     register KKGRegsetRequest* request = (KKGRegsetRequest*)req;
     KKObjectEvent reply;
 
@@ -129,7 +129,7 @@ int __rmonSetGRegisters(KKHeader* req) {
         register int i;
 
         if (tptr == NULL) {
-            return -2;
+            return TV_ERROR_INVALID_ID;
         }
 
         for (i = 1, tcbregptr = &tptr->context.at; i < 26; i++, tcbregptr++) {
@@ -144,14 +144,14 @@ int __rmonSetGRegisters(KKHeader* req) {
         tptr->context.pc = request->registers.gregs[35];
         tptr->context.sr = request->registers.gregs[36];
     } else {
-        return -2;
+        return TV_ERROR_INVALID_ID;
     }
 
     reply.object = request->tid;
     reply.header.code = request->header.code;
-    reply.header.error = 0;
-    __rmonSendReply(&reply.header, sizeof(reply), 1);
-    return 0;
+    reply.header.error = TV_ERROR_NO_ERROR;
+    __rmonSendReply(&reply.header, sizeof(reply), KK_TYPE_REPLY);
+    return TV_ERROR_NO_ERROR;
 }
 
 int __rmonGetFRegisters(KKHeader* req) {
@@ -163,7 +163,7 @@ int __rmonGetFRegisters(KKHeader* req) {
     ((void)"GetFRegisters\n");
 
     if (req->method != RMON_CPU) {
-        return -2;
+        return TV_ERROR_INVALID_ID;
     }
 
     /* touch fpu to ensure registers are saved to the context structure */
@@ -171,18 +171,18 @@ int __rmonGetFRegisters(KKHeader* req) {
 
     tptr = __rmonGetTCB(request->object);
     if (tptr == NULL) {
-        return -2;
+        return TV_ERROR_INVALID_ID;
     }
 
     __rmonCopyWords(reply.registers.fpregs.regs, (u32*)&tptr->context.fp0, 32);
 
     reply.registers.fpcsr = tptr->context.fpcsr;
     reply.header.code = request->header.code;
-    reply.header.error = 0;
+    reply.header.error = TV_ERROR_NO_ERROR;
     reply.tid = request->object;
 
-    __rmonSendReply(&reply.header, sizeof(reply), 1);
-    return 0;
+    __rmonSendReply(&reply.header, sizeof(reply), KK_TYPE_REPLY);
+    return TV_ERROR_NO_ERROR;
 
 }
 
@@ -195,14 +195,14 @@ int __rmonSetFRegisters(KKHeader* req) {
     ((void)"SetFRegisters\n");
 
     if (req->method != RMON_CPU) {
-        return -2;
+        return TV_ERROR_INVALID_ID;
     }
 
     f = 0.0f;
 
     tptr = __rmonGetTCB(request->tid);
     if (tptr == NULL) {
-        return -2;
+        return TV_ERROR_INVALID_ID;
     }
 
     __rmonCopyWords((u32*)&tptr->context.fp0, request->registers.fpregs.regs, 32);
@@ -210,9 +210,9 @@ int __rmonSetFRegisters(KKHeader* req) {
 
     reply.object = request->tid;
     reply.header.code = request->header.code;
-    reply.header.error = 0;
-    __rmonSendReply(&reply.header, sizeof(reply), 1);
-    return 0;
+    reply.header.error = TV_ERROR_NO_ERROR;
+    __rmonSendReply(&reply.header, sizeof(reply), KK_TYPE_REPLY);
+    return TV_ERROR_NO_ERROR;
 }
 
 static u32 rmonGetRcpRegister(int regNumber) {
@@ -239,12 +239,12 @@ int __rmonGetSRegs(KKHeader* req) {
     ((void)"GetSRegisters\n");
 
     if (__rmonRCPrunning()) {
-        return -4;
+        return TV_ERROR_OPERATIONS_PROTECTED;
     }
 
     reply.tid = request->object;
     reply.header.code = request->header.code;
-    reply.header.error = 0;
+    reply.header.error = TV_ERROR_NO_ERROR;
     SetUpForRCPop(FALSE);
 
     for (i = 0; i < 32; i++) {
@@ -261,8 +261,8 @@ int __rmonGetSRegs(KKHeader* req) {
     reply.registers.sregs[32 + 5] = __rmonReadWordAt((u32*)SP_STATUS_REG);
     reply.registers.sregs[32 + 6] = __rmonReadWordAt((u32*)SP_DMA_FULL_REG);
     reply.registers.sregs[32 + 7] = __rmonReadWordAt((u32*)SP_DMA_BUSY_REG);
-    __rmonSendReply(&reply.header, sizeof(reply), 1);
-    return 0;
+    __rmonSendReply(&reply.header, sizeof(reply), KK_TYPE_REPLY);
+    return TV_ERROR_NO_ERROR;
 }
 
 int __rmonSetSRegs(KKHeader* req) {
@@ -273,7 +273,7 @@ int __rmonSetSRegs(KKHeader* req) {
     ((void)"SetSRegisters\n");
 
     if (__rmonRCPrunning()) {
-        return -4;
+        return TV_ERROR_OPERATIONS_PROTECTED;
     }
 
     SetUpForRCPop(FALSE);
@@ -292,9 +292,9 @@ int __rmonSetSRegs(KKHeader* req) {
 
     reply.object = request->tid;
     reply.header.code = request->header.code;
-    reply.header.error = 0;
-    __rmonSendReply(&reply.header, sizeof(reply), 1);
-    return 0;
+    reply.header.error = TV_ERROR_NO_ERROR;
+    __rmonSendReply(&reply.header, sizeof(reply), KK_TYPE_REPLY);
+    return TV_ERROR_NO_ERROR;
 }
 
 int __rmonGetVRegs(KKHeader* req) {
@@ -308,33 +308,33 @@ int __rmonGetVRegs(KKHeader* req) {
     ((void)"GetVRegisters\n");
 
     if (__rmonRCPrunning()) {
-        return -4;
+        return TV_ERROR_OPERATIONS_PROTECTED;
     }
 
     reply.tid = request->object;
     reply.header.code = request->header.code;
-    reply.header.error = 0;
+    reply.header.error = TV_ERROR_NO_ERROR;
     reply.header.length = sizeof(reply);
 
     dataSize = sizeof(reply);
     cPtr = &dataSize;
     sent = 0;
 
-    while (sent < 4) {
-        sent += __osRdbSend(cPtr + sent, 4 - sent, 8);
+    while (sent < (signed)sizeof(dataSize)) {
+        sent += __osRdbSend(cPtr + sent, sizeof(dataSize) - sent, RDB_TYPE_GtoH_DEBUG);
     }
 
-    __rmonSendHeader(&reply.header, 0x10, 1);
+    __rmonSendHeader(&reply.header, 0x10, KK_TYPE_REPLY);
 
     SetUpForRCPop(TRUE);
     for (i = 0; i < 32; i++) {
-        LoadStoreVU(58/* SWC2 */, i);
+        LoadStoreVU(MIPS_SWC2_OPCODE, i);
         __rmonStepRCP();
         __rmonSendData(SP_DMEM_START, 0x10);
     }
     CleanupFromRCPop(TRUE);
 
-    return 0;
+    return TV_ERROR_NO_ERROR;
 }
 
 int __rmonSetVRegs(KKHeader* req) {
@@ -345,22 +345,22 @@ int __rmonSetVRegs(KKHeader* req) {
     ((void)"SetVRegs\n");
 
     if (__rmonRCPrunning()) {
-        return -4;
+        return TV_ERROR_OPERATIONS_PROTECTED;
     }
 
     SetUpForRCPop(TRUE);
     for (i = 0; i < 32; i++) {
         __rmonCopyWords(SP_DMEM_START, &request->registers.vregs[i], 4);
-        LoadStoreVU(50/* LWC2 */, i);
+        LoadStoreVU(MIPS_LWC2_OPCODE, i);
         __rmonStepRCP();
     }
     CleanupFromRCPop(TRUE);
 
     reply.object = request->tid;
     reply.header.code = request->header.code;
-    reply.header.error = 0;
-    __rmonSendReply(&reply.header, sizeof(reply), 1);
-    return 0;
+    reply.header.error = TV_ERROR_NO_ERROR;
+    __rmonSendReply(&reply.header, sizeof(reply), KK_TYPE_REPLY);
+    return TV_ERROR_NO_ERROR;
 }
 
 u32 __rmonGetRegisterContents(int method, int threadNumber, int regNumber) {

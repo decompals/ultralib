@@ -60,23 +60,23 @@ int __rmonReadMem(KKHeader* req) {
 
     reply->header.code = request->header.code;
     reply->object = request->object;
-    reply->header.error = 0;
+    reply->header.error = TV_ERROR_NO_ERROR;
 
     if (request->addr == -1) {
-        return -5;
+        return TV_ERROR_INVALID_ADDRESS;
     }
     if (request->nbytes > 1024) {
-        return -8;
+        return TV_ERROR_INVALID_CAPABILITY;
     }
 
     if (req->method == RMON_RSP) {
         if ((request->addr < SP_IMEM_START || (request->addr + request->nbytes) > SP_IMEM_END)) {
             if ((request->addr < SP_DMEM_START || (request->addr + request->nbytes) > SP_DMEM_END)) {
-                return -5;
+                return TV_ERROR_INVALID_ADDRESS;
             }
         }
     } else if (osVirtualToPhysical((void*)request->addr) == 0xFFFFFFFF) {
-        return -5;
+        return TV_ERROR_INVALID_ADDRESS;
     }
     blockStart = (u8*)request->addr;
     reply->header.length = request->nbytes + 0x10;
@@ -84,14 +84,13 @@ int __rmonReadMem(KKHeader* req) {
     cPtr = (u8*)&dataSize;
     sent = 0;
 
-    while (sent < 4) {
-        sent += __osRdbSend(cPtr + sent, 4 - sent, 8);
+    while (sent < (signed)sizeof(dataSize)) {
+        sent += __osRdbSend(cPtr + sent, sizeof(dataSize) - sent, RDB_TYPE_GtoH_DEBUG);
     }
 
-    __rmonSendHeader(&reply->header, 0x10, 1);
+    __rmonSendHeader(&reply->header, 0x10, KK_TYPE_REPLY);
     __rmonSendData(blockStart, request->nbytes);
-    return 0;
-
+    return TV_ERROR_NO_ERROR;
 }
 
 int __rmonWriteMem(KKHeader* req) {
@@ -101,11 +100,11 @@ int __rmonWriteMem(KKHeader* req) {
     ((void)"WriteMem\n");
 
     if (req->method == RMON_CPU && osVirtualToPhysical(request->writeHeader.addr) == 0xFFFFFFFF) {
-        return -5;
+        return TV_ERROR_INVALID_ADDRESS;
     }
 
-    if (request->writeHeader.nbytes > 0x400) {
-        return -8;
+    if (request->writeHeader.nbytes > 1024) {
+        return TV_ERROR_INVALID_CAPABILITY;
     }
 
     if ((request->writeHeader.addr >= SP_DMEM_START && (request->writeHeader.addr + request->writeHeader.nbytes) < 0x05000000)) {
@@ -116,7 +115,7 @@ int __rmonWriteMem(KKHeader* req) {
             ((void)"Long unaligned write...\n");
 
             if (request->writeHeader.nbytes != 1) {
-                return -5;
+                return TV_ERROR_INVALID_ADDRESS;
             }
 
             // Read the word at the back-aligned target address, substitute in the
@@ -135,7 +134,7 @@ int __rmonWriteMem(KKHeader* req) {
             u32* wordPointer = (u32*)request->buffer;
             if (request->writeHeader.nbytes % sizeof(u32) != 0) {
                 ((void)"RCP write not an integral number of words\n");
-                return -5;
+                return TV_ERROR_INVALID_ADDRESS;
             }
 
             while (wordCount--) {
@@ -148,11 +147,11 @@ int __rmonWriteMem(KKHeader* req) {
     }
 
     reply.header.code = request->writeHeader.header.code;
-    reply.header.error = 0;
+    reply.header.error = TV_ERROR_NO_ERROR;
     reply.object = request->writeHeader.object;
-    __rmonSendReply(&reply.header, sizeof(reply), 1);
+    __rmonSendReply(&reply.header, sizeof(reply), KK_TYPE_REPLY);
 
-    return 0;
+    return TV_ERROR_NO_ERROR;
 }
 
 int __rmonListProcesses(KKHeader* req) {
@@ -165,16 +164,16 @@ int __rmonListProcesses(KKHeader* req) {
     reply.objs.number = 1;
     reply.objs.objects[0] = (req->method == RMON_RSP) ? RMON_PID_RSP : RMON_PID_CPU;
     reply.header.code = request->header.code;
-    reply.header.error = 0;
+    reply.header.error = TV_ERROR_NO_ERROR;
 
-    __rmonSendReply(&reply.header, sizeof(reply), 1);
-    return 0;
+    __rmonSendReply(&reply.header, sizeof(reply), KK_TYPE_REPLY);
+    return TV_ERROR_NO_ERROR;
 }
 
 int __rmonLoadProgram(KKHeader* request) {
     ((void)"LoadProgram\n");
 
-    return -1;
+    return TV_ERROR_ILLEGAL_CALL;
 }
 
 int __rmonGetExeName(KKHeader* req) {
@@ -184,7 +183,7 @@ int __rmonGetExeName(KKHeader* req) {
     ((void)"GetExeName\n");
 
     reply->header.code = request->header.code;
-    reply->header.error = 0;
+    reply->header.error = TV_ERROR_NO_ERROR;
     reply->object = request->object;
 
     if (req->method == RMON_RSP) {
@@ -192,9 +191,9 @@ int __rmonGetExeName(KKHeader* req) {
     } else {
         strcpy(reply->buffer, "rmon");
     }
-    __rmonSendReply(&reply->header, 0x18, 1);
+    __rmonSendReply(&reply->header, 0x18, KK_TYPE_REPLY);
 
-    return 0;
+    return TV_ERROR_NO_ERROR;
 }
 
 int __rmonGetRegionCount(KKHeader* req) {
@@ -204,14 +203,14 @@ int __rmonGetRegionCount(KKHeader* req) {
     ((void)"GetRegionCount\n");
 
     reply.header.code = request->header.code;
-    reply.header.error = 0;
+    reply.header.error = TV_ERROR_NO_ERROR;
     reply.object = request->object;
 
     reply.number = (req->method == RMON_RSP) ? 2 : 5;
 
-    __rmonSendReply(&reply.header, sizeof(reply), 1);
+    __rmonSendReply(&reply.header, sizeof(reply), KK_TYPE_REPLY);
 
-    return 0;
+    return TV_ERROR_NO_ERROR;
 }
 
 int __rmonGetRegions(KKHeader* req) {
@@ -225,45 +224,45 @@ int __rmonGetRegions(KKHeader* req) {
 
     reply->header.length = numRegions * sizeof(reply->regions[0]) + sizeof(*reply);
     reply->header.code = request->header.code;
-    reply->header.error = 0;
+    reply->header.error = TV_ERROR_NO_ERROR;
     reply->object = request->object;
     reply->number = numRegions;
 
     reply->regions[1].vaddr = SP_IMEM_START;
     reply->regions[1].size = SP_IMEM_END + 1 - SP_IMEM_START;
-    reply->regions[1].flags = 7;
+    reply->regions[1].flags = 1 | 2 | 4;
     reply->regions[1].paddr = SP_IMEM_START;
 
     reply->regions[0].vaddr = SP_DMEM_START;
     reply->regions[0].size = SP_DMEM_END + 1 - SP_DMEM_START;
-    reply->regions[0].flags = 3;
+    reply->regions[0].flags = 1 | 2;
     reply->regions[0].paddr = SP_DMEM_START;
 
     if (numRegions > 2) {
         reply->regions[2].vaddr = 0x88200000;
         reply->regions[2].size = 0x6130;
-        reply->regions[2].flags = 5;
+        reply->regions[2].flags = 1 | 4;
         reply->regions[2].paddr = 0;
 
         reply->regions[3].vaddr = 4;
         reply->regions[3].size = 0x200000;
-        reply->regions[3].flags = 3;
+        reply->regions[3].flags = 1 | 2;
         reply->regions[3].paddr = 0;
 
         reply->regions[4].vaddr = 0x4002000;
         reply->regions[4].size = 0x800000;
-        reply->regions[4].flags = 3;
+        reply->regions[4].flags = 1 | 2;
         reply->regions[4].paddr = 0;
 
         reply->regions[5].vaddr = 0x88206130;
         reply->regions[5].size = 0x9000;
-        reply->regions[5].flags = 3;
+        reply->regions[5].flags = 1 | 2;
         reply->regions[5].paddr = 0;
     }
 
-    __rmonSendReply(&reply->header, reply->header.length, 1);
+    __rmonSendReply(&reply->header, reply->header.length, KK_TYPE_REPLY);
 
-    return 0;
+    return TV_ERROR_NO_ERROR;
 }
 
 #endif
