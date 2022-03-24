@@ -7,6 +7,7 @@
 
 .text
 
+/* check if the rsp is currently running by polling HALT or BROKE bits in SP_STATUS */
 LEAF(__rmonRCPrunning)
     move    v0, zero
     lw      t0, PHYS_TO_K1(SP_STATUS_REG)
@@ -17,6 +18,7 @@ isHalted:
     jr      ra
 END(__rmonRCPrunning)
 
+/* stop the rsp, first wait for any ongoing dma to complete before setting HALT in SP_STATUS */
 LEAF(__rmonIdleRCP)
     li      a0, PHYS_TO_K1(SP_DMA_BUSY_REG)
 wait4dma:
@@ -26,6 +28,7 @@ wait4dma:
     li      a0, PHYS_TO_K1(SP_STATUS_REG)
     sw      a1, (a0)
 
+/* wait for the rsp to stop */
 awaitIdle:
     li      a0, PHYS_TO_K1(SP_STATUS_REG)
     lw      v0, (a0)
@@ -34,6 +37,7 @@ awaitIdle:
     jr      ra
 END(__rmonIdleRCP)
 
+/* run the rsp in single-step mode to step one instruction */
 LEAF(__rmonStepRCP)
     li      a0, PHYS_TO_K1(SP_STATUS_REG)
     li      a1, SP_CLR_INTR_BREAK | SP_SET_SSTEP | SP_CLR_BROKE | SP_CLR_HALT
@@ -41,6 +45,7 @@ LEAF(__rmonStepRCP)
     b       awaitIdle
 END(__rmonStepRCP)
 
+/* run the rsp normally */
 LEAF(__rmonRunRCP)
     li      a0, PHYS_TO_K1(MI_INTR_MASK_REG)
     li      a1, MI_INTR_MASK_SET_SP

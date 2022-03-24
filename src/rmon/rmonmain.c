@@ -21,7 +21,7 @@ static u8 cmdoutptr;
 static int state;
 static char* inPointer;
 
-void __rmonSendHeader(const KKHeader* block, u32 blockSize, u32 type) {
+void __rmonSendHeader(KKHeader* const block, u32 blockSize, u32 type) {
     int sent;
     char* cPtr = (char*)block;
 
@@ -62,8 +62,8 @@ void __rmonSendData(char* const block, unsigned int blockSize) {
 
     if (((u32)block & 3) == 0) {
         while (wordCount--) {
-            if (blockPointer >= (void*)SP_DMEM_START && blockPointer < (void*)0x05000000) {
-                __osSpRawReadIo(blockPointer++, &data);
+            if ((u32)blockPointer >= SP_DMEM_START && (u32)blockPointer < 0x05000000) {
+                __osSpRawReadIo((u32)blockPointer++, &data);
                 __rmonIOputw(data);
             } else {
                 __rmonIOputw(*(blockPointer++));
@@ -78,10 +78,10 @@ void __rmonSendData(char* const block, unsigned int blockSize) {
 }
 
 void rmonMain(void) {
-    register int newChars;
+    register int newChars UNUSED;
 
-    ((void)"rmon: Thread %d created\n");
-    ((void)"rmon: Thread %d destroyed\n");
+    STUBBED_PRINTF(("rmon: Thread %d created\n"));
+    STUBBED_PRINTF(("rmon: Thread %d destroyed\n"));
 
     somethingToDo = 0;
     cmdoutptr = 0;
@@ -92,7 +92,7 @@ void rmonMain(void) {
 
     state = 0;
     newChars = 0;
-    inPointer = &inbuffer;
+    inPointer = (void*)&inbuffer;
 
     for (;;) {
         OSMesg work;

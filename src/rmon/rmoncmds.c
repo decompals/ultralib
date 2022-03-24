@@ -3,10 +3,12 @@
 #include "dbgproto.h"
 #include "rmonint.h"
 
+#include "macros.h"
+
 // TODO: this comes from a header
 #ident "$Revision: 1.4 $"
 
-static int NotImplemented(KKHeader* dummy) {
+static int NotImplemented(KKHeader* dummy UNUSED) {
     return TV_ERROR_ILLEGAL_CALL;
 }
 
@@ -31,15 +33,15 @@ int __rmonExecute(KKHeader* request) {
     int retval;
     KKHeader reply;
 
-    if (request->code >= (int)(sizeof(dispatchTable) / sizeof(dispatchTable[0])) - 1) {
-        return -1;
+    if (request->code >= ARRLEN(dispatchTable) - 1) {
+        return TV_ERROR_ILLEGAL_CALL;
     }
 
-    retval = dispatchTable[request->code](request);
+    retval = dispatchTable[(int)request->code](request);
     if (retval < TV_ERROR_NO_ERROR) {
         reply.code = request->code;
         reply.error = retval;
-        __rmonSendReply(&reply, sizeof(KKHeader), KK_TYPE_REPLY);
+        __rmonSendReply(&reply, sizeof(reply), KK_TYPE_REPLY);
     }
     return retval;
 }

@@ -56,16 +56,16 @@ int __rmonReadMem(KKHeader* req) {
     KKBufferEvent* reply = (KKBufferEvent*)__rmonUtilityBuffer;
     u8* blockStart;
 
-    ((void)"ReadMem @ %08x for %d\n");
+    STUBBED_PRINTF(("ReadMem @ %08x for %d\n", request->addr, request->nbytes));
 
     reply->header.code = request->header.code;
     reply->object = request->object;
     reply->header.error = TV_ERROR_NO_ERROR;
 
-    if (request->addr == -1) {
+    if (request->addr == (u32)-1) {
         return TV_ERROR_INVALID_ADDRESS;
     }
-    if (request->nbytes > 1024) {
+    if (request->nbytes > RMON_MAX_XFER_SIZE) {
         return TV_ERROR_INVALID_CAPABILITY;
     }
 
@@ -75,20 +75,21 @@ int __rmonReadMem(KKHeader* req) {
                 return TV_ERROR_INVALID_ADDRESS;
             }
         }
-    } else if (osVirtualToPhysical((void*)request->addr) == 0xFFFFFFFF) {
+    } else if (osVirtualToPhysical((void*)request->addr) == (u32)-1) {
         return TV_ERROR_INVALID_ADDRESS;
     }
-    blockStart = (u8*)request->addr;
-    reply->header.length = request->nbytes + 0x10;
-    dataSize = request->nbytes + 0x10;
-    cPtr = (u8*)&dataSize;
-    sent = 0;
 
+    blockStart = (u8*)request->addr;
+    reply->header.length = request->nbytes + sizeof(reply->header) + sizeof(reply->object);
+    dataSize = request->nbytes + sizeof(reply->header) + sizeof(reply->object);
+
+    cPtr = (char*)&dataSize;
+    sent = 0;
     while (sent < (signed)sizeof(dataSize)) {
         sent += __osRdbSend(cPtr + sent, sizeof(dataSize) - sent, RDB_TYPE_GtoH_DEBUG);
     }
 
-    __rmonSendHeader(&reply->header, 0x10, KK_TYPE_REPLY);
+    __rmonSendHeader(&reply->header, sizeof(reply->header) + sizeof(reply->object), KK_TYPE_REPLY);
     __rmonSendData(blockStart, request->nbytes);
     return TV_ERROR_NO_ERROR;
 }
@@ -97,13 +98,15 @@ int __rmonWriteMem(KKHeader* req) {
     register KKWriteRequest* request = (KKWriteRequest*)req;
     KKObjectEvent reply;
 
-    ((void)"WriteMem\n");
+    STUBBED_PRINTF(("WriteMem\n"));
 
-    if (req->method == RMON_CPU && osVirtualToPhysical(request->writeHeader.addr) == 0xFFFFFFFF) {
+    /* Bad virtual address, abort */
+    if (req->method == RMON_CPU && osVirtualToPhysical((u32*)request->writeHeader.addr) == (u32)-1) {
         return TV_ERROR_INVALID_ADDRESS;
     }
 
-    if (request->writeHeader.nbytes > 1024) {
+    /* Transfer size too large, abort */
+    if (request->writeHeader.nbytes > RMON_MAX_XFER_SIZE) {
         return TV_ERROR_INVALID_CAPABILITY;
     }
 
@@ -111,16 +114,15 @@ int __rmonWriteMem(KKHeader* req) {
         int align;
         u32 word;
 
-        if (align = request->writeHeader.addr & 3) {
-            ((void)"Long unaligned write...\n");
+        if ((align = request->writeHeader.addr & 3) != 0) {
+            STUBBED_PRINTF(("Long unaligned write...\n"));
 
             if (request->writeHeader.nbytes != 1) {
                 return TV_ERROR_INVALID_ADDRESS;
             }
 
-            // Read the word at the back-aligned target address, substitute in the
-            // write and write the full word back
-            word = __rmonReadWordAt(request->writeHeader.addr & ~3);
+            /* Unaligned write; read the word, substitute in the written byte, write it back */
+            word = __rmonReadWordAt((u32*)(request->writeHeader.addr & ~3));
             if (align == 1) {
                 word = (word & ~0xFF0000) | (request->buffer[0] << 0x10);
             } else if (align == 2) {
@@ -128,22 +130,23 @@ int __rmonWriteMem(KKHeader* req) {
             } else {
                 word = (word & ~0xFF) | (request->buffer[0] << 0);
             }
-            __rmonWriteWordTo(request->writeHeader.addr & ~3, word);
+            __rmonWriteWordTo((u32*)(request->writeHeader.addr & ~3), word);
         } else {
             int wordCount = request->writeHeader.nbytes / sizeof(u32);
             u32* wordPointer = (u32*)request->buffer;
+
             if (request->writeHeader.nbytes % sizeof(u32) != 0) {
-                ((void)"RCP write not an integral number of words\n");
+                STUBBED_PRINTF(("RCP write not an integral number of words\n"));
                 return TV_ERROR_INVALID_ADDRESS;
             }
 
             while (wordCount--) {
-                __rmonWriteWordTo(request->writeHeader.addr, *(wordPointer++));
-                request->writeHeader.addr += 4;
+                __rmonWriteWordTo((u32*)request->writeHeader.addr, *(wordPointer++));
+                request->writeHeader.addr += sizeof(*wordPointer);
             }
         }
     } else {
-        __rmonMemcpy(request->writeHeader.addr, request->buffer, request->writeHeader.nbytes);
+        __rmonMemcpy((u8*)request->writeHeader.addr, (u8*)request->buffer, request->writeHeader.nbytes);
     }
 
     reply.header.code = request->writeHeader.header.code;
@@ -158,7 +161,7 @@ int __rmonListProcesses(KKHeader* req) {
     KKObjectRequest* request = (KKObjectRequest*)req;
     KKObjsEvent reply;
 
-    ((void)"ListProcesses\n");
+    STUBBED_PRINTF(("ListProcesses\n"));
 
     reply.object = 0;
     reply.objs.number = 1;
@@ -170,8 +173,8 @@ int __rmonListProcesses(KKHeader* req) {
     return TV_ERROR_NO_ERROR;
 }
 
-int __rmonLoadProgram(KKHeader* request) {
-    ((void)"LoadProgram\n");
+int __rmonLoadProgram(KKHeader* request UNUSED) {
+    STUBBED_PRINTF(("LoadProgram\n"));
 
     return TV_ERROR_ILLEGAL_CALL;
 }
@@ -180,7 +183,7 @@ int __rmonGetExeName(KKHeader* req) {
     KKObjectRequest* request = (KKObjectRequest*)req;
     KKBufferEvent* reply = (KKBufferEvent*)__rmonUtilityBuffer;
 
-    ((void)"GetExeName\n");
+    STUBBED_PRINTF(("GetExeName\n"));
 
     reply->header.code = request->header.code;
     reply->header.error = TV_ERROR_NO_ERROR;
@@ -191,7 +194,7 @@ int __rmonGetExeName(KKHeader* req) {
     } else {
         strcpy(reply->buffer, "rmon");
     }
-    __rmonSendReply(&reply->header, 0x18, KK_TYPE_REPLY);
+    __rmonSendReply(&reply->header, sizeof(reply->header) + sizeof(reply->object) + 8, KK_TYPE_REPLY);
 
     return TV_ERROR_NO_ERROR;
 }
@@ -200,7 +203,7 @@ int __rmonGetRegionCount(KKHeader* req) {
     KKObjectRequest* request = (KKObjectRequest*)req;
     KKNumberEvent reply;
 
-    ((void)"GetRegionCount\n");
+    STUBBED_PRINTF(("GetRegionCount\n"));
 
     reply.header.code = request->header.code;
     reply.header.error = TV_ERROR_NO_ERROR;
@@ -218,7 +221,7 @@ int __rmonGetRegions(KKHeader* req) {
     KKRegionEvent* reply = (KKRegionEvent*)__rmonUtilityBuffer;
     int numRegions;
 
-    ((void)"GetRegions\n");
+    STUBBED_PRINTF(("GetRegions\n"));
 
     numRegions = (req->method == RMON_RSP) ? 2 : 6;
 

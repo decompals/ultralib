@@ -22,13 +22,14 @@ void* __osRdb_DbgRead_Buf;
 u8 rmonRdbReadBuf[RMON_DBG_BUF_SIZE] ALIGNED(0x10);
 
 void __rmonSendFault(OSThread* thread) {
-    volatile float f;
+    volatile float f UNUSED;
     u8* tPtr;
     u32 sent = 0;
 
+    /* touch fpu to ensure registers are saved to the context structure */
     f = 0.0f;
-    tPtr = (u8*)thread;
 
+    tPtr = (u8*)thread;
     while (sent < sizeof(OSThread)) {
         sent += __osRdbSend(tPtr + sent, sizeof(OSThread) - sent, RDB_TYPE_GtoH_FAULT);
     }
@@ -45,10 +46,10 @@ void __rmonIOflush(void) {
 
 void __rmonIOputw(u32 word) {
     int sent = 0;
-    char* cPtr = (u8*)&word;
+    char* cPtr = (char*)&word;
 
     while (sent < 4) {
-        sent += __osRdbSend(cPtr + sent, 4 - sent, RDB_TYPE_GtoH_DEBUG);
+        sent += __osRdbSend(cPtr + sent, sizeof(word) - sent, RDB_TYPE_GtoH_DEBUG);
     }
 }
 

@@ -5,6 +5,15 @@
 
 #define KK_REV 2
 
+#define KK_CODE_THREAD_STATUS 4
+
+#define KK_TYPE_REQUEST      0
+#define KK_TYPE_REPLY        1
+#define KK_TYPE_EXCEPTION    2
+#define KK_TYPE_THREAD_EXIT  3
+#define KK_TYPE_PROCESS_EXIT 4
+#define KK_TYPE_CONSOLE      5
+
 #define TV_ERROR_NO_ERROR               0
 #define TV_ERROR_ILLEGAL_CALL           -1
 #define TV_ERROR_INVALID_ID             -2
@@ -132,13 +141,6 @@ typedef struct __KKProcUsageStruct {
     TVid pid;
     KKTimeStruct states[10];
 } KKProcUsage;
-
-#define KK_TYPE_REQUEST      0
-#define KK_TYPE_REPLY        1
-#define KK_TYPE_EXCEPTION    2
-#define KK_TYPE_THREAD_EXIT  3
-#define KK_TYPE_PROCESS_EXIT 4
-#define KK_TYPE_CONSOLE      5
 
 typedef struct __KKHeaderStruct {
     int length;
