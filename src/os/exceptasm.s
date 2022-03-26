@@ -60,7 +60,7 @@ __osIntOffTable:
 __osIntTable:
     .word redispatch, sw1, sw2, rcp, cart, prenmi, IP6_Hdlr, IP7_Hdlr, counter
 
-#ifndef NDEBUG
+#ifndef _FINALROM
 EXPORT(__osCauseTable_pt)
     .byte 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0
     .byte 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0
@@ -79,7 +79,7 @@ EXPORT(__osHwIntTable)
 EXPORT(__osPiIntTable)
     .word 0, 0
 
-#ifndef NDEBUG
+#ifndef _FINALROM
 __osRdb_DbgRead_Ct:
     .word 0
 
@@ -100,7 +100,7 @@ LEAF(__osExceptionPreamble)
     jr      k0
 END(__osExceptionPreamble)
 
-#ifndef NDEBUG
+#ifndef _FINALROM
 LEAF(__ptExceptionPreamble)
 .set noreorder
     sw      k0, -0x10(sp)
@@ -184,7 +184,7 @@ STAY2(mtc0  k1, C0_SR)
     sw      zero, THREAD_FP(k0)
     /* this instruction is useless, leftover because of bad placement of an ifdef for the debug version */
 STAY2(mfc0  t0, C0_CAUSE)
-#ifndef NDEBUG
+#ifndef _FINALROM
     lw      t2, __kmc_pt_mode
     bnez    t2, skip_kmc_mode
     andi    t1, t0, 0x7c
@@ -380,7 +380,7 @@ skip_kmc_mode:
 savecontext:
     move    t0, k0
     lw      k0, __osRunningThread 
-#ifndef NDEBUG
+#ifndef _FINALROM
     sw      k0, __osPreviousThread
 #endif
     ld      t1, THREAD_GP1(t0)
@@ -487,7 +487,7 @@ STAY2(mfc0  t0, C0_CAUSE)
     li      t1, OS_STATE_RUNNABLE
     sh      t1, THREAD_STATE(k0)
 
-#ifndef NDEBUG
+#ifndef _FINALROM
     lw      a0, __os_Kdebug_Pkt
     beqz    a0, no_kdebug
     sw      zero, __os_Kdebug_Pkt
@@ -812,7 +812,7 @@ END(handle_CpU)
 
 LEAF(__osEnqueueAndYield)
     lw      a1, __osRunningThread
-#ifndef NDEBUG
+#ifndef _FINALROM
     sw      a1, __osPreviousThread
 #endif
 STAY2(mfc0  t0, C0_SR)
@@ -914,7 +914,7 @@ LEAF(__osDispatchThread)
     sh      t0, THREAD_STATE(v0)
     move    k0, v0
 
-#ifndef NDEBUG
+#ifndef _FINALROM
     la      t0, __osThprofFunc
     lw      t0, (t0)
     beqz    t0, __osDispatchThreadSave
