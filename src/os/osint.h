@@ -47,4 +47,9 @@ extern s32 osViClock;
 extern void __osTimerServicesInit(void);
 extern s32 __osAiDeviceBusy(void);
 extern int __osDpDeviceBusy(void);
+
+#ifndef _FINALROM
+extern void* __printfunc;
+#endif
+
 #endif

@@ -17,7 +17,12 @@ OSTime osClockRate = OS_CLOCK_RATE;
 s32 osViClock = VI_NTSC_CLOCK;
 u32 __osShutdown = 0;
 u32 __OSGlobalIntMask = OS_IM_ALL;
+#ifdef _FINALROM
 u32 __osFinalrom;
+#else
+void* __printfunc = NULL;
+u32 __kmc_pt_mode;
+#endif
 
 void __createSpeedParam(void) {
     __Dom1SpeedParam.type = DEVICE_TYPE_INIT;
@@ -35,7 +40,11 @@ void __createSpeedParam(void) {
 
 void __osInitialize_common() {
     u32 pifdata;
+
+#ifdef _FINALROM
     __osFinalrom = TRUE;
+#endif
+
     __osSetSR(__osGetSR() | SR_CU1);    //enable fpu
     __osSetFpcCsr(FPCSR_FS | FPCSR_EV); //flush denorm to zero, enable invalid operation
     __osSetWatchLo(0x4900000);
@@ -82,4 +91,15 @@ void __osInitialize_common() {
 }
 
 void __osInitialize_autodetect() {
+#ifndef _FINALROM
+    if (__checkHardware_msp()) {
+        __osInitialize_msp();
+    } else if (__checkHardware_kmc()) {
+        __osInitialize_kmc();
+    } else if (__checkHardware_isv()) {
+        __osInitialize_isv();
+    } else {
+        __osInitialize_emu();
+    }
+#endif
 }
