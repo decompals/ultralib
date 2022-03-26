@@ -1,5 +1,1 @@
-#ifndef _FINALROM
-
-
-
-#endif
+/* Empty file */
