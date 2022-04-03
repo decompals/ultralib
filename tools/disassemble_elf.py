@@ -43,6 +43,7 @@ class MipsDisasm:
                     break
                 elif self.cur_file == sym:
                     seen_cur_file = True
+        return self.cur_file is not None
 
     def disassemble_all_sections(self):
         print(MipsDisasm.asm_prelude())
@@ -201,8 +202,8 @@ class MipsDisasm:
                     print(f"// compiler generated")
                     if self.cur_file is None:
                         print(f".version \"01.01\"")
-                    self.advance_file()
-                    print(f".file 1 \"{self.cur_file.name}\"")
+                    if self.advance_file():
+                        print(f".file 1 \"{self.cur_file.name}\"")
 
                     comment_string = None
                     while comment_string != "\"GCC: (GNU) 2.7.2\"":

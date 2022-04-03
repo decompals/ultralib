@@ -103,6 +103,14 @@ ifneq ($(NON_MATCHING),1)
 	@touch $@
 endif
 
+ifeq ($(findstring _d,$(TARGET)),_d)
+$(BUILD_DIR)/src/rmon/%.marker: OPTFLAGS := -O0
+endif
+
+STRIP = 
+
+$(BUILD_DIR)/src/os/initialize_isv.marker: OPTFLAGS := -O2
+$(BUILD_DIR)/src/os/initialize_isv.marker: STRIP = && tools/gcc/strip.new -N initialize_isv.c $(WORKING_DIR)/$(@:.marker=.o) $(WORKING_DIR)/$(@:.marker=.o)
 $(BUILD_DIR)/src/os/assert.marker: OPTFLAGS := -O0
 $(BUILD_DIR)/src/os/ackramromread.marker: OPTFLAGS := -O0
 $(BUILD_DIR)/src/os/ackramromwrite.marker: OPTFLAGS := -O0
@@ -119,6 +127,7 @@ $(BUILD_DIR)/src/mgu/rotate.marker: export VR4300MUL := ON
 $(BUILD_DIR)/src/os/%.marker: ASFLAGS += -P
 $(BUILD_DIR)/src/gu/%.marker: ASFLAGS += -P
 $(BUILD_DIR)/src/libc/%.marker: ASFLAGS += -P
+$(BUILD_DIR)/src/rmon/%.marker: ASFLAGS += -P
 $(BUILD_DIR)/src/voice/%.marker: OPTFLAGS += -DLANG_JAPANESE -I$(WORKING_DIR)/src -I$(WORKING_DIR)/src/voice
 $(BUILD_DIR)/src/voice/%.marker: CC := tools/compile_sjis.py -D__CC=$(WORKING_DIR)/$(CC)
 
@@ -126,8 +135,8 @@ $(BUILD_DIR)/%.marker: %.c
 	cd $(<D) && $(WORKING_DIR)/$(CC) $(CFLAGS) $(CPPFLAGS) $(OPTFLAGS) $(<F) -o $(WORKING_DIR)/$(@:.marker=.o)
 ifneq ($(NON_MATCHING),1)
 # check if this file is in the archive; patch corrupted bytes and change file timestamps to match original if so
-	@$(if $(findstring $(BASE_DIR)/$(@F:.marker=.o), $(BASE_OBJS)), \
-	 python3 tools/fix_objfile.py $(@:.marker=.o) $(BASE_DIR)/$(@F:.marker=.o) && \
+		$(if $(findstring $(BASE_DIR)/$(@F:.marker=.o), $(BASE_OBJS)), \
+	 python3 tools/fix_objfile.py $(@:.marker=.o) $(BASE_DIR)/$(@F:.marker=.o) $(STRIP) && \
 	 $(COMPARE_OBJ) && \
 	 touch -r $(BASE_DIR)/$(@F:.marker=.o) $(@:.marker=.o), \
 	 echo "Object file $(<F:.marker=.o) is not in the current archive" \
