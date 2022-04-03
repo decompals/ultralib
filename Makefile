@@ -23,18 +23,12 @@ ASFLAGS := -w -nostdinc -c -G 0 -mgp32 -mfp32 -mips3 -DMIPSEB -D_LANGUAGE_ASSEMB
 GBIDEFINE := -DF3DEX_GBI_2
 CPPFLAGS = -D_MIPS_SZLONG=32 -D__USE_ISOC99 -I $(WORKING_DIR)/include -I $(WORKING_DIR)/include/gcc -I $(WORKING_DIR)/include/PR $(GBIDEFINE)
 
-ifeq ($(TARGET),libgultra_rom)
-OPTFLAGS := -O3
-CPPFLAGS += -DNDEBUG -D_FINALROM
-else ifeq ($(TARGET),libgultra_d)
-OPTFLAGS := -O0
-CPPFLAGS += -D_DEBUG
-endif
-
 ifeq ($(findstring _d,$(TARGET)),_d)
 CPPFLAGS += -D_DEBUG
+OPTFLAGS := -O0
 else
 CPPFLAGS += -DNDEBUG -D_FINALROM
+OPTFLAGS := -O3
 endif
 
 SRC_DIRS := $(shell find src -type d)
