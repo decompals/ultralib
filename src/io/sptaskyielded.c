@@ -7,7 +7,7 @@ OSYieldResult osSpTaskYielded(OSTask *tp) {
     OSYieldResult result;
     
     status = __osSpGetStatus();
-    result = (status >> 8) & 1;
+    result = (status & SP_STATUS_YIELDED) ? OS_TASK_YIELDED : 0;
 
     if (status & SP_STATUS_YIELD) {
         tp->t.flags |= result;
