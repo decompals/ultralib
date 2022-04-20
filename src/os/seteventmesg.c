@@ -9,6 +9,13 @@ void osSetEventMesg(OSEvent event, OSMesgQueue *mq, OSMesg msg) {
 	register u32 saveMask = __osDisableInt();
 	__OSEventState *es = &__osEventStateTab[event];
 
+#ifdef _DEBUG
+	if (e >= OS_NUM_EVENTS) {
+		__osError(ERR_OSSETEVENTMESG, 1, e);
+		return 0;
+	}
+#endif
+
 	es->messageQueue = mq;
 	es->message = msg;
 
