@@ -285,6 +285,7 @@ s32 __osPfsRWInode(OSPfs *pfs, __OSInode *inode, u8 flag, u8 bank) {
     return 0;
 }
 
+#ifdef _DEBUG
 s32 __osDumpId(OSPfs* pfs) {
     u8 id[BLOCKSIZE];
     __OSPackId* temp;
@@ -304,4 +305,5 @@ s32 __osDumpId(OSPfs* pfs) {
 	rmonPrintf("inverted_checksum %x\n", temp->inverted_checksum);
     return 0;
 }
+#endif
 

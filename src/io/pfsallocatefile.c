@@ -24,10 +24,9 @@ s32 osPfsAllocateFile(OSPfs *pfs, u16 company_code, u32 game_code, u8 *game_name
     }
 
     file_size_in_pages = ROUND_UP_DIVIDE(file_size_in_bytes, BLOCKSIZE * PFS_ONE_PAGE);
-
-    ret = osPfsFindFile(pfs, company_code, game_code, game_name, ext_name, file_no);
     
-    if (ret != 0 && ret != PFS_ERR_INVALID) {
+    if (((ret = osPfsFindFile(pfs, company_code, game_code, game_name,
+        ext_name, file_no)) != 0) && ret != PFS_ERR_INVALID) {
         return ret;
     }
 
@@ -45,8 +44,8 @@ s32 osPfsAllocateFile(OSPfs *pfs, u16 company_code, u32 game_code, u8 *game_name
         return PFS_ERR_INVALID;
     }
 
-    ret = osPfsFindFile(pfs, 0, 0, NULL, NULL, file_no);
-    if (ret != 0 && ret != PFS_ERR_INVALID) {
+    if (((ret = osPfsFindFile(pfs, 0, 0, 
+        NULL, NULL, file_no)) != 0) && ret != PFS_ERR_INVALID) {
         return ret;
     }
     
