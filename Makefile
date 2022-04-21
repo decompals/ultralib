@@ -126,6 +126,7 @@ $(BUILD_DIR)/src/mgu/%.marker: export VR4300MUL := OFF
 $(BUILD_DIR)/src/mgu/rotate.marker: export VR4300MUL := ON
 $(BUILD_DIR)/src/debug/%.marker: ASFLAGS += -P
 $(BUILD_DIR)/src/error/%.marker: ASFLAGS += -P
+$(BUILD_DIR)/src/log/%.marker: ASFLAGS += -P
 $(BUILD_DIR)/src/os/%.marker: ASFLAGS += -P
 $(BUILD_DIR)/src/gu/%.marker: ASFLAGS += -P
 $(BUILD_DIR)/src/libc/%.marker: ASFLAGS += -P
