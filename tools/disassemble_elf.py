@@ -202,7 +202,8 @@ class MipsDisasm:
                     print(f"// compiler generated")
                     if self.cur_file is None:
                         print(f".version \"01.01\"")
-                    if self.advance_file():
+                    self.advance_file()
+                    if self.cur_file is not None:
                         print(f".file 1 \"{self.cur_file.name}\"")
 
                     comment_string = None
@@ -265,7 +266,7 @@ class MipsDisasm:
                         addend = 0
                     addend_str = f" + 0x{addend:X}" if addend != 0 else ""
 
-                    if insn.id == MIPS_INS_ADDIU:
+                    if insn.id in [MIPS_INS_ADDIU, MIPS_INS_DADDIU]:
                         op_str = f"{insn.abi.gpr_names[insn.rt]}, {insn.abi.gpr_names[insn.rs]}, %lo({rel_name}{addend_str})"
                     elif insn.id in MIPS_LOAD_STORE_INSNS:
                         if insn.id in MIPS_FP_LOAD_STORE_INSNS:

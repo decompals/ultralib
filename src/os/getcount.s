@@ -3,7 +3,12 @@
 #include "sys/regdef.h"
 
 .text
+
+#ifndef BBPLAYER
+
 LEAF(osGetCount)
     STAY2(mfc0 v0, C0_COUNT)
     jr ra
 END(osGetCount)
+
+#endif

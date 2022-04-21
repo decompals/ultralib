@@ -14,9 +14,26 @@ extern __osExceptionVector __osExceptionPreamble[];
 extern OSPiHandle __Dom1SpeedParam;
 extern OSPiHandle __Dom2SpeedParam;
 
+#ifdef BBPLAYER
+extern u32 __osBbIsBb;
+extern u32 __osBbEepromSize;
+extern u32 __osBbPakSize;
+extern u32 __osBbFlashSize;
+extern u32 __osBbEepromAddress;
+extern u32 __osBbPakAddress[4];
+extern u32 __osBbFlashAddress;
+extern u32 __osBbSramSize;
+extern u32 __osBbSramAddress;
+
+char __osBbLibVersion[] = "libultra 12/06/04 08:28:27";
+#endif
+
 OSTime osClockRate = OS_CLOCK_RATE;
 s32 osViClock = VI_NTSC_CLOCK;
 u32 __osShutdown = 0;
+#ifdef BBPLAYER
+u32 __osShutdownTime = 0;
+#endif
 u32 __OSGlobalIntMask = OS_IM_ALL;
 #ifdef _FINALROM
 u32 __osFinalrom;
@@ -75,12 +92,41 @@ void INITIALIZE_FUNC() {
     __osSetWatchLo(0x4900000);
 #endif
 
-    while (__osSiRawReadIo(PIF_RAM_END - 3, &pifdata)) { // last byte of joychannel ram
+#ifdef BBPLAYER
+    {
+        u32 x, y;
+
+        IO_WRITE(MI_BASE_REG + 0x3C, 0x22000);
+        x = IO_READ(MI_BASE_REG + 0x3C); // MI_HW_INTR_MASK_REG
+        IO_WRITE(MI_BASE_REG + 0x3C, 0x11000);
+        y = IO_READ(MI_BASE_REG + 0x3C); // MI_HW_INTR_MASK_REG
+
+        __osBbIsBb = ((x & 0x140) == 0x140) && ((y & 0x140) == 0);
+    }
+
+    if (__osBbIsBb) {
+        if (IO_READ(PI_BASE_REG + 0x60) & 0xC0000000) { // PI_MISC_REG
+            __osBbIsBb = 2;
+        }
+    }
+
+    if (__osBbIsBb) {
+        osTvType = OS_TV_NTSC;
+        osRomType = 0;
+        osResetType = 0;
+        osVersion = 1;
+    } else {
+#endif
+    while (__osSiRawReadIo(PIF_RAM_END - 3, &pifdata)) { //last byte of joychannel ram
         ;
     }
     while (__osSiRawWriteIo(PIF_RAM_END - 3, pifdata | 8)) {
-        ; // todo: magic contant
+        ; //todo: magic constant
     }
+#ifdef BBPLAYER
+    }
+#endif
+
     *(__osExceptionVector*)UT_VEC = *__osExceptionPreamble;
     *(__osExceptionVector*)XUT_VEC = *__osExceptionPreamble;
     *(__osExceptionVector*)ECC_VEC = *__osExceptionPreamble;
@@ -115,13 +161,34 @@ void INITIALIZE_FUNC() {
     }
 
 #if BUILD_VERSION >= VERSION_J
-    // Wait until there are no RCP interrupts
+    // Lock up if PreNMI is pending
     if (__osGetCause() & CAUSE_IP5) {
         while (TRUE) {
             ;
         }
     }
 
+#ifdef BBPLAYER
+    if (!__osBbIsBb) {
+        // On iQue these are set before the game runs
+        __osBbEepromSize = 0x200;
+        __osBbPakSize = 0x8000;
+        __osBbFlashSize = 0x20000;
+        __osBbEepromAddress = 0x803FFE00;
+        __osBbPakAddress[0] = 0x803F7E00;
+        __osBbPakAddress[1] = 0;
+        __osBbPakAddress[2] = 0;
+        __osBbPakAddress[3] = 0;
+        __osBbFlashAddress = 0x803E0000;
+        __osBbSramSize = 0x20000;
+        __osBbSramAddress = 0x803E0000;
+    } else {
+        IO_WRITE(PI_BASE_REG + 0x64, IO_READ(PI_BASE_REG + 0x64) & 0x7FFFFFFF);
+        IO_WRITE(MI_BASE_REG + 0x3C, 0x20000); // MI_HW_INTR_MASK_REG
+        IO_WRITE(SI_BASE_REG + 0x0C, 0);
+        IO_WRITE(SI_BASE_REG + 0x1C, (IO_READ(SI_BASE_REG + 0x1C) & 0x80FFFFFF) | 0x2F400000);
+    }
+#endif
     IO_WRITE(AI_CONTROL_REG, AI_CONTROL_DMA_ON);
     IO_WRITE(AI_DACRATE_REG, AI_MAX_DAC_RATE - 1);
     IO_WRITE(AI_BITRATE_REG, AI_MAX_BIT_RATE - 1);
@@ -221,4 +288,8 @@ static void SPEED_PARAM_FUNC(void) {
     __Dom2SpeedParam.pageSize = IO_READ(PI_BSD_DOM2_PGS_REG);
     __Dom2SpeedParam.relDuration = IO_READ(PI_BSD_DOM2_RLS_REG);
 }
+#endif
+
+#ifdef BBPLAYER
+#ident "$Revision: 1.1 $"
 #endif

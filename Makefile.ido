@@ -1,17 +1,17 @@
 COMPILER := ido
-AS := tools/ido/cc
-CC := tools/ido/cc
+export COMPILER_PATH := $(WORKING_DIR)/tools/ido
+
+CC := $(COMPILER_PATH)/cc
 AR_OLD := tools/ar.py
 PATCH_AR_FLAGS := 40001 110 100644
 STRIP =
-
-export COMPILER_PATH := $(WORKING_DIR)/tools/ido
 
 CFLAGS := -c -Wab,-r4300_mul -G 0 -nostdinc -Xcpluscomm -fullwarn -woff 516,649,838,712
 ASFLAGS := -c -Wab,-r4300_mul -G 0 -nostdinc -woff 516,649,838,712
 CPPFLAGS = -D_MIPS_SZLONG=32 $(GBIDEFINE) $(VERSION_DEFINE) $(PICFLAGS) $(DEBUGFLAG)
 IINC = -I $(WORKING_DIR)/include -I $(WORKING_DIR)/include/ido -I $(WORKING_DIR)/include/PR
 MIPS_VERSION := -mips2 -o32
+REG_SIZES :=
 PICFLAGS := -non_shared
 
 ifeq ($(findstring _d,$(TARGET)),_d)
