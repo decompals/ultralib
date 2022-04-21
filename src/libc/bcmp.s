@@ -16,7 +16,7 @@ LEAF(bcmp)
     subu a2, a2, t8
     beqz t8, wordcmp
     
-    move v0, v1
+    addu v0, v1, zero
     lwl v0, 0(a0)
     lwl v1, 0(a1)
     addu a0, a0, t8
@@ -83,7 +83,7 @@ bytecmp:
     bne a0, a3, 1b 
 
 cmpdone:
-    move v0, zero
+    addu v0, zero, zero
     jr ra
 cmpne:
     li v0, 1

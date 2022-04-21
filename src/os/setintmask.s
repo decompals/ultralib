@@ -17,8 +17,12 @@ LEAF(osSetIntMask)
 
     la t0, __OSGlobalIntMask
     lw t3, 0(t0)
- 
-    xor t0, t3,-1
+
+#ifdef BBPLAYER
+    xor t0, t3, 0xFFFFFFFF
+#else
+    xor t0, t3, ~0
+#endif
     andi t0, t0,(SR_IMASK)
     or v0, v0,t0
 
@@ -26,7 +30,11 @@ LEAF(osSetIntMask)
     beqz t2, 1f
     srl t1, t3,0x10
 
-    xor t1, t1,-1
+#ifdef BBPLAYER
+    xor t1, t1, 0xFFFFFFFF
+#else
+    xor t1, t1, ~0
+#endif
     andi t1, t1, MI_INTR_MASK
     or t2, t2,t1
 1:

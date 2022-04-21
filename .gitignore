@@ -17,6 +17,7 @@ build/
 expected/
 notes/
 tools/gcc
+tools/gcc-ique
 *.elf
 *.o
 *.a

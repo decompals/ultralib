@@ -51,13 +51,14 @@ x:;							\
 #define	EXPORT(x)					\
 	.globl	x;					\
 x:
-/*
+
+#ifdef BBPLAYER
 #define WEAK(x, y) \
 	.weak x; \
-	.set x,y;
-*/
-
+	.equ x, y;
+#else
 #define WEAK(x, y)
+#endif
 
 #define STAY1(stmnt) .set noreorder; stmnt; .set reorder;
 #define STAY2(stmnt, arg1) .set noreorder; stmnt, arg1; .set reorder;

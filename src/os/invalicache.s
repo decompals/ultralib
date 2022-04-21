@@ -2,8 +2,12 @@
 #include "sys/asm.h"
 #include "sys/regdef.h"
 
+.set mips3
+
 .text
+
 .set noreorder
+
 LEAF(osInvalICache)
 	blez a1, 2f
 	nop

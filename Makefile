@@ -1,6 +1,6 @@
 NON_MATCHING ?= 0
 
-TARGET := libgultra_rom
+TARGET := libultra_rom_iQue
 BASE_DIR := base_$(TARGET)
 BASE_AR := $(TARGET).a
 BUILD_DIR := build
@@ -10,25 +10,51 @@ WORKING_DIR := $(shell pwd)
 
 CPP := cpp -P
 AR := ar
-AS := tools/gcc/as
-CC := tools/gcc/gcc
-AR_OLD := tools/gcc/ar
 
+ifeq ($(findstring _iQue,$(TARGET)),_iQue)
+export COMPILER_PATH := $(WORKING_DIR)/tools/gcc-ique
+CC := mips-linux-gcc
+AR_OLD := mips-linux-ar
+else
 export COMPILER_PATH := $(WORKING_DIR)/tools/gcc
+CC := $(WORKING_DIR)/tools/gcc/gcc
+AR_OLD := tools/gcc/ar
+endif
 
-CFLAGS := -w -nostdinc -c -G 0 -mgp32 -mfp32 -mips3 -D_LANGUAGE_C 
-ASFLAGS := -w -nostdinc -c -G 0 -mgp32 -mfp32 -mips3 -DMIPSEB -D_LANGUAGE_ASSEMBLY -D_MIPS_SIM=1 -D_ULTRA64 -x assembler-with-cpp
+CFLAGS := -w -nostdinc -c -G 0 -D_LANGUAGE_C -mgp32 -mfp32
+ifeq ($(findstring _iQue,$(TARGET)),_iQue)
+CFLAGS += -fno-PIC -mips2 -mno-abicalls -mcpu=4300 -D__sgi
+else
+CFLAGS += -mips3
+endif
+
+ASFLAGS := -non_shared -fno-PIC -w -nostdinc -mcpu=4300 -c -G 0 -mips2 -DMIPSEB -D_LANGUAGE_ASSEMBLY -D_MIPS_SIM=1 -D_ULTRA64 -x assembler-with-cpp
+
 GBIDEFINE := -DF3DEX_GBI_2
 CPPFLAGS = -D_MIPS_SZLONG=32 -D__USE_ISOC99 -I $(WORKING_DIR)/include -I $(WORKING_DIR)/include/gcc -I $(WORKING_DIR)/include/PR $(GBIDEFINE)
+
 OPTFLAGS := -O3
+
+ifeq ($(findstring _iQue,$(TARGET)),_iQue)
+CPPFLAGS += -DBBPLAYER
+OPTFLAGS := -O2
+else
+OPTFLAGS := -O3
+endif
 
 ifeq ($(findstring _d,$(TARGET)),_d)
 CPPFLAGS += -D_DEBUG
+OPTFLAGS += -g
 else
 CPPFLAGS += -DNDEBUG -D_FINALROM
 endif
 
+ifeq ($(findstring _iQue,$(TARGET)),_iQue)
 SRC_DIRS := $(shell find src -type d)
+else
+SRC_DIRS := $(shell find src -type d -not -path "src/bb/*")
+endif
+
 ASM_DIRS := $(shell find asm -type d -not -path "asm/non_matchings*")
 C_FILES  := $(foreach dir,$(SRC_DIRS),$(wildcard $(dir)/*.c))
 S_FILES  := $(foreach dir,$(SRC_DIRS) $(ASM_DIRS),$(wildcard $(dir)/*.s))
@@ -40,15 +66,25 @@ O_FILES  := $(foreach f,$(S_FILES:.s=.o),$(BUILD_DIR)/$f) \
 MARKER_FILES := $(O_FILES:.o=.marker)
 
 ifneq ($(NON_MATCHING),1)
-COMPARE_OBJ = cmp $(BASE_DIR)/$(@F:.marker=.o) $(@:.marker=.o) && echo "$(@:.marker=.o): OK"
+
+ifeq ($(findstring _iQue,$(TARGET)),_iQue)
+COMPARE_OBJ = mips-linux-objcopy -p -S $(BASE_DIR)/$(@F:.marker=.o) $(BASE_DIR)/$(@F:.marker=.cmp.o) && \
+              mips-linux-objcopy -p -S $(WORKING_DIR)/$(@:.marker=.o) $(WORKING_DIR)/$(@:.marker=.cmp.o) && \
+              dd if=$(BASE_DIR)/$(@F:.marker=.o) bs=1 count=4 skip=36 seek=36 conv=notrunc of=$(WORKING_DIR)/$(@:.marker=.cmp.o) 2>/dev/null && \
+              cmp $(BASE_DIR)/$(@F:.marker=.cmp.o) $(WORKING_DIR)/$(@:.marker=.cmp.o) && echo "$(@:.marker=.o): OK"
+COMPARE_AR = echo "$@: Cannot compare archive currently"
+else
+COMPARE_OBJ = cmp $(BASE_DIR)/$(@F:.marker=.o) $(WORKING_DIR)/$(@:.marker=.o) && echo "$(@:.marker=.o): OK"
 COMPARE_AR = cmp $(BASE_AR) $@ && echo "$@: OK"
+endif
 else
 COMPARE_OBJ :=
 COMPARE_AR :=
 AR_OLD := $(AR)
 endif
 
-BASE_OBJS := $(wildcard $(BASE_DIR)/*.o)
+BASE_OBJS := $(shell find $(BASE_DIR) -type f -not -name "*.cmp.o")
+
 # Try to find a file corresponding to an archive file in any of src/ asm/ or the base directory, prioritizing src then asm then the original file
 AR_ORDER = $(foreach f,$(shell $(AR) t $(BASE_AR)),$(shell find $(BUILD_DIR)/src $(BUILD_DIR)/asm $(BUILD_DIR)/$(BASE_DIR) -name $f -type f -print -quit))
 MATCHED_OBJS = $(filter-out $(BUILD_DIR)/$(BASE_DIR)/%,$(AR_ORDER))
@@ -93,10 +129,8 @@ export VR4300MUL := ON
 $(BUILD_DIR)/$(BASE_DIR)/%.marker: $(BASE_DIR)/%.o
 	cp $< $(@:.marker=.o)
 ifneq ($(NON_MATCHING),1)
-#	@$(COMPARE_OBJ)
 # change file timestamps to match original
 	@touch -r $(BASE_DIR)/$(@F:.marker=.o) $(@:.marker=.o)
-	@$(COMPARE_OBJ)
 	@touch $@
 endif
 
@@ -116,31 +150,33 @@ $(BUILD_DIR)/src/os/%.marker: ASFLAGS += -P
 $(BUILD_DIR)/src/gu/%.marker: ASFLAGS += -P
 $(BUILD_DIR)/src/libc/%.marker: ASFLAGS += -P
 $(BUILD_DIR)/src/voice/%.marker: OPTFLAGS += -DLANG_JAPANESE -I$(WORKING_DIR)/src -I$(WORKING_DIR)/src/voice
-$(BUILD_DIR)/src/voice/%.marker: CC := tools/compile_sjis.py -D__CC=$(WORKING_DIR)/$(CC)
+$(BUILD_DIR)/src/voice/%.marker: CC := $(WORKING_DIR)/tools/compile_sjis.py -D__CC=$(CC)
 
 $(BUILD_DIR)/%.marker: %.c
-	cd $(<D) && $(WORKING_DIR)/$(CC) $(CFLAGS) $(CPPFLAGS) $(OPTFLAGS) $(<F) -o $(WORKING_DIR)/$(@:.marker=.o)
+	cd $(<D) && $(CC) $(CFLAGS) $(CPPFLAGS) $(OPTFLAGS) $(<F) -o $(WORKING_DIR)/$(@:.marker=.o)
 ifneq ($(NON_MATCHING),1)
+	python3 tools/patch_64bit_compile.py $(WORKING_DIR)/$(@:.marker=.o)
 # check if this file is in the archive; patch corrupted bytes and change file timestamps to match original if so
-	@$(if $(findstring $(BASE_DIR)/$(@F:.marker=.o), $(BASE_OBJS)), \
-	 python3 tools/fix_objfile.py $(@:.marker=.o) $(BASE_DIR)/$(@F:.marker=.o) && \
+	$(if $(findstring $(BASE_DIR)/$(@F:.marker=.o), $(BASE_OBJS)), \
+	 python3 tools/fix_objfile.py $(@:.marker=.o) $(BASE_DIR)/$(@F:.marker=.o) $(STRIP) && \
 	 $(COMPARE_OBJ) && \
 	 touch -r $(BASE_DIR)/$(@F:.marker=.o) $(@:.marker=.o), \
-	 echo "Object file $(<F:.marker=.o) is not in the current archive" \
+	 @echo "Object file $(<F:.marker=.o) is not in the current archive" \
 	)
 # create or update the marker file
 	@touch $@
 endif
 
 $(BUILD_DIR)/%.marker: %.s
-	cd $(<D) && $(WORKING_DIR)/$(CC) $(ASFLAGS) $(CPPFLAGS) -I. $(OPTFLAGS) $(<F) -o $(WORKING_DIR)/$(@:.marker=.o)
+	cd $(<D) && $(CC) $(ASFLAGS) $(CPPFLAGS) -I. $(OPTFLAGS) $(<F) -o $(WORKING_DIR)/$(@:.marker=.o)
 ifneq ($(NON_MATCHING),1)
+	python3 tools/patch_64bit_compile.py $(WORKING_DIR)/$(@:.marker=.o)
 # check if this file is in the archive; patch corrupted bytes and change file timestamps to match original if so
-	@$(if $(findstring $(BASE_DIR)/$(@F:.marker=.o), $(BASE_OBJS)), \
+	$(if $(findstring $(BASE_DIR)/$(@F:.marker=.o), $(BASE_OBJS)), \
 	 python3 tools/fix_objfile.py $(@:.marker=.o) $(BASE_DIR)/$(@F:.marker=.o) && \
 	 $(COMPARE_OBJ) && \
 	 touch -r $(BASE_DIR)/$(@F:.marker=.o) $(@:.marker=.o), \
-	 echo "Object file $(<F:.marker=.o) is not in the current archive" \
+	 @echo "Object file $(<F:.marker=.o) is not in the current archive" \
 	)
 # create or update the marker file
 	@touch $@

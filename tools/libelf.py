@@ -5,7 +5,8 @@
 
 import struct
 
-from mdebug import EcoffHDRR, EcoffFdr, EcoffPdr, EcoffLiner, EcoffSymr
+from mdebug import EcoffHDRR, EcoffFdr
+from STABS import STABSContext
 
 # =====================================================================================================
 # Utility
@@ -1003,7 +1004,8 @@ class MdebugSection(Section):
         super().__init__(header, elf_file, index)
         self.parent = self.elf_file
         self.hdrr = EcoffHDRR(self.data)
- 
+        self.stabs_ctx = STABSContext()
+
         self.fdrs = []
         for i in range(self.hdrr.ifdMax):
             fdr = EcoffFdr.from_binary(self, i)

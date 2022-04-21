@@ -3,9 +3,16 @@
 #include "sys/regdef.h"
 
 .text
+
+#ifdef BBPLAYER
+WEAK(bcopy, _bcopy)
+LEAF(_bcopy)
+#else
 WEAK(_bcopy, bcopy)
 LEAF(bcopy)
-    move a3, a1
+#endif
+
+    addu a3, a1, zero
     beqz a2, ret
     beq a0, a1, ret
     blt a1, a0, goforwards
@@ -33,7 +40,7 @@ forwards_bytecopy:
     addiu a1, a1, 1
     bne a0, v1, 99b
 ret:
-    move v0, a3
+    addu v0, a3, zero
     jr ra
 
 forwalignable:
@@ -134,8 +141,8 @@ backwards_bytecopy:
     sb v0, 0(a1)
     addiu a1, a1, -1
     bne a0, v1,99b
+    addu v0, a3, zero
 
-    move v0, a3
     jr ra
 backalignable:
     beqz v0, backwards
@@ -212,7 +219,12 @@ backwards_4:
     addiu a1, a1, -4
     addiu a2, a2, -4
     b backwards_4
-    
+
+#ifdef BBPLAYER
+END(_bcopy)
+#else
 END(bcopy)
+#endif
+
 /*
 */
