@@ -3,7 +3,8 @@ NON_MATCHING ?= 0
 # One of:
 # libgultra_rom, libgultra_d, libgultra
 # libultra_rom, libultra_d, libultra
-TARGET ?= libgultra_rom
+# libultra_rom_iQue
+TARGET ?= libultra_rom_iQue
 CROSS ?= mips-linux-gnu-
 
 BASE_DIR := base_$(TARGET)
@@ -17,7 +18,9 @@ WORKING_DIR := $(shell pwd)
 CPP := cpp -P
 AR := ar
 
-ifeq ($(findstring libgultra,$(TARGET)),libgultra)
+ifeq ($(findstring _iQue,$(TARGET)),_iQue)
+-include Makefile.egcs
+else ifeq ($(findstring libgultra,$(TARGET)),libgultra)
 -include Makefile.gcc
 else ifeq ($(findstring libultra,$(TARGET)),libultra)
 -include Makefile.ido
@@ -35,7 +38,13 @@ ifeq ($(findstring _rom,$(TARGET)),_rom)
 CPPFLAGS += -D_FINALROM
 endif
 
+ifeq ($(findstring _iQue,$(TARGET)),_iQue)
+CPPFLAGS += -DBBPLAYER
 SRC_DIRS := $(shell find src -type d)
+else
+SRC_DIRS := $(shell find src -type d -not -path "src/bb/*")
+endif
+
 ASM_DIRS := $(shell find asm -type d -not -path "asm/non_matchings*")
 C_FILES  := $(foreach dir,$(SRC_DIRS),$(wildcard $(dir)/*.c))
 S_FILES  := $(foreach dir,$(SRC_DIRS) $(ASM_DIRS),$(wildcard $(dir)/*.s))
@@ -47,20 +56,29 @@ O_FILES  := $(foreach f,$(S_FILES:.s=.o),$(BUILD_DIR)/$f) \
 MARKER_FILES := $(O_FILES:.o=.marker)
 
 ifneq ($(NON_MATCHING),1)
-COMPARE_OBJ = cmp $(BASE_DIR)/$(@F:.marker=.o) $(@:.marker=.o) && echo "$(@:.marker=.o): OK"
+
+ifeq ($(findstring _iQue,$(TARGET)),_iQue)
+COMPARE_OBJ = $(CROSS)objcopy -p --strip-debug $(WORKING_DIR)/$(@:.marker=.o) $(WORKING_DIR)/$(@:.marker=.cmp.o) && \
+              cmp $(BASE_DIR)/.cmp/$(@F:.marker=.cmp.o) $(WORKING_DIR)/$(@:.marker=.cmp.o) && echo "$(@:.marker=.o): OK"
+COMPARE_AR = echo "$@: Cannot compare archive currently"
+else ifeq ($(COMPILER),gcc)
+COMPARE_OBJ = cmp $(BASE_DIR)/$(@F:.marker=.o) $(WORKING_DIR)/$(@:.marker=.o) && echo "$(@:.marker=.o): OK"
 COMPARE_AR = cmp $(BASE_AR) $@ && echo "$@: OK"
-ifeq ($(COMPILER),ido)
+else
 COMPARE_OBJ = $(CROSS)objcopy -p --strip-debug $(WORKING_DIR)/$(@:.marker=.o) $(WORKING_DIR)/$(@:.marker=.cmp.o) && \
               cmp $(BASE_DIR)/.cmp/$(@F:.marker=.cmp.o) $(WORKING_DIR)/$(@:.marker=.cmp.o) && echo "$(@:.marker=.o): OK"
 COMPARE_AR = echo "$@: Cannot compare archive currently"
 endif
+
 else
+
 COMPARE_OBJ :=
 COMPARE_AR :=
 AR_OLD := $(AR)
 endif
 
-BASE_OBJS := $(wildcard $(BASE_DIR)/*.o)
+BASE_OBJS := $(shell find $(BASE_DIR) -type f -not -name "*.cmp.o")
+
 # Try to find a file corresponding to an archive file in any of src/ asm/ or the base directory, prioritizing src then asm then the original file
 AR_ORDER = $(foreach f,$(shell $(AR) t $(BASE_AR)),$(shell find $(BUILD_DIR)/src $(BUILD_DIR)/asm $(BUILD_DIR)/$(BASE_DIR) -iname $f -type f -print -quit))
 MATCHED_OBJS = $(filter-out $(BUILD_DIR)/$(BASE_DIR)/%,$(AR_ORDER))
@@ -95,7 +113,7 @@ setup:
 	$(MAKE) -C tools
 	cd $(BASE_DIR) && $(AR) xo ../$(BASE_AR)
 	chmod -R +rw $(BASE_DIR)
-ifeq ($(COMPILER),ido)
+ifneq ($(COMPILER),gcc)
 	export CROSS=$(CROSS) && ./tools/strip_debug.sh $(BASE_DIR)
 endif
 
@@ -104,7 +122,6 @@ $(BUILD_DIR)/$(BASE_DIR)/%.marker: $(BASE_DIR)/%.o
 ifneq ($(NON_MATCHING),1)
 # change file timestamps to match original
 	@touch -r $(BASE_DIR)/$(@F:.marker=.o) $(@:.marker=.o)
-	@$(COMPARE_OBJ)
 	@touch $@
 endif
 
@@ -120,7 +137,7 @@ $(BUILD_DIR)/src/voice/%.marker: OPTFLAGS += -DLANG_JAPANESE -I$(WORKING_DIR)/sr
 $(BUILD_DIR)/src/voice/%.marker: CC := tools/compile_sjis.py -D__CC=$(WORKING_DIR)/$(CC) -D__BUILD_DIR=$(BUILD_DIR)
 
 $(BUILD_DIR)/%.marker: %.c
-	cd $(<D) && $(WORKING_DIR)/$(CC) $(CFLAGS) $(MIPS_VERSION) $(CPPFLAGS) $(OPTFLAGS) $(<F) $(IINC) -o $(WORKING_DIR)/$(@:.marker=.o)
+	cd $(<D) && $(WORKING_DIR)/$(CC) $(CFLAGS) $(MIPS_VERSION) $(REG_SIZES) $(CPPFLAGS) $(OPTFLAGS) $(<F) $(IINC) -o $(WORKING_DIR)/$(@:.marker=.o)
 ifneq ($(NON_MATCHING),1)
 # check if this file is in the archive; patch corrupted bytes and change file timestamps to match original if so
 	@$(if $(findstring $(BASE_DIR)/$(@F:.marker=.o), $(BASE_OBJS)), \
@@ -134,8 +151,9 @@ ifneq ($(NON_MATCHING),1)
 endif
 
 $(BUILD_DIR)/%.marker: %.s
-	cd $(<D) && $(WORKING_DIR)/$(CC) $(ASFLAGS) $(MIPS_VERSION) $(CPPFLAGS) $(ASOPTFLAGS) $(<F) $(IINC) -o $(WORKING_DIR)/$(@:.marker=.o)
+	cd $(<D) && $(WORKING_DIR)/$(CC) $(ASFLAGS) $(MIPS_VERSION) $(REG_SIZES) $(CPPFLAGS) $(ASOPTFLAGS) $(<F) $(IINC) -o $(WORKING_DIR)/$(@:.marker=.o)
 ifneq ($(NON_MATCHING),1)
+	python3 tools/patch_64bit_compile.py $(WORKING_DIR)/$(@:.marker=.o)
 # check if this file is in the archive; patch corrupted bytes and change file timestamps to match original if so
 	@$(if $(findstring $(BASE_DIR)/$(@F:.marker=.o), $(BASE_OBJS)), \
 	 python3 tools/fix_objfile.py $(@:.marker=.o) $(BASE_DIR)/$(@F:.marker=.o) $(STRIP) && \
@@ -154,8 +172,9 @@ $(MDEBUG_FILES): $(BUILD_DIR)/src/%.marker: src/%.s
 	export USR_INCLUDE=$(WORKING_DIR)/include && cd $(@:.marker=) && $(WORKING_DIR)/$(CC) $(ASFLAGS) $(CPPFLAGS) ../$(<F) -I/usr/include -o $(notdir $(<:.s=.o))
 	mv $(@:.marker=)/$(<F:.s=.o) $(@:.marker=)/..
 ifneq ($(NON_MATCHING),1)
+	python3 tools/patch_64bit_compile.py $(WORKING_DIR)/$(@:.marker=.o)
 # check if this file is in the archive; patch corrupted bytes and change file timestamps to match original if so
-	@$(if $(findstring $(BASE_DIR)/$(@F:.marker=.o), $(BASE_OBJS)), \
+	$(if $(findstring $(BASE_DIR)/$(@F:.marker=.o), $(BASE_OBJS)), \
 	 python3 tools/fix_objfile.py $(@:.marker=.o) $(BASE_DIR)/$(@F:.marker=.o) && \
 	 $(COMPARE_OBJ) && \
 	 touch -r $(BASE_DIR)/$(@F:.marker=.o) $(@:.marker=.o), \

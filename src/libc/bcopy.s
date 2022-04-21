@@ -3,6 +3,7 @@
 #include "sys/regdef.h"
 
 .text
+
 #ifdef __sgi
 WEAK(bcopy, _bcopy)
 #else
@@ -37,7 +38,7 @@ forwards_bytecopy:
     addiu a1, a1, 1
     bne a0, v1, 99b
 ret:
-    move v0, a3
+    addu v0, a3, zero
     jr ra
 
 forwalignable:
@@ -138,8 +139,8 @@ backwards_bytecopy:
     sb v0, 0(a1)
     addiu a1, a1, -1
     bne a0, v1,99b
+    addu v0, a3, zero
 
-    move v0, a3
     jr ra
 backalignable:
     beqz v0, backwards

@@ -13,8 +13,11 @@ https://opensource.apple.com/source/gcc_legacy/gcc_legacy-938/gcc/mips-tdump.c.a
 https://github.com/uhhpctools/openuh/blob/master/osprey-gcc-4.2.0/gcc/mips-tdump.c
 https://github.com/bminor/binutils-gdb/blob/master/gdb/mdebugread.c
 
+
 (stabs docs):
+https://github.com/astrelsky/ghidra/blob/StabsParser/Ghidra/Features/Base/src/main/java/ghidra/app/util/bin/format/stabs/
 https://sourceware.org/gdb/current/onlinedocs/stabs.html
+https://opensource.apple.com/source/gdb/gdb-213/doc/stabs.pdf
 
 (ecoff docs):
 https://web.archive.org/web/20160305114748/http://h41361.www4.hp.com/docs/base_doc/DOCUMENTATION/V50A_ACRO_SUP/OBJSPEC.PDF
@@ -25,6 +28,12 @@ https://kernel.googlesource.com/pub/scm/linux/kernel/git/hjl/binutils/+/hjl/seco
 
 from enum import IntEnum
 import struct
+
+from STABS import STABS
+
+# Version 1 is the version that IDO emits
+# Version 2 is the version that EGCS emits
+MDEBUG_VERSION = 2
 
 class EcoffBt(IntEnum): # Basic Type
     NIL         =  0 # 
@@ -354,30 +363,64 @@ class EcoffSymr:
         self._reserved = get_bitrange(bits, 20, 1)
         self.index = get_bitrange(bits, 0, 20)
 
+        assert self._reserved == 0 # Sanity check
+
         self.name = self.fdr.read_string(self.iss)
         self.type_name = None
 
+        if 'stabs_continuations' not in EcoffSymr.__init__.__dict__:
+            EcoffSymr.__init__.stabs_continuations = set()
+
+        self.is_stab = (self.index & 0xFFF00) == 0x8F300
+        self.is_stab_continuation = self.iss in EcoffSymr.__init__.stabs_continuations
+        # STAB continuation
+        if self.is_stab and not self.is_stab_continuation and len(self.name) != 0:
+            while self.name[-1] == '\\':
+                # TODO hack, assumes all continuations are in order in the string table
+                # which may not necessarily be the case, but it seems to be here
+                iss = self.iss + len(self.name) + 1
+                self.name = self.name[:-1] + self.fdr.read_string(iss)
+                EcoffSymr.__init__.stabs_continuations.add(iss)
+
         self.c_repr = None
 
-        assert self._reserved == 0 # Sanity check
-
     def link_syms(self):
+        offset = 0 if MDEBUG_VERSION == 1 else self.fdr.isymBase
+
         if self.st == EcoffSt.END:
-            self.start_sym = self.fdr.symrs[self.index]
+            # print(self.fdr.symrs)
+            self.start_sym = self.fdr.symrs[self.index - offset]
         elif self.st in [EcoffSt.BLOCK, EcoffSt.FILE, EcoffSt.STRUCT, EcoffSt.UNION, EcoffSt.ENUM]:
             self.end_sym = self.fdr.symrs[self.index - 1]
         elif self.st in [EcoffSt.PROC, EcoffSt.STATICPROC]:
             aux = self.fdr.auxs[self.index]
-            self.end_sym = self.fdr.symrs[aux.isym - 1]
+            self.end_sym = self.fdr.symrs[aux.isym - offset - 1]
         elif self.st in [EcoffSt.GLOBAL, EcoffSt.STATIC, EcoffSt.PARAM, EcoffSt.LOCAL, EcoffSt.MEMBER, EcoffSt.TYPEDEF, EcoffSt.FORWARD]:
             pass
 
-    def late_init(self):
+    def parse_stab(self, stabs_ctx):
+        stabs = STABS(self.name, stabs_ctx)
+
+        if stabs.c_repr is None:
+            return f"{stabs.name}"
+        else:
+            return f"{stabs.c_repr}"
+
+    def late_init(self, stabs_ctx):
+        offset = 0 if MDEBUG_VERSION == 1 else self.fdr.isymBase
+
+        if self.is_stab:
+            if self.is_stab_continuation:
+                self.c_repr = None
+            else:
+                self.c_repr = self.parse_stab(stabs_ctx)
+            return
+
         if self.st == EcoffSt.END:
             """
             END symbols index the associated begin symbol
             """
-            self.start_sym = self.fdr.symrs[self.index]
+            self.start_sym = self.fdr.symrs[self.index - offset]
             if self.start_sym.st == EcoffSt.BLOCK:
                 self.c_repr = "}"
             elif self.start_sym.st == EcoffSt.FILE:
@@ -452,7 +495,7 @@ class EcoffSymr:
 
     def process_type_information(self, ind):
         c_bt_names = {
-            EcoffBt.NIL         : None, 
+            EcoffBt.NIL         : "", 
             EcoffBt.ADR         : None, 
             EcoffBt.CHAR        : "signed char", 
             EcoffBt.UCHAR       : "char", 
@@ -503,7 +546,9 @@ class EcoffSymr:
             # no type info
             return "", None
 
-        aux = self.fdr.auxs[self.index + ind]
+        offset = 0 if MDEBUG_VERSION == 1 else self.fdr.iauxBase
+
+        aux = self.fdr.auxs[self.index + ind - offset]
         ind += 1
         type_str = ""
 
@@ -530,14 +575,16 @@ class EcoffSymr:
 
         # TODO improve emitting qualified types
         tqs = ""
+        # print(aux.ti.tqs)
         for tq in aux.ti.tqs:
             if tq == EcoffTq.NIL:
-                continue
+                break
+
             if tq == EcoffTq.ARRAY:
                 ind += 2 # skips over some info such as the type of index (always int for C)
                 array_low_aux = self.fdr.auxs[self.index + ind]
                 array_high_aux = self.fdr.auxs[self.index + ind + 1]
-                stride_aux = self.fdr.auxs[self.index + ind + 2]
+                # stride_aux = self.fdr.auxs[self.index + ind + 2]
                 ind += 3
                 tqs += "["
                 if array_high_aux.dnHigh != 0xFFFFFFFF:
@@ -559,7 +606,7 @@ value     = 0x{self.value:08X}
 st        = st{self.st.name}
 sc        = sc{self.sc.name}
 _reserved = {self._reserved}
-index     = 0x{self.index:05X}
+index     = 0x{self.index:05X}{'(STAB)' if self.is_stab else ''}
 name      = {self.name}"""
 
 class EcoffPdr:
@@ -787,7 +834,7 @@ class EcoffFdr:
 
     def late_init(self):
         for symr in self.symrs:
-            symr.late_init()
+            symr.late_init(self.parent.stabs_ctx)
 
     def pdr_forname(self, procedure_name):
         for pdr in self.pdrs:
@@ -815,7 +862,10 @@ class EcoffFdr:
         C prettyprint file
         """
         def print_symbol(symr):
-            return f"{symr.st.name} :: {symr.c_repr}"
+            if symr.is_stab:
+                return f"{symr.c_repr}"
+            else:
+                return f"{symr.st.name} :: {symr.c_repr}"
 
         indent = 0
         out = f"File: {self.name}\n"
@@ -824,9 +874,10 @@ class EcoffFdr:
             if symr.st in [EcoffSt.END]:
                 indent -= 2
 
-            out += " " * indent
-            out += print_symbol(symr)
-            out += "\n"
+            line = f" {' ' * indent}{print_symbol(symr)}"
+            if symr.is_stab:
+                line = line.strip()
+            out += line + "\n"
 
             if symr.st in [EcoffSt.FILE, EcoffSt.STRUCT, EcoffSt.UNION, EcoffSt.PROC, EcoffSt.STATICPROC, EcoffSt.BLOCK]:
                 indent += 2

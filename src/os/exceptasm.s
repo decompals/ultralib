@@ -11,6 +11,10 @@
 #define KMC_WPORT       0xBFF08000
 #define KMC_STAT        0xBFF08004
 
+#ifdef BBPLAYER
+.set mips3
+#endif
+
 .rdata
 
 #define REDISPATCH 0x00
@@ -433,7 +437,11 @@ savecontext:
 /*if any interrupts are enabled*/
     la      t0, __OSGlobalIntMask
     lw      t0, 0(t0)
+#ifdef BBPLAYER
+    xor     t2, t0, 0xffffffff
+#else
     xor     t2, t0, ~0 /* not except not using not */
+#endif
     andi    t2, t2, SR_IMASK
     or      ta0, t1, t2
     and     t3, k1, ~SR_IMASK
@@ -452,7 +460,11 @@ savercp:
     lw      t0, 0(t0)
 
     srl     t0, t0, 0x10
-    xor     t0, t0, ~0
+#ifdef BBPLAYER
+    xor     t0, t0, 0xffffffff
+#else
+    xor     t0, t0, ~0 /* not except not using not */
+#endif
     andi    t0, t0, 0x3f
     lw      ta0, THREAD_RCP(k0)
     and     t0, t0, ta0
@@ -464,7 +476,9 @@ STAY2(mfc0  t0, C0_EPC)
     lw      t0, THREAD_FP(k0)
     beqz    t0, 1f
 STAY2(cfc1  t0, fcr31)
+#ifdef BBPLAYER
     NOP
+#endif
     sw      t0, THREAD_FPCSR(k0)
     sdc1    $f0, THREAD_FP0(k0)
     sdc1    $f2, THREAD_FP2(k0)
@@ -515,6 +529,24 @@ no_rdb_mesg:
     
     li      t2, EXC_INT
     bne     t1, t2, panic
+
+#ifdef BBPLAYER
+    /* Check for pending reset */
+    la      t1, __osShutdown
+    lw      t2, (t1)
+    beqz    t2, handle_interrupt
+    /* Reset is pending, check if 0.5s has passed */
+    la      t1, __osShutdownTime
+    lw      t1, (t1)
+STAY2(mfc0  t2, C0_COUNT)
+    subu    t2, t2, t1
+    li      t1, 0x5000000 /* 0.5s ? */
+    sltu    t1, t1, t2
+    beqz    t1, handle_interrupt
+    /* 0.5s has passed, exit */
+    jal     skExit
+#endif
+
 handle_interrupt:
     and     s0, k1, t0
 next_interrupt:
@@ -562,8 +594,91 @@ cart:
     b       redispatch
     
 1:
+#ifndef BBPLAYER
     li      a0, MESG(OS_EVENT_CART)
     jal     send_mesg
+#else
+
+    lw      s1, PHYS_TO_K1(MI_BASE_REG + 0x38)
+
+flash:
+    andi    t1, s1, 0x40
+    beqz    t1, flashx
+
+    andi    s1, s1, 0x3f80
+    li      t1, 0
+    sw      t1, PHYS_TO_K1(PI_BASE_REG + 0x48)
+    li      a0, MESG(OS_EVENT_FLASH)
+    jal     send_mesg
+flashx:
+
+md:
+    andi    t1, s1, 0x2000
+    beqz    t1, mdx
+
+    andi    s1, s1, 0x1fc0
+    li      t1, 0x2000
+    sw      t1, PHYS_TO_K1(MI_BASE_REG + 0x38)
+    li      a0, MESG(OS_EVENT_MD)
+    jal     send_mesg
+mdx:
+
+aes:
+    andi    t1, s1, 0x80
+    beqz    t1, aesx
+
+    andi    s1, s1, 0x3f40
+    li      t1, 0x4000
+    sw      t1, PHYS_TO_K1(MI_BASE_REG + 0x3C)
+    li      a0, MESG(OS_EVENT_AES)
+    jal     send_mesg
+aesx:
+
+ide:
+    andi    t1, s1, 0x100
+    beqz    t1, idex
+
+    andi    s1, s1, 0x3ec0
+    li      t1, 0x10000
+    sw      t1, PHYS_TO_K1(MI_BASE_REG + 0x3C)
+    li      a0, MESG(OS_EVENT_IDE)
+    jal     send_mesg
+idex:
+
+pi_err:
+    andi    t1, s1, 0x200
+    beqz    t1, pi_errx
+
+    andi    s1, s1, 0x3dc0
+    li      t1, 0x40000
+    sw      t1, PHYS_TO_K1(MI_BASE_REG + 0x3C)
+    li      a0, MESG(OS_EVENT_PI_ERR)
+    jal     send_mesg
+pi_errx:
+
+usb0:
+    andi    t1, s1,0x400
+    beqz    t1, usb0x
+
+    andi    s1, s1, 0x3bc0
+    li      t1, 0x100000
+    sw      t1, PHYS_TO_K1(MI_BASE_REG + 0x3C)
+    li      a0, MESG(OS_EVENT_USB0)
+    jal     send_mesg
+usb0x:
+
+usb1:
+    andi    t1, s1, 0x800
+    beqz    t1, usb1x
+
+    andi    s1, s1, 0x37c0
+    li      t1, 0x400000
+    sw      t1, PHYS_TO_K1(MI_BASE_REG + 0x3C)
+    li      a0, MESG(OS_EVENT_USB1)
+    jal     send_mesg
+usb1x:
+
+#endif
     b       next_interrupt
 
 rcp:
@@ -687,6 +802,12 @@ prenmi:
 firstnmi:
     li      t2, 1
     sw      t2, 0(t1) /* __osShutdown */
+#ifdef BBPLAYER
+    /* Save reset time */
+STAY2(mfc0  t2, C0_COUNT)
+    la      t1, __osShutdownTime
+    sw      t2, 0(t1)
+#endif
     li      a0, MESG(OS_EVENT_PRENMI)
     jal     send_mesg
 
@@ -837,7 +958,11 @@ STAY2(mfc0  t0, C0_SR)
     sw      ra, THREAD_PC(a1)
     lw      k1, THREAD_FP(a1)
     beqz    k1, 1f
+#ifdef BBPLAYER
+STAY2(cfc1  k1, fcr31)
+#else
     cfc1    k1, fcr31
+#endif
     sw      k1, THREAD_FPCSR(a1)
     sdc1    $f20, THREAD_FP20(a1)
     sdc1    $f22, THREAD_FP22(a1)
@@ -852,7 +977,11 @@ STAY2(mfc0  t0, C0_SR)
 
     la      t0, __OSGlobalIntMask
     lw      t0, 0(t0)
-    xor     t0, t0, ~0
+#ifdef BBPLAYER
+    xor     t0, t0, 0xffffffff
+#else
+    xor     t0, t0, ~0 /* not except not using not */
+#endif
     andi    t0, t0, SR_IMASK
     or      t1, t1, t0
     and     k1, k1, ~SR_IMASK
@@ -866,7 +995,11 @@ STAY2(mfc0  t0, C0_SR)
     lw      k0, 0(k0)
 
     srl     k0, k0, 0x10
-    xor     k0, k0, ~0
+#ifdef BBPLAYER
+    xor     k0, k0, 0xffffffff
+#else
+    xor     k0, k0, ~0 /* not except not using not */
+#endif
     andi    k0, k0, 0x3f
     lw      t0, THREAD_RCP(a1)
     and     k0, k0, t0

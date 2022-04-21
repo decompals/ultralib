@@ -2,6 +2,8 @@
 #include "sys/asm.h"
 #include "sys/regdef.h"
 
+.set mips3
+
 .text
 LEAF(osInvalDCache)
     blez a1, 3f

@@ -2,7 +2,10 @@
 #include "sys/asm.h"
 #include "sys/regdef.h"
 
+.set mips3
+
 .text
+
 LEAF(osInvalICache)
 	blez a1, 2f
 
@@ -18,10 +21,10 @@ LEAF(osInvalICache)
 	subu t0, t0, t2
 1:
 	CACHE((C_HINV|CACH_PI), (t0))
-    .set noreorder
+  .set noreorder
 	bltu t0, t1, 1b
 	addiu t0, t0, ICACHE_LINESIZE
-    .set reorder
+  .set reorder
 2:
 	jr ra
 
@@ -31,10 +34,10 @@ LEAF(osInvalICache)
 	addiu t1, t1, -ICACHE_LINESIZE
 4:
 	CACHE((C_IINV|CACH_PI), (t0))
-    .set noreorder
+  .set noreorder
 	bltu t0, t1, 4b
 	addiu t0, t0, ICACHE_LINESIZE
-    .set reorder
+  .set reorder
 
 	jr ra
 

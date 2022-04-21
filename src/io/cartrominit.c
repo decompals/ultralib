@@ -5,10 +5,11 @@
 #include "piint.h"
 
 OSPiHandle __CartRomHandle ALIGNED(8);
+
 OSPiHandle* osCartRomInit(void) {
-    u32 value = 0;
+    u32 value; // value = 0;
     u32 saveMask;
-    static int first = 1;
+    static int first = TRUE;
     register u32 stat;
     u32 latency;
     u32 pulse;
@@ -22,7 +23,7 @@ OSPiHandle* osCartRomInit(void) {
         return &__CartRomHandle;
     }
 
-    first = 0;
+    first = FALSE;
     __CartRomHandle.type = DEVICE_TYPE_CART;
     __CartRomHandle.baseAddress = PHYS_TO_K1(PI_DOM1_ADDR2);
     __CartRomHandle.domain = PI_DOMAIN1;
