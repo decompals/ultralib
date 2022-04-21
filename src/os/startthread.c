@@ -1,4 +1,5 @@
 #include "PR/os_internal.h"
+#include "PR/ultraerror.h"
 #include "osint.h"
 
 void osStartThread(OSThread *t) {
@@ -22,6 +23,12 @@ void osStartThread(OSThread *t) {
                 __osEnqueueThread(&__osRunQueue, __osPopThread(t->queue));
             }
             break;
+#ifdef _DEBUG
+        default:
+		    __osError(ERR_OSSTARTTHREAD, 0);
+		    __osRestoreInt(saveMask);
+		    return 0;
+#endif
     }
 
     if (__osRunningThread == NULL) {
