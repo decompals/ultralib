@@ -18,7 +18,7 @@ $(GCC-2.7.2): | $(GCC_DIR)
 	$(RM) gcc-2.7.2-linux.tar.gz
 
 $(STRIP-2.7): | $(GCC_DIR)
-	wget https://github.com/decompals/mips-binutils-2.7/releases/download/main/binutils-2.7.tar.gz
+	wget https://github.com/decompals/mips-binutils-2.7/releases/download/release/binutils-2.7.tar.gz
 	tar xf binutils-2.7.tar.gz -C $(GCC_DIR)
 	$(RM) binutils-2.7.tar.gz
 
