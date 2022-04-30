@@ -1,3 +1,5 @@
+#ifndef _FINALROM
+
 #include "PR/os_internal.h"
 #include "PR/rdb.h"
 
@@ -30,3 +32,5 @@ void osReadHost(void* dramAddr, u32 nbytes) {
     osRecvMesg(&readHostMesgQueue, NULL, OS_MESG_BLOCK);
     return;
 }
+
+#endif
