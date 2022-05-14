@@ -3,7 +3,7 @@
 GCC_DIR   := gcc
 AR        := $(GCC_DIR)/ar
 GCC-2.7.2 := $(GCC_DIR)/gcc
-STRIP-2.7 := $(GCC_DIR)/strip.new
+STRIP-2.7 := $(GCC_DIR)/strip-2.7
 
 all: $(AR) $(GCC-2.7.2) $(STRIP-2.7)
 

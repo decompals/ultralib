@@ -52,7 +52,7 @@ class MipsDisasm:
         for section in self.elf_file.sections:
             local_labels = self.section_local_labels.get(section.name, None)
             # debug_log(section)
-            if section.name in ['', '.strtab', '.shstrtab', '.symtab', '.reginfo', '.comment', '.note', '.options', '.mdebug', '.gptab.data'] or \
+            if section.name in ['', '.strtab', '.shstrtab', '.symtab', '.reginfo', '.comment', '.note', '.options', '.mdebug', '.gptab.data', '.gptab.bss'] or \
                 (section.sh_type == SHT_REL or section.sh_type == SHT_RELA):
                 continue
             if section.sh_size == 0:
@@ -240,6 +240,10 @@ class MipsDisasm:
                 if rel.rel_type == R_MIPS_26:
                     if insn.id == MIPS_INS_JAL:
                         op_str = rel.relocated_symbol.name
+                        if op_str == ".text" and cur_fdr is not None:
+                            pdr = cur_fdr.pdr_foraddr(insn.target)
+                            if pdr is not None:
+                                op_str = pdr.name
                     elif insn.id != MIPS_INS_J: # Branch labels for j instructions are also R_MIPS_26 relocations
                         assert False , f"Got unexpected R_MIPS_26 relocation {insn.id}"
                 elif rel.rel_type == R_MIPS_HI16:
@@ -247,6 +251,8 @@ class MipsDisasm:
                     rel_name = rel.relocated_symbol.name
                     if rel.relocated_symbol.type == ST_SECTION:
                         rel_name = f".{rel_name[1].upper()}_00000000"
+                        if cur_fdr is not None:
+                            pass
 
                     op_str = f"{insn.abi.gpr_names[insn.rt]}, %hi({rel_name})"
                 elif rel.rel_type == R_MIPS_LO16:
