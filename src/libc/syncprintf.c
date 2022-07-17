@@ -12,6 +12,8 @@ void osSyncPrintf(const char *fmt, ...) {
 }
 
 void rmonPrintf(const char *fmt, ...) {
-    int ans;
-    va_list ap;
+    va_list args;
+    va_start(args, fmt);
+    _Printf(osSyncPrintf, NULL, fmt, args);
+    va_end(args);
 }
