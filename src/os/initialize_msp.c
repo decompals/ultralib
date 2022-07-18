@@ -16,7 +16,7 @@ extern __osExceptionVector* __ptExceptionPreamble;
 
 static volatile unsigned int* stat = (unsigned*)0xbff08004;
 static volatile unsigned int* wport = (unsigned*)0xbff08000;
-static volatile unsigned int* piok = (unsigned*)0xa4600010;
+static volatile unsigned int* piok = (unsigned*)PHYS_TO_K1(PI_STATUS_REG);
 
 static void rmonPutchar(char c) {
     u32 data;
