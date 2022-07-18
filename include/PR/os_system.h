@@ -71,13 +71,6 @@ extern u64 osClockRate;
 
 extern OSIntMask __OSGlobalIntMask; /* global interrupt mask */
 
-#define osInitialize()          \
-    __osInitialize_common();    \
-    __osInitialize_autodetect()
-
-void __osInitialize_common(void);
-void __osInitialize_autodetect(void);
-
 extern void     osExit(void);
 extern u32      osGetMemSize(void);
 

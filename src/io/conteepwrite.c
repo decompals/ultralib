@@ -18,11 +18,7 @@ s32 osEepromWrite(OSMesgQueue *mq, u8 address, u8 *buffer)
 
     type = sdata.type & (CONT_EEPROM | CONT_EEP16K);
 
-    if (ret != 0) {
-        __osSiRelAccess();
-        return ret;
-    }
-
+	if (ret == 0) {
     switch (type) {
         case CONT_EEPROM:
             if (address >= EEPROM_MAXBLOCKS) {
@@ -33,9 +29,7 @@ s32 osEepromWrite(OSMesgQueue *mq, u8 address, u8 *buffer)
             if (address >= EEP16K_MAXBLOCKS) {
                 //not technically possible
                 ret = CONT_RANGE_ERROR;
-            }
-            if (__osEepromRead16K)
-            {
+            } else if (__osEepromRead16K){
                 __osEepromRead16K = 0;
                 __osSiRelAccess();
                 osEepromRead(mq, (address ^ 1), temp);
@@ -44,7 +38,7 @@ s32 osEepromWrite(OSMesgQueue *mq, u8 address, u8 *buffer)
             break;
         default:
             ret = CONT_NO_RESPONSE_ERROR;
-            break;
+            }
     }
 
     if (ret != 0) {

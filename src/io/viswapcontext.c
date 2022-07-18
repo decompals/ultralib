@@ -9,8 +9,8 @@ void __osViSwapContext() {
     register OSViMode *vm;
     register __OSViContext *vc;
     u32 origin;
-    u32 vStart;
     u32 hStart;
+    u32 vStart;
     u32 nomValue;
     u32 field;
 

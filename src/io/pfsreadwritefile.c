@@ -35,15 +35,15 @@ s32 osPfsReadWriteFile(OSPfs *pfs, s32 file_no, u8 flag, int offset, int size_in
     u8 bank;
     u16 blockno;
     
-    if (file_no >= pfs->dir_size || file_no < 0) {
+    if ((file_no >= (s32)pfs->dir_size) || (file_no < 0)) {
         return PFS_ERR_INVALID;
     }
 
-    if (size_in_bytes <= 0 || ((size_in_bytes & (BLOCKSIZE - 1)) != 0)) {
+    if ((size_in_bytes <= 0) || ((size_in_bytes % BLOCKSIZE) != 0)) {
         return PFS_ERR_INVALID;
     }
     
-    if (offset < 0 || ((offset & (BLOCKSIZE - 1)) != 0)) {
+    if ((offset < 0) || ((offset % BLOCKSIZE) != 0)) {
         return PFS_ERR_INVALID;
     }
 
@@ -115,5 +115,6 @@ s32 osPfsReadWriteFile(OSPfs *pfs, s32 file_no, u8 flag, int offset, int size_in
         ERRCK(__osContRamWrite(pfs->queue, pfs->channel, pfs->dir_table + file_no, (u8*)&dir, FALSE));
     }
 
-    return __osPfsGetStatus(pfs->queue, pfs->channel);
+    ret = __osPfsGetStatus(pfs->queue, pfs->channel);
+    return ret;
 }

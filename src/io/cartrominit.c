@@ -6,7 +6,7 @@
 OSPiHandle __CartRomHandle ALIGNED(8);
 OSPiHandle *osCartRomInit(void)
 {
-   u32 value;
+   u32 value = 0;
    u32 saveMask;
    static int first = 1;
    register u32 stat;
@@ -30,9 +30,10 @@ OSPiHandle *osCartRomInit(void)
 
 	bzero(&__CartRomHandle.transferInfo, sizeof(__OSTranxInfo));
 
-    while (stat = IO_READ(PI_STATUS_REG), stat & (PI_STATUS_DMA_BUSY | PI_STATUS_IO_BUSY)) {
-        ;
-    }
+	stat = IO_READ(PI_STATUS_REG);
+	while (stat & (PI_STATUS_IO_BUSY | PI_STATUS_DMA_BUSY)) {
+	    stat = IO_READ(PI_STATUS_REG);
+	} 
 
     latency = IO_READ(PI_BSD_DOM1_LAT_REG);
     pageSize = IO_READ(PI_BSD_DOM1_PGS_REG);

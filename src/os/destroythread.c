@@ -25,7 +25,6 @@ void osDestroyThread(OSThread *t) {
                 break;
             }
             pred = succ;
-            succ = pred->tlnext;
         }
     }
 

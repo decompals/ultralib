@@ -27,7 +27,9 @@ void *memcpy(void *s1, const void *s2, size_t n) {
     const char *su2 = (const char *)s2;
     while (n > 0)
     {
-        *su1++ = *su2++;
+        *su1 = *su2;
+        su1++;
+        su2++;
         n--;
     }
     return (void *)s1;

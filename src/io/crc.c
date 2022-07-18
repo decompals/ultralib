@@ -2,9 +2,9 @@
 
 u8 __osContAddressCrc(u16 addr) {
     u32 temp = 0;
-    u32 i;
+    u32 i = 0x400;
 
-    for (i = 0x400; i != 0;) {
+    do {
         temp <<= 1;
 
         if (addr & i) {
@@ -18,14 +18,16 @@ u8 __osContAddressCrc(u16 addr) {
         }
         
         i >>= 1;
-    }
+    } while (i != 0);
 
-    for (i = 5; i != 0; --i) {
+    i = 5;
+    
+    do {
         temp <<= 1;
         if (temp & 0x20) {
             temp ^= 0x15;
         }
-    }
+    } while (--i != 0);
 
     return temp & 0x1F;
 }

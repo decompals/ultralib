@@ -60,10 +60,8 @@ s32 osPfsChecker(OSPfs *pfs) {
                             return ret;
                         }
                     }
-
-                    cc = corrupted(pfs, next_page, &cache) - cl;
                     
-                    if (cc != 0) {
+                    if (cc = corrupted(pfs, next_page, &cache) - cl) {
                         break;
                     }
                     

@@ -7,7 +7,7 @@ static void __osPackEepReadData(u8 address);
 OSPifRam __osEepPifRam ALIGNED(16);
 s32 __osEepromRead16K;
 
-s32 osEepromRead(OSMesgQueue *mq, u8 address, u8 *buffer)
+s32 osEepromRead(OSMesgQueue* mq, u8 address, u8* buffer)
 {
 	s32 ret = 0;
 	int i = 0;
@@ -17,33 +17,30 @@ s32 osEepromRead(OSMesgQueue *mq, u8 address, u8 *buffer)
 	__OSContEepromFormat eepromformat;
 
 	ptr = (u8 *)&__osEepPifRam.ramarray;
-	__osSiGetAccess();
-	ret = __osEepStatus(mq, &sdata);
-	type = sdata.type & (CONT_EEPROM | CONT_EEP16K);
+    __osSiGetAccess();
+    ret = __osEepStatus(mq, &sdata);
+    type = sdata.type & (CONT_EEPROM | CONT_EEP16K);
 
-	if (ret != 0) {
-		__osSiRelAccess();
-		return ret;
-	}
-
-	switch (type) {
-		case CONT_EEPROM:
-			if (address >= EEPROM_MAXBLOCKS) {
-				ret = CONT_RANGE_ERROR;
-			}
-			break;
-		case CONT_EEPROM | CONT_EEP16K:
-            __osEepromRead16K = 1;
-			if (address >= EEP16K_MAXBLOCKS) {
-				//not technically possible
-				ret = CONT_RANGE_ERROR;
-			}
-			break;
-		default:
-			ret = CONT_NO_RESPONSE_ERROR;
-			break;
-	}
-
+    if (ret == 0) {
+        switch (type) {
+            case CONT_EEPROM:
+                if (address >= EEPROM_MAXBLOCKS) {
+                    ret = CONT_RANGE_ERROR;
+                }
+                break;
+            case CONT_EEPROM | CONT_EEP16K:
+                if (address >= EEP16K_MAXBLOCKS) {
+                    //not technically possible
+                    ret = CONT_RANGE_ERROR;
+                } else {
+                    __osEepromRead16K = 1;
+                }
+                break;
+            default:
+                ret = CONT_NO_RESPONSE_ERROR;
+        }
+    }
+    
     if (ret != 0) {
         __osSiRelAccess();
         return ret;
@@ -52,7 +49,7 @@ s32 osEepromRead(OSMesgQueue *mq, u8 address, u8 *buffer)
 	while (sdata.status & CONT_EEPROM_BUSY) {
 		__osEepStatus(mq, &sdata);
 	}
-	
+
 	__osPackEepReadData(address);
 	ret = __osSiRawStartDma(OS_WRITE, &__osEepPifRam); //send command to pif
 	osRecvMesg(mq, NULL, OS_MESG_BLOCK);
@@ -64,7 +61,7 @@ s32 osEepromRead(OSMesgQueue *mq, u8 address, u8 *buffer)
 		//skip the first 4 bytes
 		ptr++;
 	}
-
+    
 	eepromformat = *(__OSContEepromFormat *)ptr;
 	ret = CHNL_ERR(eepromformat);
 
@@ -73,9 +70,8 @@ s32 osEepromRead(OSMesgQueue *mq, u8 address, u8 *buffer)
 			*buffer++ = eepromformat.data[i];
 		}
 	}
-
-	__osSiRelAccess();
-	return ret;
+    __osSiRelAccess();
+    return ret;
 }
 
 static void __osPackEepReadData(u8 address) {

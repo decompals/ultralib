@@ -1,7 +1,7 @@
 #include "PR/os_internal.h"
 #include "PR/rcp.h"
 #include "PR/rdb.h"
-#include "osint.h"
+#include "../os/osint.h"
 
 extern u32 __osRdb_IP6_Empty;
 

@@ -20,5 +20,7 @@ s32 osPfsNumFiles(OSPfs *pfs, s32 *max_files, s32 *files_used) {
     }
     *files_used = files;
     *max_files = pfs->dir_size;
-    return __osPfsGetStatus(pfs->queue, pfs->channel);
+
+    ret = __osPfsGetStatus(pfs->queue, pfs->channel);
+    return ret;
 }

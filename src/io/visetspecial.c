@@ -1,4 +1,5 @@
 #include <PR/os_internal.h>
+#include <PR/ultraerror.h>
 #include <PR/rcp.h>
 #include "viint.h"
 
@@ -6,7 +7,23 @@
 #ident "$Revision: 1.17 $"
 
 void osViSetSpecialFeatures(u32 func) {
-    register u32 saveMask = __osDisableInt();
+    register u32 saveMask;
+
+#ifdef _DEBUG
+    if (!__osViDevMgr.active) {
+	__osError(ERR_OSVISETSPECIAL_VIMGR, 0);
+	return 0;
+    }
+
+    if ((func < OS_VI_GAMMA_ON) || (func > (OS_VI_GAMMA_ON | OS_VI_GAMMA_OFF \
+    | OS_VI_GAMMA_DITHER_ON | OS_VI_GAMMA_DITHER_OFF | OS_VI_DIVOT_ON \
+    | OS_VI_DIVOT_OFF | OS_VI_DITHER_FILTER_ON | OS_VI_DITHER_FILTER_OFF))) {
+	__osError(ERR_OSVISETSPECIAL_VALUE, 1, func);
+	return 0;
+    }
+#endif
+
+    saveMask = __osDisableInt();
 
     if ((func & OS_VI_GAMMA_ON) != 0) {
         __osViNext->control |= VI_CTRL_GAMMA_ON;

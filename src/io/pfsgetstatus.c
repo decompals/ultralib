@@ -71,8 +71,9 @@ void __osPfsGetOneChannelData(int channel, OSContStatus *data) {
     requestformat = *(__OSContRequesFormatShort *)ptr;
     data->errno = CHNL_ERR(requestformat);
 
-    if (data->errno == 0) {
+    if (data->errno) {
+        return;
+    }
         data->type = (requestformat.typel << 8) | (requestformat.typeh);
         data->status = requestformat.status;
-    }
 }

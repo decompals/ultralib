@@ -14,7 +14,7 @@ void osVoiceCountSyllables(u8 *data, u32 *syllable) {
     old = 0;
     *syllable = 1;
     for (k = 0; data[k] != 0; k += 2) {
-        sjis = data[k + 1] + (data[k] << 8);
+        sjis = (data[k] << 8) + data[k + 1];
         if ((sjis == 'あ') || (sjis == 'い') || (sjis == 'う') || (sjis == 'え') || (sjis == 'お')
          || (sjis == 'ア') || (sjis == 'イ') || (sjis == 'ウ') || (sjis == 'エ') || (sjis == 'オ')
         ) {
