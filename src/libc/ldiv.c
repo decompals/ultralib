@@ -1,8 +1,10 @@
 #include "stdlib.h"
 
+#ifndef BBPLAYER
 // TODO: these come from headers
 #ident "$Revision: 1.34 $"
 #ident "$Revision: 1.5 $"
+#endif
 
 ldiv_t ldiv(long num, long denom) {
     ldiv_t ret;

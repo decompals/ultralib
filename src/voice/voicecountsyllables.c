@@ -7,6 +7,7 @@
 //  to properly see whether it will fit.
 
 void osVoiceCountSyllables(u8 *data, u32 *syllable) {
+#ifndef BBPLAYER
     s32 k;
     u16 sjis;
     u16 old;
@@ -56,4 +57,5 @@ void osVoiceCountSyllables(u8 *data, u32 *syllable) {
         }
         old = sjis;
     }
+#endif
 }

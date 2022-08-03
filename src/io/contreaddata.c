@@ -2,6 +2,11 @@
 #include "controller.h"
 #include "siint.h"
 
+// TODO: this comes from a header
+#ifdef BBPLAYER
+#ident "$Revision: 1.1 $"
+#endif
+
 static void __osPackReadData(void);
 
 s32 osContStartReadData(OSMesgQueue* mq) {
@@ -16,11 +21,18 @@ s32 osContStartReadData(OSMesgQueue* mq) {
     }
 
     ret = __osSiRawStartDma(OS_READ, __osContPifRam.ramarray);
+#ifdef BBPLAYER
+    __osContLastCmd = CONT_CMD_CHANNEL_RESET;
+#else
     __osContLastCmd = CONT_CMD_READ_BUTTON;
+#endif
     __osSiRelAccess();
 
     return ret;
 }
+
+extern u32 __osBbIsBb;
+extern u32 __osBbHackFlags;
 
 void osContGetReadData(OSContPad* data) {
     u8* ptr = __osContPifRam.ramarray;
@@ -39,6 +51,18 @@ void osContGetReadData(OSContPad* data) {
         data->stick_x = readformat.stick_x;
         data->stick_y = readformat.stick_y;
     }
+
+#ifdef BBPLAYER
+
+    if (__osBbIsBb && __osBbHackFlags != 0) {
+        OSContPad tmp;
+        data -= __osMaxControllers;
+
+        tmp = data[0];
+        data[0] = data[__osBbHackFlags];
+        data[__osBbHackFlags] = tmp;
+    }
+#endif
 }
 
 static void __osPackReadData(void) {
@@ -63,6 +87,5 @@ static void __osPackReadData(void) {
         *(__OSContReadFormat*)ptr = readformat;
         ptr += sizeof(__OSContReadFormat);
     }
-    
     *ptr = CONT_CMD_END;
 }

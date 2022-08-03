@@ -1,6 +1,11 @@
 #include "PR/os_internal.h"
 #include "osint.h"
 
+// TODO: this comes from a header
+#ifdef BBPLAYER
+#ident "$Revision: 1.1 $"
+#endif
+
 s32 osRecvMesg(OSMesgQueue *mq, OSMesg *msg, s32 flags) {
     register u32 saveMask;
     saveMask = __osDisableInt();

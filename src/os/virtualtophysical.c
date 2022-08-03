@@ -2,6 +2,11 @@
 #include "PR/R4300.h"
 #include "osint.h"
 
+// TODO: this comes from a header
+#ifdef BBPLAYER
+#ident "$Revision: 1.1 $"
+#endif
+
 u32 osVirtualToPhysical(void *addr) {
     if (IS_KSEG0(addr)) {
         return K0_TO_PHYS(addr);

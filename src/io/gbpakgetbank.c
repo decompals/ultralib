@@ -1,6 +1,12 @@
 #include "PR/os_internal.h"
 #include "controller.h"
 
+// TODO: this comes from a header
+#ifdef BBPLAYER
+#ident "$Revision: 1.1 $"
+#endif
+
+#ifndef BBPLAYER
 s32 __osGbpakGetBank(OSPfs* pfs, u8* bank) {
     s32 ret;
     u32 temp[BLOCKSIZE / sizeof(u32)];
@@ -26,3 +32,4 @@ s32 __osGbpakGetBank(OSPfs* pfs, u8* bank) {
     
     return ret;
 }
+#endif

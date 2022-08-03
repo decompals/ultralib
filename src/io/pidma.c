@@ -1,6 +1,11 @@
 #include "PR/os_internal.h"
 #include "piint.h"
 
+// TODO: this comes from a header
+#ifdef BBPLAYER
+#ident "$Revision: 1.1 $"
+#endif
+
 s32 osPiStartDma(OSIoMesg *mb, s32 priority, s32 direction, u32 devAddr, void *dramAddr, u32 size, OSMesgQueue *mq) {
     register s32 ret;
     if (!__osPiDevMgr.active) {

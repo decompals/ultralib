@@ -10,7 +10,7 @@
 
 .text
 .set noreorder
-LEAF(osSetIntMask) 
+LEAF(osSetIntMask)
     mfc0 ta0, C0_SR
 
     andi v0, ta0, OS_IM_CPU

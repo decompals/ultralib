@@ -21,14 +21,19 @@ CC := $(WORKING_DIR)/tools/gcc/gcc
 AR_OLD := tools/gcc/ar
 endif
 
-CFLAGS := -w -nostdinc -c -G 0 -D_LANGUAGE_C -mgp32 -mfp32
+REG_SIZES := -mgp32 -mfp32
 ifeq ($(findstring _iQue,$(TARGET)),_iQue)
-CFLAGS += -fno-PIC -mips2 -mno-abicalls -mcpu=4300 -D__sgi
+MIPS_VERSION := -mips2
 else
-CFLAGS += -mips3
+MIPS_VERSION := -mips3
 endif
 
-ASFLAGS := -non_shared -fno-PIC -w -nostdinc -mcpu=4300 -c -G 0 -mips2 -DMIPSEB -D_LANGUAGE_ASSEMBLY -D_MIPS_SIM=1 -D_ULTRA64 -x assembler-with-cpp
+CFLAGS := -w -nostdinc -c -G 0 -D_LANGUAGE_C
+ifeq ($(findstring _iQue,$(TARGET)),_iQue)
+CFLAGS += -fno-PIC  -mno-abicalls -mcpu=4300 -D__sgi
+endif
+
+ASFLAGS := -non_shared -fno-PIC -w -nostdinc -mcpu=4300 -c -G 0 -DMIPSEB -D_LANGUAGE_ASSEMBLY -D_MIPS_SIM=1 -D_ULTRA64 -x assembler-with-cpp
 
 GBIDEFINE := -DF3DEX_GBI_2
 CPPFLAGS = -D_MIPS_SZLONG=32 -D__USE_ISOC99 -I $(WORKING_DIR)/include -I $(WORKING_DIR)/include/gcc -I $(WORKING_DIR)/include/PR $(GBIDEFINE)
@@ -134,6 +139,9 @@ ifneq ($(NON_MATCHING),1)
 	@touch $@
 endif
 
+$(BUILD_DIR)/src/reg/_%.marker: REG_SIZES := -mgp64 -mfp64
+$(BUILD_DIR)/src/reg/_%.marker: MIPS_VERSION := -mips3
+
 $(BUILD_DIR)/src/os/assert.marker: OPTFLAGS := -O0
 $(BUILD_DIR)/src/os/ackramromread.marker: OPTFLAGS := -O0
 $(BUILD_DIR)/src/os/ackramromwrite.marker: OPTFLAGS := -O0
@@ -153,7 +161,7 @@ $(BUILD_DIR)/src/voice/%.marker: OPTFLAGS += -DLANG_JAPANESE -I$(WORKING_DIR)/sr
 $(BUILD_DIR)/src/voice/%.marker: CC := $(WORKING_DIR)/tools/compile_sjis.py -D__CC=$(CC)
 
 $(BUILD_DIR)/%.marker: %.c
-	cd $(<D) && $(CC) $(CFLAGS) $(CPPFLAGS) $(OPTFLAGS) $(<F) -o $(WORKING_DIR)/$(@:.marker=.o)
+	cd $(<D) && $(CC) $(CFLAGS) $(MIPS_VERSION) $(REG_SIZES) $(CPPFLAGS) $(OPTFLAGS) $(<F) -o $(WORKING_DIR)/$(@:.marker=.o)
 ifneq ($(NON_MATCHING),1)
 	python3 tools/patch_64bit_compile.py $(WORKING_DIR)/$(@:.marker=.o)
 # check if this file is in the archive; patch corrupted bytes and change file timestamps to match original if so
@@ -168,7 +176,7 @@ ifneq ($(NON_MATCHING),1)
 endif
 
 $(BUILD_DIR)/%.marker: %.s
-	cd $(<D) && $(CC) $(ASFLAGS) $(CPPFLAGS) -I. $(OPTFLAGS) $(<F) -o $(WORKING_DIR)/$(@:.marker=.o)
+	cd $(<D) && $(CC) $(ASFLAGS) $(MIPS_VERSION) $(REG_SIZES) $(CPPFLAGS) -I. $(OPTFLAGS) $(<F) -o $(WORKING_DIR)/$(@:.marker=.o)
 ifneq ($(NON_MATCHING),1)
 	python3 tools/patch_64bit_compile.py $(WORKING_DIR)/$(@:.marker=.o)
 # check if this file is in the archive; patch corrupted bytes and change file timestamps to match original if so

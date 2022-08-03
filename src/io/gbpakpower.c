@@ -2,7 +2,15 @@
 #include "controller.h"
 #include "controller_gbpak.h"
 
+// TODO: this comes from a header
+#ifdef BBPLAYER
+#ident "$Revision: 1.1 $"
+#endif
+
 s32 osGbpakPower(OSPfs* pfs, s32 flag) {
+#ifdef BBPLAYER
+    return PFS_ERR_DEVICE;
+#else
     s32 i;
     s32 ret;
     u8 temp[BLOCKSIZE];
@@ -31,4 +39,5 @@ s32 osGbpakPower(OSPfs* pfs, s32 flag) {
     }
 
     return ret;
+#endif
 }

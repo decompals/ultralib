@@ -1,7 +1,7 @@
 #include "PR/os_internal.h"
 #include "PR/rcp.h"
 
-u8 __osBbCardChange;
+u8 __osBbCardChange = TRUE;
 
 const struct /* size=0x8 */ {
     /* 0x0000 */ u8 mfg;
@@ -58,9 +58,6 @@ s32 __osBbCardGetAccess(void) {
     return 0;
 }
 
-void osBbCardInit(void);
-#ifdef NON_MATCHING
-// Single delay slot reordering
 void osBbCardInit(void) {
     u32 type;
     u32 mfg;
@@ -109,7 +106,6 @@ void osBbCardInit(void) {
         __osBbCardBlocks = 0;
     }
 }
-#endif
 
 void __osBbCardDmaCopy(u32 which, void* addr, u32 dir) {
     OSIoMesg m;

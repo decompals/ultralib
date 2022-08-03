@@ -1,6 +1,11 @@
 #include "macros.h"
 #include "PR/os_internal.h"
 
+// TODO: this comes from a header
+#ifdef BBPLAYER
+#ident "$Revision: 1.1 $"
+#endif
+
 #define PI_Q_BUF_LEN 1
 u32 __osPiAccessQueueEnabled = 0;
 OSMesgQueue __osPiAccessQueue ALIGNED(8);

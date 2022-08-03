@@ -1,6 +1,18 @@
 #include "PR/os_internal.h"
 
+extern u32 __osBbFlashAddress;
+extern u32 __osBbFlashSize;
+
 s32 osFlashReadArray(OSIoMesg* mb, s32 priority, u32 page_num, void* dramAddr, u32 n_pages, OSMesgQueue* mq) {
+#ifdef BBPLAYER
+    if (__osBbFlashSize != 0 && __osBbFlashSize >= (page_num + n_pages) * 0x80) {
+        bcopy((void*)(__osBbFlashAddress + page_num * 0x80), dramAddr, n_pages * 0x80);
+        return osSendMesg(mq, NULL, OS_MESG_NOBLOCK);
+    } else {
+        bzero(dramAddr, n_pages * 0x80);
+        return osSendMesg(mq, NULL, OS_MESG_NOBLOCK);
+    }
+#else
     u32 ret;
     u32 tmp;
     u32 end_page;
@@ -46,4 +58,5 @@ s32 osFlashReadArray(OSIoMesg* mb, s32 priority, u32 page_num, void* dramAddr, u
     ret = osEPiStartDma(&__osFlashHandler, mb, OS_READ);
 
     return ret;
+#endif
 }

@@ -2,7 +2,11 @@
 #include "PR/R4300.h"
 
 // TODO: this comes from a header
+#ifndef BBPLAYER
 #ident "$Revision: 1.17 $"
+#else
+#ident "$Revision: 1.1 $"
+#endif
 
 void osFree(void *region, void *addr) {
     register OSRegion *rp = region;

@@ -1,6 +1,11 @@
 #include "macros.h"
 #include "PR/os_internal.h"
 
+// TODO: this comes from a header
+#ifdef BBPLAYER
+#ident "$Revision: 1.1 $"
+#endif
+
 #define SI_Q_BUF_LEN 1
 static OSMesg siAccessBuf[SI_Q_BUF_LEN] ALIGNED(8);
 OSMesgQueue __osSiAccessQueue ALIGNED(8);

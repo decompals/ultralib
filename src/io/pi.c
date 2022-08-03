@@ -3,7 +3,11 @@
 #include "piint.h"
 
 // TODO: this comes from a header
+#ifndef BBPLAYER
 #ident "$Revision: 1.17 $"
+#else
+#ident "$Revision: 1.1 $"
+#endif
 
 int __osPiDeviceBusy() {
     register u32 stat = IO_READ(PI_STATUS_REG);

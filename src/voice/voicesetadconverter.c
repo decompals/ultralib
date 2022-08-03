@@ -6,6 +6,11 @@
 
 #define SWRITEFORMAT(p) ((__OSVoiceSWriteFormat*)(p))
 
+// TODO: this comes from a header
+#ifdef BBPLAYER
+#ident "$Revision: 1.1 $"
+#endif
+
 s32 __osVoiceSetADConverter(OSMesgQueue* mq, s32 channel, u8 data) {
     s32 ret;
     int i;

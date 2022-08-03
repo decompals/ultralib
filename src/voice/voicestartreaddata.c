@@ -3,7 +3,15 @@
 #include "PR/os_voice.h"
 #include "voiceinternal.h"
 
+// TODO: this comes from a header
+#ifdef BBPLAYER
+#ident "$Revision: 1.1 $"
+#endif
+
 s32 osVoiceStartReadData(OSVoiceHandle* hd) {
+#ifdef BBPLAYER
+    return CONT_ERR_DEVICE;
+#else
     s32 ret;
     u8 stat;
     u8 temp[4];
@@ -32,4 +40,5 @@ s32 osVoiceStartReadData(OSVoiceHandle* hd) {
     }
 
     return ret;
+#endif
 }

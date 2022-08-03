@@ -2,6 +2,11 @@
 #include "PR/os_internal.h"
 #include "piint.h"
 
+// TODO: this comes from a header
+#ifdef BBPLAYER
+#ident "$Revision: 1.1 $"
+#endif
+
 OSDevMgr __osPiDevMgr = {0};
 OSPiHandle *__osPiTable = NULL;
 OSPiHandle __Dom1SpeedParam ALIGNED(8);
@@ -42,7 +47,11 @@ void osCreatePiManager(OSPri pri, OSMesgQueue *cmdQ, OSMesg *cmdBuf, s32 cmdMsgC
         __osPiDevMgr.acsQueue = &__osPiAccessQueue;
         __osPiDevMgr.dma = __osPiRawStartDma;
         __osPiDevMgr.edma = __osEPiRawStartDma;
+#ifdef BBPLAYER
+        osCreateThread(&piThread, 0xCE5, __osDevMgrMain, &__osPiDevMgr, &piThreadStack[OS_PIM_STACKSIZE], pri);
+#else
         osCreateThread(&piThread, 0, __osDevMgrMain, &__osPiDevMgr, &piThreadStack[OS_PIM_STACKSIZE], pri);
+#endif
         osStartThread(&piThread);
         __osRestoreInt(savedMask);
 

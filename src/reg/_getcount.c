@@ -31,4 +31,3 @@ u32 osGetCount(void) {
 
     return count;
 }
-

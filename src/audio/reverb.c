@@ -28,8 +28,12 @@
 #include "initfx.h"
 
 // TODO: these come from headers
+#ifndef BBPLAYER
 #ident "$Revision: 1.49 $"
 #ident "$Revision: 1.17 $"
+#else
+#ident "$Revision: 1.1 $"
+#endif
 
 #define RANGE 2.0
 extern ALGlobals *alGlobals;
@@ -57,7 +61,9 @@ Acmd *_saveBuffer(ALFx *r, s16 *curr_ptr, s32 buff, s32 count, Acmd *p);
 Acmd *_filterBuffer(ALLowPass *lp, s32 buff, s32 count, Acmd *p);
 f32  _doModFunc(ALDelay *d, s32 count);
 
+#ifndef BBPLAYER
 static s32 L_INC[] = { L0_INC, L1_INC, L2_INC };
+#endif
 
 /***********************************************************************
  * Reverb filter public interfaces
@@ -244,8 +250,10 @@ Acmd *_loadOutputBuffer(ALFx *r, ALDelay *d, s32 buff, s32 incount, Acmd *p)
     s16         *out_ptr;
     f32         fincount, fratio, delta;
     s32         ramalign = 0, length;
+#ifndef BBPLAYER
     static f32  val=0.0, lastval=-10.0;
     static f32  blob=0;
+#endif
 /*
  * The following section implements the chorus resampling. Modulate where you pull
  * the samples from, since you need varying amounts of samples.

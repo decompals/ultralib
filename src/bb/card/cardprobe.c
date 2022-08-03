@@ -4,7 +4,7 @@
 s32 __osBbCardFlushEvent(void);
 s32 __osBbCardGetAccess(void);
 void __osBbCardRelAccess(void);
-void __osBbDelay(s32);
+void __osBbDelay(u32);
 extern u8 __osBbCardChange;
 
 s32 osBbCardProbe(u32 dev) {

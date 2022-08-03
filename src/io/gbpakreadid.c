@@ -2,7 +2,15 @@
 #include "PR/os_internal.h"
 #include "controller.h"
 
+// TODO: this comes from a header
+#ifdef BBPLAYER
+#ident "$Revision: 1.1 $"
+#endif
+
 s32 osGbpakReadId(OSPfs* pfs, OSGbpakId* id, u8* status) {
+#ifdef BBPLAYER
+    return PFS_ERR_DEVICE;
+#else
     s32 i;
     s32 ret;
     u8 isum;
@@ -81,4 +89,5 @@ s32 osGbpakReadId(OSPfs* pfs, OSGbpakId* id, u8* status) {
     }
 
     return ret;
+#endif
 }

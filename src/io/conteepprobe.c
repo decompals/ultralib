@@ -1,7 +1,27 @@
 #include "controller.h"
 #include "siint.h"
 
+// TODO: this comes from a header
+#ifdef BBPLAYER
+#ident "$Revision: 1.1 $"
+#endif
+
+extern s32 __osBbEepromSize;
+
 s32 osEepromProbe(OSMesgQueue *mq) {
+#ifdef BBPLAYER
+    s32 ret = 0;
+
+    __osSiGetAccess();
+    if (__osBbEepromSize == 0x200) {
+        ret = EEPROM_TYPE_4K;
+    } else if (__osBbEepromSize == 0x800) {
+        ret = EEPROM_TYPE_16K;
+    }
+    __osSiRelAccess();
+    return ret;
+
+#else
     s32 ret = 0;
     u16 type;
     OSContStatus sdata;
@@ -29,4 +49,5 @@ s32 osEepromProbe(OSMesgQueue *mq) {
     __osEepromRead16K = 0;
     __osSiRelAccess();
     return ret;
+#endif
 }

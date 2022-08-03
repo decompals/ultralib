@@ -2,7 +2,11 @@
 #include "../os/osint.h"
 
 // TODO: this comes from a header
+#ifndef BBPLAYER
 #ident "$Revision: 1.17 $"
+#else
+#ident "$Revision: 1.1 $"
+#endif
 
 s32 osAiSetFrequency(u32 frequency) {
     register unsigned int dacRate;

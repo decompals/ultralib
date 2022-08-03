@@ -4,7 +4,11 @@
 #include "../os/osint.h"
 
 // TODO: this comes from a header
+#ifndef BBPLAYER
 #ident "$Revision: 1.17 $"
+#else
+#ident "$Revision: 1.1 $"
+#endif
 
 int __osSpDeviceBusy() {
     register u32 stat = IO_READ(SP_STATUS_REG);

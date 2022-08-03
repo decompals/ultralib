@@ -2,6 +2,11 @@
 #include "PR/sptask.h"
 #include "PR/rcp.h"
 
+// TODO: this comes from a header
+#ifdef BBPLAYER
+#ident "$Revision: 1.1 $"
+#endif
+
 OSYieldResult osSpTaskYielded(OSTask *tp) {
     u32 status;
     OSYieldResult result;

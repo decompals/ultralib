@@ -566,7 +566,11 @@
 #define VI_CTRL_PIXEL_ADV_MASK      0x01000 /* [15:12] pixel advance mode? */
 #define VI_CTRL_PIXEL_ADV_1         0x01000 /* Bit [15:12] pixel advance mode? */
 #define VI_CTRL_PIXEL_ADV_2         0x02000 /* Bit [15:12] pixel advance mode? */
+#ifndef BBPLAYER
 #define VI_CTRL_PIXEL_ADV_3         0x03000 /* Bit [15:12] pixel advance mode? */
+#else
+#define VI_CTRL_PIXEL_ADV_3         0x01000 /* Bit [15:12] pixel advance mode? */
+#endif
 #define VI_CTRL_DITHER_FILTER_ON    0x10000 /* 16: dither-filter mode */
 
 /*

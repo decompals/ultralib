@@ -10,8 +10,10 @@ OSIoMesg __osFlashMsg ALIGNED(8);
 u32 __osFlashID[4] ALIGNED(8);
 
 OSPiHandle* osFlashInit(void) {
+#ifndef BBPLAYER
     u32 flash_type;
     u32 flash_maker;
+#endif
 
     osCreateMesgQueue(&__osFlashMessageQ, __osFlashMsgBuf, ARRLEN(__osFlashMsgBuf));
 
@@ -31,6 +33,8 @@ OSPiHandle* osFlashInit(void) {
     bzero(&__osFlashHandler.transferInfo, sizeof(__OSTranxInfo));
 
     osEPiLinkHandle(&__osFlashHandler);
+
+#ifndef BBPLAYER
     osFlashReadId(&flash_type, &flash_maker);
 
     if (flash_maker == FLASH_VERSION_MX_C || flash_maker == FLASH_VERSION_MX_A || flash_maker == FLASH_VERSION_MX_PROTO_A) {
@@ -38,6 +42,9 @@ OSPiHandle* osFlashInit(void) {
     } else {
         __osFlashVersion = NEW_FLASH;
     }
+#else
+    __osFlashVersion = NEW_FLASH;
+#endif
 
     return &__osFlashHandler;
 }
