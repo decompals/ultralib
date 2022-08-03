@@ -2,7 +2,11 @@
 #include "siint.h"
 
 // TODO: this comes from a header
+#ifndef BBPLAYER
 #ident "$Revision: 1.17 $"
+#else
+#ident "$Revision: 1.1 $"
+#endif
 
 int __osSiDeviceBusy() {
     register u32 stat = IO_READ(SI_STATUS_REG);

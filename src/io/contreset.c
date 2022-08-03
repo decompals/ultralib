@@ -2,6 +2,11 @@
 #include "controller.h"
 #include "siint.h"
 
+// TODO: this comes from a header
+#ifdef BBPLAYER
+#ident "$Revision: 1.1 $"
+#endif
+
 void __osPackResetData(void);
 
 s32 osContReset(OSMesgQueue *mq, OSContStatus *data) {
@@ -11,20 +16,29 @@ s32 osContReset(OSMesgQueue *mq, OSContStatus *data) {
     __osSiGetAccess();
 
     if (__osContLastCmd != CONT_CMD_RESET) {
+#ifdef BBPLAYER
+        __osPackRequestData(CONT_CMD_RESET);
+#else
         __osPackResetData();
-        
+#endif
+
         ret = __osSiRawStartDma(OS_WRITE, __osContPifRam.ramarray);
         osRecvMesg(mq, NULL, OS_MESG_BLOCK);
 
+#ifndef BBPLAYER
         ret = __osSiRawStartDma(OS_READ, __osContPifRam.ramarray);
         osRecvMesg(mq, NULL, OS_MESG_BLOCK);
         
         __osPackRequestData(CONT_CMD_RESET);
-        
+
         ret = __osSiRawStartDma(OS_WRITE, __osContPifRam.ramarray);
         osRecvMesg(mq, NULL, OS_MESG_BLOCK);
-        
+
         __osContLastCmd = CONT_CMD_RESET;
+#else
+        __osContLastCmd = CONT_CMD_CHANNEL_RESET;
+#endif
+
     }
 
     ret = __osSiRawStartDma(OS_READ, __osContPifRam.ramarray);

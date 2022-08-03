@@ -4,7 +4,11 @@
 #include "assert.h"
 
 // TODO: this comes from a header
+#ifndef BBPLAYER
 #ident "$Revision: 1.17 $"
+#else
+#ident "$Revision: 1.1 $"
+#endif
 
 s32 __osSpRawStartDma(s32 direction, u32 devAddr, void *dramAddr, u32 size) {
     // These asserts are present in debug builds, but the line numbers won't match as-is

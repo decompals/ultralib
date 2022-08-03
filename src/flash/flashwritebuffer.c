@@ -1,6 +1,20 @@
 #include "PR/os_internal.h"
 
+extern u32 __osBbFlashAddress;
+extern u32 __osBbFlashSize;
+
+#ifdef BBPLAYER
+u8 __osBbFlashBuffer[0x80];
+#endif
+
 s32 osFlashWriteBuffer(OSIoMesg* mb, s32 priority, void* dramAddr, OSMesgQueue* mq) {
+#ifdef BBPLAYER
+    if (__osBbFlashSize != 0) {
+        bcopy(dramAddr, __osBbFlashBuffer, 0x80);
+        return osSendMesg(mq, NULL, NULL);
+    }
+    return -1;
+#else
     s32 ret;
 
     // select page program mode
@@ -16,4 +30,5 @@ s32 osFlashWriteBuffer(OSIoMesg* mb, s32 priority, void* dramAddr, OSMesgQueue* 
     ret = osEPiStartDma(&__osFlashHandler, mb, OS_WRITE);
 
     return ret;
+#endif
 }

@@ -20,12 +20,17 @@
 #include <gt.h>
 
 #undef  PRINTF
+#ifdef BBPLAYER
+#define PRINTF      osSyncPrintf
+#else
 #define PRINTF      rmonPrintf
+#endif
 
-
+#ifndef BBPLAYER
 #define TX_MAX		100
 static u32	textures[TX_MAX];
 static u32	numtextures;
+#endif
 
 #define UNSEG_ADDR(sa)	((u32 *) (((globp)?				   \
 			(((int)(sa) & 0x00ffffff) + 			   \

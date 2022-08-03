@@ -2,6 +2,11 @@
 #include "PR/os_internal.h"
 #include "osint.h"
 
+// TODO: this comes from a header
+#ifdef BBPLAYER
+#ident "$Revision: 1.1 $"
+#endif
+
 __OSEventState __osEventStateTab[OS_NUM_EVENTS] ALIGNED(8);
 u32 __osPreNMI = FALSE;
 

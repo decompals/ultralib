@@ -3,10 +3,12 @@
 #include "stdarg.h"
 #include "xstdio.h"
 
+#ifndef BBPLAYER
 // TODO: these come from headers
 #ident "$Revision: 1.34 $"
 #ident "$Revision: 1.5 $"
 #ident "$Revision: 1.23 $"
+#endif
 
 #define isdigit(x) ((x >= '0' && x <= '9'))
 #define LDSIGN(x) (((unsigned short *)&(x))[0] & 0x8000)

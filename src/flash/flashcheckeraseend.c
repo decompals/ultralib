@@ -1,6 +1,15 @@
 #include "PR/os_internal.h"
 
+extern u32 __osBbFlashSize;
+
 s32 osFlashCheckEraseEnd(void) {
+#ifdef BBPLAYER
+    if (__osBbFlashSize != 0) {
+        return FLASH_STATUS_ERASE_OK;
+    } else {
+        return FLASH_STATUS_ERASE_ERROR;
+    }
+#else
     u8 status;
 
     osFlashReadStatus(&status);
@@ -18,4 +27,5 @@ s32 osFlashCheckEraseEnd(void) {
         }
     }
     return FLASH_STATUS_ERASE_BUSY;
+#endif
 }

@@ -2,7 +2,15 @@
 #include "io/controller.h"
 #include "PR/os_voice.h"
 
+// TODO: this comes from a header
+#ifdef BBPLAYER
+#ident "$Revision: 1.1 $"
+#endif
+
 s32 osVoiceSetWord(OSVoiceHandle *hd, u8 *word) {
+#ifdef BBPLAYER
+    return CONT_ERR_DEVICE;
+#else
     s32 j;
     s32 k;
     s32 ret;
@@ -41,4 +49,5 @@ s32 osVoiceSetWord(OSVoiceHandle *hd, u8 *word) {
         }
     }
     return ret;
+#endif
 }

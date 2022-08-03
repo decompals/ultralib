@@ -1,8 +1,10 @@
 #include "PR/ultratypes.h"
 #include "string.h"
 
+#ifndef BBPLAYER
 // TODO: this comes from a header
 #ident "$Revision: 1.23 $"
+#endif
 
 char *strchr(const char *s, int c) {
     const char ch = c;

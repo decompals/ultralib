@@ -17,12 +17,16 @@
  * Copyright Laws of the United States.
  *====================================================================*/
  
-#include <ultralog.h>
-#include <assert.h>
-#include <sched.h>
+#include "PR/ultralog.h"
+#include "assert.h"
+#include "PR/sched.h"
 
 // TODO: this comes from a header
+#ifndef BBPLAYER
 #ident "$Revision: 1.17 $"
+#else
+#ident "$Revision: 1.1 $"
+#endif
 
 /*
  * private typedefs and defines
@@ -70,7 +74,6 @@ static s32      __scSchedule(OSSched *sc, OSScTask **sp, OSScTask **dp,
 /*
 #define SC_LOGGING 1
 */
-
 
 #ifdef SC_LOGGING
 #define SC_LOG_LEN      32*1024
@@ -171,8 +174,10 @@ static void __scMain(void *arg)
     OSMesg msg;
     OSSched *sc = (OSSched *)arg;
     OSScClient *client;
+#if !defined(BBPLAYER) && !defined(SC_LOGGING)
     static int count = 0;
-    
+#endif
+
     while (1) {
         
         osRecvMesg(&sc->interruptQ, (OSMesg *)&msg, OS_MESG_BLOCK);

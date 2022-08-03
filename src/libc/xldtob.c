@@ -2,10 +2,12 @@
 #include "string.h"
 #include "xstdio.h"
 
+#ifndef BBPLAYER
 // TODO: these come from headers
 #ident "$Revision: 1.23 $"
 #ident "$Revision: 1.34 $"
 #ident "$Revision: 1.5 $"
+#endif
 
 #define BUFF_LEN 0x20
 
@@ -255,11 +257,7 @@ void _Genld(_Pft* px, char code, u8* p, s16 nsig, s16 xexp) {
                 px->prec = 0;
             }
 
-            if (code == 'g') {
-                code = 'e';
-            } else {
-                code = 'E';
-            }
+            code = (code == 'g') ? 'e' : 'E';
         }
 
         px->s[px->n1++] = *p++;

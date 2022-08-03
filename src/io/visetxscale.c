@@ -2,7 +2,11 @@
 #include "viint.h"
 
 // TODO: this comes from a header
+#ifndef BBPLAYER
 #ident "$Revision: 1.17 $"
+#else
+#ident "$Revision: 1.1 $"
+#endif
 
 void osViSetXScale(f32 value) {
     register u32 nomValue;
