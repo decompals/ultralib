@@ -2,7 +2,15 @@
 #include "PR/os_internal.h"
 #include "controller.h"
 
+// TODO: this comes from a header
+#ifdef BBPLAYER
+#ident "$Revision: 1.1 $"
+#endif
+
 s32 osGbpakCheckConnector(OSPfs* pfs, u8* status) {
+#ifdef BBPLAYER
+    return PFS_ERR_DEVICE;
+#else
     s32 ret;
     s32 bufn = 1;
     s32 oldbufn = 0;
@@ -126,6 +134,6 @@ s32 osGbpakCheckConnector(OSPfs* pfs, u8* status) {
             ret = PFS_ERR_CONTRFAIL;
         }
     }
-
     return ret;
+#endif
 }

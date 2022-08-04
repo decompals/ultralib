@@ -1,6 +1,21 @@
 #include "PR/os_internal.h"
 
+extern u32 __osBbFlashAddress;
+extern u32 __osBbFlashSize;
+
 s32 osFlashAllErase(void) {
+#ifdef BBPLAYER
+    if (__osBbFlashSize != 0) {
+        int i;
+        u32* p = (u32*)__osBbFlashAddress;
+
+        for (i = 0; i < __osBbFlashSize / 4; i++) {
+            p[i] = -1;
+        }
+        return FLASH_STATUS_ERASE_OK;
+    }
+    return FLASH_STATUS_ERASE_ERROR;
+#else
     u32 status;
     OSTimer mytimer;
     OSMesgQueue timerMesgQueue;
@@ -28,4 +43,5 @@ s32 osFlashAllErase(void) {
     } else {
         return FLASH_STATUS_ERASE_ERROR;
     }
+#endif
 }

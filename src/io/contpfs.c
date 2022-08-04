@@ -2,6 +2,11 @@
 #include "PR/os_internal.h"
 #include "controller.h"
 
+// TODO: this comes from a header
+#ifdef BBPLAYER
+#ident "$Revision: 1.1 $"
+#endif
+
 __OSInode __osPfsInodeCache ALIGNED(8);
 s32 __osPfsInodeCacheChannel = -1;
 u8 __osPfsInodeCacheBank = 250;
@@ -87,11 +92,7 @@ s32 __osRepairPackId(OSPfs *pfs, __OSPackId *badid, __OSPackId *newid) {
     
     SET_ACTIVEBANK_TO_ZERO;
     
-    if (j > 0) {
-        mask = 1;
-    } else {
-        mask = 0;
-    }
+    mask = (j > 0) ? 1 : 0;
 
     newid->deviceid = (badid->deviceid & (u16)~1) | mask;
     newid->banks = j;

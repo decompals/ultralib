@@ -44,7 +44,11 @@
 #include "seq.h"
 
 // TODO: this comes from a header
+#ifndef BBPLAYER
 #ident "$Revision: 1.17 $"
+#else
+#ident "$Revision: 1.1 $"
+#endif
 
 
 static  ALMicroTime     __seqpVoiceHandler(void *node);
@@ -788,7 +792,9 @@ void __handleMIDIMsg(ALSeqPlayer *seqp, ALEvent *event)
 void __handleMetaMsg(ALSeqPlayer *seqp, ALEvent *event)
 {
     ALTempoEvent *tevt = &event->msg.tempo;
+#ifndef BBPLAYER
     ALEvent      evt;
+#endif
     s32          tempo;
 
     if (event->msg.tempo.status == AL_MIDI_Meta)

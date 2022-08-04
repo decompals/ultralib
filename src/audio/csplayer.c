@@ -45,7 +45,11 @@
 #include "cseq.h"
 
 // TODO: this comes from a header
+#ifndef BBPLAYER
 #ident "$Revision: 1.17 $"
+#else
+#ident "$Revision: 1.1 $"
+#endif
 
 
 static ALMicroTime      __CSPVoiceHandler(void *node);
@@ -779,7 +783,9 @@ static void __CSPHandleMIDIMsg(ALCSPlayer *seqp, ALEvent *event)
 static void __CSPHandleMetaMsg(ALCSPlayer *seqp, ALEvent *event)
 {
     ALTempoEvent    *tevt = &event->msg.tempo;
+#ifndef BBPLAYER
     ALEvent         evt;
+#endif
     s32             tempo;
     s32             oldUspt;
     u32             ticks;

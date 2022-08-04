@@ -6,6 +6,12 @@
 
 #define WRITE4FORMAT(p) ((__OSVoiceWrite4Format*)(ptr))
 
+// TODO: this comes from a header
+#ifdef BBPLAYER
+#ident "$Revision: 1.1 $"
+#endif
+
+#ifndef BBPLAYER
 s32 __osVoiceContWrite4(OSMesgQueue* mq, int channel, u16 address, u8 dst[4]) {
     s32 ret;
     u8 status;
@@ -73,3 +79,4 @@ s32 __osVoiceContWrite4(OSMesgQueue* mq, int channel, u16 address, u8 dst[4]) {
 
     return ret;
 }
+#endif

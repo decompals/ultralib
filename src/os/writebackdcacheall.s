@@ -2,6 +2,10 @@
 #include "sys/asm.h"
 #include "sys/regdef.h"
 
+#ifdef BBPLAYER
+.set mips3
+#endif
+
 .text
 LEAF(osWritebackDCacheAll)
     li      t0, KUSIZE

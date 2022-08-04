@@ -4,6 +4,11 @@
 #include "PR/rcp.h"
 #include "piint.h"
 
+// TODO: this comes from a header
+#ifdef BBPLAYER
+#ident "$Revision: 1.1 $"
+#endif
+
 OSPiHandle __CartRomHandle ALIGNED(8);
 
 OSPiHandle* osCartRomInit(void) {

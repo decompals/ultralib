@@ -3,7 +3,11 @@
 #include "../os/osint.h"
 
 // TODO: this comes from a header
+#ifndef BBPLAYER
 #ident "$Revision: 1.17 $"
+#else
+#ident "$Revision: 1.1 $"
+#endif
 
 s32 osAiSetNextBuffer(void *bufPtr, u32 size) {
 	static u8 hdwrBugFlag = FALSE;

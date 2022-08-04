@@ -4,7 +4,15 @@
 
 s32 __osVoiceSetADConverter(OSMesgQueue*, int ch, u8 cmd);
 
+// TODO: this comes from a header
+#ifdef BBPLAYER
+#ident "$Revision: 1.1 $"
+#endif
+
 s32 osVoiceControlGain(OSVoiceHandle *hd, s32 analog, s32 digital) {
+#ifdef BBPLAYER
+    return CONT_ERR_INVALID;
+#else
     s32 ret;
     u8 cmd = (u8) (analog == 0 ? 0x18 : 0x98);
     static u8 digital_table[] = {0x00, 0x80, 0x40, 0xC0, 0x20, 0xA0, 0x60, 0xE0};
@@ -19,4 +27,5 @@ s32 osVoiceControlGain(OSVoiceHandle *hd, s32 analog, s32 digital) {
 
     ERRCK(__osVoiceSetADConverter(hd->__mq,hd->__channel, cmd));
     return ret;
+#endif
 }

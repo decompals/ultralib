@@ -1,6 +1,17 @@
 #include "PR/os_internal.h"
 
+extern u32 __osBbFlashAddress;
+extern u32 __osBbFlashSize;
+extern u8 __osBbFlashBuffer[128];
+
 s32 osFlashWriteArray(u32 page_num) {
+#ifdef BBPLAYER
+    if (__osBbFlashSize != 0 && __osBbFlashSize >= page_num * 0x80 + 0x80) {
+        bcopy(__osBbFlashBuffer, (void*)(__osBbFlashAddress + page_num * 0x80), 0x80);
+        return FLASH_STATUS_WRITE_OK;
+    }
+    return FLASH_STATUS_WRITE_ERROR;
+#else
     u32 status;
     OSTimer mytimer;
     OSMesgQueue timerMesgQueue;
@@ -30,4 +41,5 @@ s32 osFlashWriteArray(u32 page_num) {
     } else {
         return FLASH_STATUS_WRITE_ERROR;
     }
+#endif
 }
