@@ -4,7 +4,15 @@
 #include "voiceinternal.h"
 #include "os_version.h"
 
+// TODO: this comes from a header
+#ifdef BBPLAYER
+#ident "$Revision: 1.1 $"
+#endif
+
 s32 osVoiceStopReadData(OSVoiceHandle* hd) {
+#ifdef BBPLAYER
+    return CONT_ERR_DEVICE;
+#else
     s32 ret;
 #if BUILD_VERSION >= VERSION_K 
     s32 i;
@@ -56,4 +64,5 @@ s32 osVoiceStopReadData(OSVoiceHandle* hd) {
 #endif
 
     return ret;
+#endif
 }

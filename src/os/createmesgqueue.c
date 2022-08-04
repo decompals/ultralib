@@ -2,8 +2,12 @@
 #include "PR/ultraerror.h"
 #include "osint.h"
 
-void osCreateMesgQueue(OSMesgQueue* mq, OSMesg* msg, s32 msgCount) {
+// TODO: this comes from a header
+#ifdef BBPLAYER
+#ident "$Revision: 1.1 $"
+#endif
 
+void osCreateMesgQueue(OSMesgQueue* mq, OSMesg* msg, s32 msgCount) {
 #ifdef _DEBUG
     if (msgCount <= 0) {
         __osError(ERR_OSCREATEMESGQUEUE, 1, msgCount);

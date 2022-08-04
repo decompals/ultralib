@@ -2,6 +2,11 @@
 #include "PR/ultraerror.h"
 #include "osint.h"
 
+// TODO: this comes from a header
+#ifdef BBPLAYER
+#ident "$Revision: 1.1 $"
+#endif
+
 void osStartThread(OSThread* t) {
     register u32 saveMask = __osDisableInt();
 

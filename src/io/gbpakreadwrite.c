@@ -2,9 +2,17 @@
 #include "controller.h"
 #include "os_version.h"
 
+// TODO: this comes from a header
+#ifdef BBPLAYER
+#ident "$Revision: 1.1 $"
+#endif
+
 s32 __osGbpakSetBank(OSPfs* pfs, u8 bank);
 
 s32 osGbpakReadWrite(OSPfs* pfs, u16 flag, u16 address, u8* buffer, u16 size) {
+#ifdef BBPLAYER
+    return PFS_ERR_DEVICE;
+#else
     s32 i;
     s32 ret;
     u8 bank;
@@ -71,4 +79,5 @@ s32 osGbpakReadWrite(OSPfs* pfs, u16 flag, u16 address, u8* buffer, u16 size) {
     }
 
     return ret;
+#endif
 }

@@ -4,7 +4,11 @@
 #include "viint.h"
 
 // TODO: this comes from a header
+#ifndef BBPLAYER
 #ident "$Revision: 1.17 $"
+#else
+#ident "$Revision: 1.1 $"
+#endif
 
 // This value was incorrectly calculated until being fixed in 2.0J
 #if BUILD_VERSION >= VERSION_J

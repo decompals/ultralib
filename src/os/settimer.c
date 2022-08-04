@@ -3,7 +3,13 @@
 #include "osint.h"
 #include "../io/viint.h"
 
+// TODO: this comes from a header
+#ifdef BBPLAYER
+#ident "$Revision: 1.1 $"
+#endif
+
 int osSetTimer(OSTimer* t, OSTime countdown, OSTime interval, OSMesgQueue* mq, OSMesg msg) {
+    register u32 saveMask;
     OSTime time;
 #if BUILD_VERSION >= VERSION_K
     OSTimer* next;

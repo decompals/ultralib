@@ -3,8 +3,41 @@
 #include "controller.h"
 #include "siint.h"
 
+// TODO: this comes from a header
+#ifdef BBPLAYER
+#ident "$Revision: 1.1 $"
+#endif
+
+extern u32 __osBbEepromAddress;
+extern u32 __osBbEepromSize;
+
 static void __osPackEepWriteData(u8 address, u8* buffer);
+
 s32 osEepromWrite(OSMesgQueue* mq, u8 address, u8* buffer) {
+#ifdef BBPLAYER
+    s32 ret = 0;
+
+    __osSiGetAccess();
+
+    if (__osBbEepromSize == 0x200) {
+        if (address >= 0x40) {
+            ret = -1;
+        }
+    } else if (__osBbEepromSize != 0x800) {
+        ret = 8;
+    }
+
+    if (ret == 0) {
+        int i;
+
+        for (i = 0; i < 8; i++) {
+            *(u8*)(__osBbEepromAddress + (address * 8) + i) = buffer[i];
+        }
+    }
+
+    __osSiRelAccess();
+    return ret;
+#else
     s32 ret = 0;
 #if BUILD_VERSION < VERSION_J
     int i;
@@ -109,8 +142,10 @@ s32 osEepromWrite(OSMesgQueue* mq, u8 address, u8* buffer) {
 
     __osSiRelAccess();
     return ret;
+#endif
 }
 
+#ifndef BBPLAYER
 static void __osPackEepWriteData(u8 address, u8* buffer) {
     u8* ptr = (u8*)&__osEepPifRam.ramarray;
     __OSContEepromFormat eepromformat;
@@ -201,3 +236,4 @@ s32 __osEepStatus(OSMesgQueue* mq, OSContStatus* data) {
 
     return 0;
 }
+#endif

@@ -5,6 +5,11 @@
 #include "viint.h"
 #include "../os/osint.h"
 
+// TODO: this comes from a header
+#ifdef BBPLAYER
+#ident "$Revision: 1.1 $"
+#endif
+
 OSDevMgr __osViDevMgr = { 0 };
 #if BUILD_VERSION >= VERSION_J
 u32 __additional_scanline = 0;
@@ -61,7 +66,11 @@ void osCreateViManager(OSPri pri) {
     __osViDevMgr.acsQueue = NULL;
     __osViDevMgr.dma = NULL;
     __osViDevMgr.edma = NULL;
+#ifdef BBPLAYER
+    osCreateThread(&viThread, 0xD49, viMgrMain, &__osViDevMgr, &viThreadStack[OS_VIM_STACKSIZE], pri);
+#else
     osCreateThread(&viThread, 0, viMgrMain, &__osViDevMgr, &viThreadStack[OS_VIM_STACKSIZE], pri);
+#endif
     __osViInit();
     osStartThread(&viThread);
     __osRestoreInt(savedMask);

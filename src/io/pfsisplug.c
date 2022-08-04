@@ -3,16 +3,30 @@
 #include "controller.h"
 #include "siint.h"
 
+// TODO: this comes from a header
+#ifdef BBPLAYER
+#ident "$Revision: 1.1 $"
+#endif
+
+extern u32 __osBbIsBb;
+extern u32 __osBbHackFlags;
+extern u32 __osBbPakAddress[4];
+
 OSPifRam __osPfsPifRam ALIGNED(16);
 
 s32 osPfsIsPlug(OSMesgQueue* mq, u8* pattern) {
     s32 ret = 0;
-    OSMesg msg;
+    OSMesg dummy;
     u8 bitpattern;
-    OSContStatus contData[MAXCONTROLLERS];
-    s32 channel;
+    OSContStatus data[MAXCONTROLLERS];
+    int channel;
+#ifdef BBPLAYER
+    int crc_error_cnt = 3;
     u8 bits = 0;
-    s32 crcErrorCount = 3;
+#else
+    u8 bits = 0;
+    s32 crc_error_cnt = 3;
+#endif
 
     __osSiGetAccess();
 
@@ -20,27 +34,27 @@ s32 osPfsIsPlug(OSMesgQueue* mq, u8* pattern) {
         __osPfsRequestData(CONT_CMD_REQUEST_STATUS);
 
         ret = __osSiRawStartDma(OS_WRITE, &__osPfsPifRam);
-        osRecvMesg(mq, &msg, OS_MESG_BLOCK);
+        osRecvMesg(mq, &dummy, OS_MESG_BLOCK);
 
         ret = __osSiRawStartDma(OS_READ, &__osPfsPifRam);
-        osRecvMesg(mq, &msg, OS_MESG_BLOCK);
+        osRecvMesg(mq, &dummy, OS_MESG_BLOCK);
 
-        __osPfsGetInitData(&bitpattern, &contData[0]);
+        __osPfsGetInitData(&bitpattern, &data[0]);
 
         for (channel = 0; channel < __osMaxControllers; channel++) {
-            if ((contData[channel].status & CONT_ADDR_CRC_ER) == 0) {
-                crcErrorCount--;
+            if ((data[channel].status & CONT_ADDR_CRC_ER) == 0) {
+                crc_error_cnt--;
                 break;
             }
         }
 
         if (channel == __osMaxControllers) {
-            crcErrorCount = 0;
+            crc_error_cnt = 0;
         }
-    } while (crcErrorCount > 0);
+    } while (crc_error_cnt > 0);
 
     for (channel = 0; channel < __osMaxControllers; channel++) {
-        if ((contData[channel].errno == 0) && ((contData[channel].status & CONT_CARD_ON) != 0)) {
+        if ((data[channel].errno == 0) && ((data[channel].status & CONT_CARD_ON) != 0)) {
             bits |= (1 << channel);
         }
     }
@@ -90,8 +104,26 @@ void __osPfsGetInitData(u8* pattern, OSContStatus* data) {
         }
 
         data->type = ((requestformat.typel << 8) | requestformat.typeh);
+#ifdef BBPLAYER
+        data->status = __osBbPakAddress[i] != 0;
+#else
         data->status = requestformat.status;
+#endif
         bits |= (1 << i);
     }
+
+#ifdef BBPLAYER
+    if (__osBbIsBb && __osBbHackFlags != 0) {
+        OSContStatus tmp;
+
+        bits = (bits & ~((1 << __osBbHackFlags) | 1)) | ((bits & 1) << __osBbHackFlags) | ((bits & (1 << __osBbHackFlags)) >> __osBbHackFlags);
+
+        data -= __osMaxControllers;
+
+        tmp = data[0];
+        data[0] = data[__osBbHackFlags];
+        data[__osBbHackFlags] = tmp;
+    }
+#endif
     *pattern = bits;
 }

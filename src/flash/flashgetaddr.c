@@ -1,3 +1,4 @@
+#ifndef BBPLAYER
 #include "ultra64.h"
 #include "PR/os_internal_flash.h"
 
@@ -13,3 +14,4 @@ u32 __osFlashGetAddr(u32 page_num) {
 
     return devAddr;
 }
+#endif

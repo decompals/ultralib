@@ -21,7 +21,11 @@
 #include <os.h>
 #include <assert.h>
 // TODO: this comes from a header
+#ifndef BBPLAYER
 #ident "$Revision: 1.17 $"
+#else
+#ident "$Revision: 1.1 $"
+#endif
 
 Acmd *alSavePull(void *filter, s16 *outp, s32 outCount, s32 sampleOffset,
                  Acmd *p) 

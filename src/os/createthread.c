@@ -3,6 +3,11 @@
 #include "PR/ultraerror.h"
 #include "osint.h"
 
+// TODO: this comes from a header
+#ifdef BBPLAYER
+#ident "$Revision: 1.1 $"
+#endif
+
 extern __OSThreadprofile_s thprof[];
 
 void osCreateThread(OSThread* t, OSId id, void (*entry)(void*), void* arg, void* sp, OSPri p) {
@@ -25,10 +30,12 @@ void osCreateThread(OSThread* t, OSId id, void (*entry)(void*), void* arg, void*
     t->priority = p;
     t->next = NULL;
     t->queue = NULL;
+
     t->context.pc = (u32)entry;
     t->context.a0 = (s64)(s32)arg; // Double cast gets rid of compiler warning
     t->context.sp = (s64)(s32)sp - 16;
     t->context.ra = (u64)__osCleanupThread;
+
     mask = OS_IM_ALL;
     t->context.sr = (mask & (SR_IMASK | SR_IE)) | SR_EXL;
     t->context.rcp = (mask & RCP_IMASK) >> RCP_IMASKSHIFT;
@@ -48,7 +55,9 @@ void osCreateThread(OSThread* t, OSId id, void (*entry)(void*), void* arg, void*
 #endif
 
     saveMask = __osDisableInt();
+
     t->tlnext = __osActiveQueue;
     __osActiveQueue = t;
+
     __osRestoreInt(saveMask);
 }

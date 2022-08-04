@@ -4,6 +4,11 @@
 #include "controller.h"
 #include "PR/rmon.h"
 
+// TODO: this comes from a header
+#ifdef BBPLAYER
+#ident "$Revision: 1.1 $"
+#endif
+
 #if BUILD_VERSION >= VERSION_J
 __OSInode __osPfsInodeCache ALIGNED(8);
 s32 __osPfsInodeCacheChannel = -1;

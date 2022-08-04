@@ -3,6 +3,11 @@
 #include "osint.h"
 #include "../io/viint.h"
 
+// TODO: this comes from a header
+#ifdef BBPLAYER
+#ident "$Revision: 1.1 $"
+#endif
+
 int osStopTimer(OSTimer* t) {
     register u32 savedMask;
     OSTimer* timep;

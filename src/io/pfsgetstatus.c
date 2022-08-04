@@ -2,7 +2,15 @@
 #include "controller.h"
 #include "siint.h"
 
+// TODO: this comes from a header
+#ifdef BBPLAYER
+#ident "$Revision: 1.1 $"
+
+extern u32 __osBbPakAddress[4];
+#endif
+
 #if BUILD_VERSION >= VERSION_J
+
 void __osPfsRequestOneChannel(int channel, u8 cmd);
 #else
 void __osPfsRequestOneChannel(int channel);
@@ -10,6 +18,12 @@ void __osPfsRequestOneChannel(int channel);
 void __osPfsGetOneChannelData(int channel, OSContStatus* data);
 
 s32 __osPfsGetStatus(OSMesgQueue* queue, int channel) {
+#ifdef BBPLAYER
+    if (__osBbPakAddress[channel] != 0) {
+        return 0;
+    }
+    return PFS_ERR_NOPACK;
+#else
     s32 ret = 0;
     OSMesg dummy;
     OSContStatus data;
@@ -39,6 +53,7 @@ s32 __osPfsGetStatus(OSMesgQueue* queue, int channel) {
     }
 
     return ret;
+#endif
 }
 
 #if BUILD_VERSION >= VERSION_J

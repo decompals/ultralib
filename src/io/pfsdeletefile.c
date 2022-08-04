@@ -1,6 +1,11 @@
 #include "PR/os_internal.h"
 #include "controller.h"
 
+// TODO: this comes from a header
+#ifdef BBPLAYER
+#ident "$Revision: 1.1 $"
+#endif
+
 s32 osPfsDeleteFile(OSPfs* pfs, u16 company_code, u32 game_code, u8* game_name, u8* ext_name) {
     s32 file_no;
 #if BUILD_VERSION < VERSION_J

@@ -2,6 +2,11 @@
 #include "PR/rcp.h"
 #include "PR/R4300.h"
 
+// TODO: this comes from a header
+#ifdef BBPLAYER
+#ident "$Revision: 1.1 $"
+#endif
+
 #define STEP 0x100000
 #define SIZE_4MB 0x400000
 #define SIZE_8MB 0x800000
@@ -9,6 +14,9 @@
 #if BUILD_VERSION >= VERSION_J
 
 u32 osGetMemSize(void) {
+#ifdef BBPLAYER
+    return osMemSize;
+#else
     vu32* ptr;
     u32 size = SIZE_4MB;
     u32 data0;
@@ -34,6 +42,7 @@ u32 osGetMemSize(void) {
     }
 
     return size;
+#endif
 }
 
 #else

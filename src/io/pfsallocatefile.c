@@ -2,7 +2,12 @@
 #include "controller.h"
 #include "PR/rmon.h"
 
-#define ROUND_UP_DIVIDE(numerator, denominator) (((numerator) + (denominator)-1) / (denominator))
+// TODO: this comes from a header
+#ifdef BBPLAYER
+#ident "$Revision: 1.1 $"
+#endif
+
+#define ROUND_UP_DIVIDE(numerator, denominator) (((numerator) + (denominator) - 1) / (denominator))
 
 #if BUILD_VERSION >= VERSION_J
 

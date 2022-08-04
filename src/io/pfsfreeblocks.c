@@ -1,6 +1,11 @@
 #include "PR/os_internal.h"
 #include "controller.h"
 
+// TODO: this comes from a header
+#ifdef BBPLAYER
+#ident "$Revision: 1.1 $"
+#endif
+
 s32 osPfsFreeBlocks(OSPfs* pfs, s32* bytes_not_used) {
     int j;
     int pages = 0;

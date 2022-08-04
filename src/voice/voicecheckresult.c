@@ -3,6 +3,12 @@
 #include "PR/os_voice.h"
 #include "voiceinternal.h"
 
+// TODO: this comes from a header
+#ifdef BBPLAYER
+#ident "$Revision: 1.1 $"
+#endif
+
+#ifndef BBPLAYER
 s32 __osVoiceCheckResult(OSVoiceHandle* hd, u8* stat) {
     s32 ret;
     u8 buf[2];
@@ -26,3 +32,4 @@ s32 __osVoiceCheckResult(OSVoiceHandle* hd, u8* stat) {
     }
     return ret;
 }
+#endif

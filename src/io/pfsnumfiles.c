@@ -1,6 +1,11 @@
 #include "PR/os_internal.h"
 #include "controller.h"
 
+// TODO: this comes from a header
+#ifdef BBPLAYER
+#ident "$Revision: 1.1 $"
+#endif
+
 s32 osPfsNumFiles(OSPfs* pfs, s32* max_files, s32* files_used) {
     int j;
     s32 ret;

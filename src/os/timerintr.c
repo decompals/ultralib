@@ -2,6 +2,11 @@
 #include "PR/os_internal.h"
 #include "osint.h"
 
+// TODO: this comes from a header
+#ifdef BBPLAYER
+#ident "$Revision: 1.1 $"
+#endif
+
 OSTime __osCurrentTime;
 u32 __osBaseCounter;
 u32 __osViIntrCount;
@@ -40,6 +45,7 @@ void __osTimerInterrupt(void) {
     if (__osTimerList->next == __osTimerList) {
         return;
     }
+
     for (;;) {
         t = __osTimerList->next;
 

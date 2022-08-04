@@ -1,6 +1,11 @@
 #include "piint.h"
 #include "PR/ultraerror.h"
 
+// TODO: this comes from a header
+#ifdef BBPLAYER
+#ident "$Revision: 1.1 $"
+#endif
+
 s32 osEPiStartDma(OSPiHandle* pihandle, OSIoMesg* mb, s32 direction) {
     register s32 ret;
 

@@ -4,6 +4,11 @@
 #include "PR/rcp.h"
 #include "../os/osint.h"
 
+// TODO: this comes from a header
+#ifdef BBPLAYER
+#ident "$Revision: 1.1 $"
+#endif
+
 #if BUILD_VERSION < VERSION_J
 #ident "$Revision: 1.4 $"
 #endif

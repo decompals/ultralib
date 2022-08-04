@@ -22,7 +22,11 @@
 #include <sp.h>
 #include <PR/os_version.h>
 // TODO: this comes from a header
+#ifndef BBPLAYER
 #ident "$Revision: 1.17 $"
+#else
+#ident "$Revision: 1.1 $"
+#endif
 
 /*
  * spSetZ()

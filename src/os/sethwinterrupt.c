@@ -1,5 +1,10 @@
 #include "PR/os_internal.h"
 
+// TODO: this comes from a header
+#ifdef BBPLAYER
+#ident "$Revision: 1.1 $"
+#endif
+
 // A stack frame was added to hardware interrupt handlers in 2.0J
 #if BUILD_VERSION >= VERSION_J
 

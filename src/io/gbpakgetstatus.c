@@ -1,7 +1,15 @@
 #include "PR/os_internal.h"
 #include "controller.h"
 
+// TODO: this comes from a header
+#ifdef BBPLAYER
+#ident "$Revision: 1.1 $"
+#endif
+
 s32 osGbpakGetStatus(OSPfs* pfs, u8* status) {
+#ifdef BBPLAYER
+    return PFS_ERR_DEVICE;
+#else
     s32 ret;
     s32 i;
     u32 temp[BLOCKSIZE / sizeof(u32)];
@@ -36,4 +44,5 @@ s32 osGbpakGetStatus(OSPfs* pfs, u8* status) {
     }
 
     return ret;
+#endif
 }

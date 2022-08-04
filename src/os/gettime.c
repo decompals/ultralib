@@ -3,7 +3,12 @@
 #include "osint.h"
 #include "../io/viint.h"
 
-OSTime osGetTime() {
+// TODO: this comes from a header
+#ifdef BBPLAYER
+#ident "$Revision: 1.1 $"
+#endif
+
+OSTime osGetTime(void) {
     u32 tmptime;
     u32 elapseCount;
     OSTime currentCount;

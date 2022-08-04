@@ -2,6 +2,13 @@
 #include "PR/rcp.h"
 #include "piint.h"
 
+// TODO: this comes from a header
+#ifdef BBPLAYER
+#ident "$Revision: 1.1 $"
+#endif
+
+extern u32 __osBbIsBb;
+
 void __osDevMgrMain(void* args) {
     OSIoMesg* mb;
     OSMesg em;
@@ -9,6 +16,9 @@ void __osDevMgrMain(void* args) {
     s32 ret;
     OSDevMgr* dm;
     s32 messageSend = 0;
+#ifdef BBPLAYER
+    int check = 0;
+#endif
 
     dm = (OSDevMgr*)args;
     mb = NULL;
@@ -75,6 +85,13 @@ void __osDevMgrMain(void* args) {
             switch (mb->hdr.type) {
                 case OS_MESG_TYPE_DMAREAD:
                     osRecvMesg(dm->acsQueue, &dummy, OS_MESG_BLOCK);
+#ifdef BBPLAYER
+                    if (__osBbIsBb == TRUE && ((u32)mb->dramAddr & 0x7F) >= 0x60) {
+                        check = TRUE;
+                        ret = dm->dma(OS_READ, mb->devAddr, 0x80600000, mb->size);
+                        break;
+                    }
+#endif
                     ret = dm->dma(OS_READ, mb->devAddr, mb->dramAddr, mb->size);
                     break;
                 case OS_MESG_TYPE_DMAWRITE:
@@ -83,6 +100,13 @@ void __osDevMgrMain(void* args) {
                     break;
                 case OS_MESG_TYPE_EDMAREAD:
                     osRecvMesg(dm->acsQueue, &dummy, OS_MESG_BLOCK);
+#ifdef BBPLAYER
+                    if (__osBbIsBb == TRUE && ((u32)mb->dramAddr & 0x7F) >= 0x60) {
+                        check = TRUE;
+                        ret = dm->edma(mb->piHandle, OS_READ, mb->devAddr, 0x80600000, mb->size);
+                        break;
+                    }
+#endif
                     ret = dm->edma(mb->piHandle, OS_READ, mb->devAddr, mb->dramAddr, mb->size);
                     break;
                 case OS_MESG_TYPE_EDMAWRITE:
@@ -100,6 +124,14 @@ void __osDevMgrMain(void* args) {
 
             if (ret == 0) {
                 osRecvMesg(dm->evtQueue, &em, OS_MESG_BLOCK);
+#ifdef BBPLAYER
+                if (__osBbIsBb == TRUE && check) {
+                    osInvalDCache((void*)0x80600000, (mb->size + DCACHE_LINEMASK) & ~DCACHE_LINEMASK);
+                    bcopy((void*)0x80600000, mb->dramAddr, mb->size);
+                    check = FALSE;
+                    osWritebackDCache(mb->dramAddr, mb->size);
+                }
+#endif
                 osSendMesg(mb->hdr.retQueue, mb, OS_MESG_NOBLOCK);
                 osSendMesg(dm->acsQueue, NULL, OS_MESG_NOBLOCK);
             }
