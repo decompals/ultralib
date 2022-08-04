@@ -2,8 +2,10 @@
 #include "string.h"
 #include "os.h"
 
+#ifndef BBPLAYER
 // TODO: this comes from a header
 #ident "$Revision: 1.23 $"
+#endif
 
 static char* proutSprintf(char* dst, const char* src, size_t count);
 

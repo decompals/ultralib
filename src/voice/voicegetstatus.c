@@ -4,6 +4,12 @@
 #include "voiceinternal.h"
 #include "io/siint.h"
 
+// TODO: this comes from a header
+#ifdef BBPLAYER
+#ident "$Revision: 1.1 $"
+#endif
+
+#ifndef BBPLAYER
 s32 __osVoiceGetStatus(OSMesgQueue* mq, s32 port, u8* status) {
     __OSContRequesFormatShort header;
     s32 ret = 0;
@@ -60,3 +66,4 @@ s32 __osVoiceGetStatus(OSMesgQueue* mq, s32 port, u8* status) {
 
     return ret;
 }
+#endif

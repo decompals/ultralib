@@ -1,6 +1,11 @@
 #include "PR/os_internal.h"
 #include "osint.h"
 
+// TODO: this comes from a header
+#ifdef BBPLAYER
+#ident "$Revision: 1.1 $"
+#endif
+
 struct __osThreadTail __osThreadTail = { NULL, -1 };
 OSThread* __osRunQueue = (OSThread*)&__osThreadTail;
 OSThread* __osActiveQueue = (OSThread*)&__osThreadTail;

@@ -3,7 +3,15 @@
 #include "PR/os_voice.h"
 #include "voiceinternal.h"
 
+// TODO: this comes from a header
+#ifdef BBPLAYER
+#ident "$Revision: 1.1 $"
+#endif
+
 s32 osVoiceControlGain(OSVoiceHandle* hd, s32 analog, s32 digital) {
+#ifdef BBPLAYER
+    return CONT_ERR_INVALID;
+#else
     s32 ret;
     u8 cmd;
 
@@ -25,4 +33,5 @@ s32 osVoiceControlGain(OSVoiceHandle* hd, s32 analog, s32 digital) {
 
     ERRCK(__osVoiceSetADConverter(hd->__mq, hd->__channel, cmd));
     return ret;
+#endif
 }

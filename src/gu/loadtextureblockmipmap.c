@@ -18,8 +18,10 @@
 #include "ultra64.h"
 #include "macros.h"
 
+#ifndef BBPLAYER
 // TODO: this comes from a header
 #ident "$Revision: 1.49 $"
+#endif
 
 #define TRAM_SIZE       4096    /* in bytes */
 #define TRAM_WSIZE      8       /* TRAM word size in bytes */

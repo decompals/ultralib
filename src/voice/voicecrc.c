@@ -5,6 +5,12 @@
 #define VOICE_CRC_LENGTH 8
 #define VOICE_CRC_GENERATOR 0x85
 
+// TODO: this comes from a header
+#ifdef BBPLAYER
+#ident "$Revision: 1.1 $"
+#endif
+
+#ifndef BBPLAYER
 u8 __osVoiceContDataCrc(u8* data, u32 length) {
     s32 temp = 0;
     u32 i;
@@ -38,3 +44,4 @@ u8 __osVoiceContDataCrc(u8* data, u32 length) {
     // Discarding the excess is done automatically by the return type
     return temp;
 }
+#endif

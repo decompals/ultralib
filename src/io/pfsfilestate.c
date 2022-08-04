@@ -1,6 +1,11 @@
 #include "PR/os_internal.h"
 #include "controller.h"
 
+// TODO: this comes from a header
+#ifdef BBPLAYER
+#ident "$Revision: 1.1 $"
+#endif
+
 s32 osPfsFileState(OSPfs* pfs, s32 file_no, OSPfsState* state) {
     s32 ret;
     int pages;

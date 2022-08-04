@@ -3,11 +3,21 @@
 #include "controller.h"
 #include "siint.h"
 
+// TODO: this comes from a header
+#ifdef BBPLAYER
+#ident "$Revision: 1.1 $"
+#endif
+
+#ifndef BBPLAYER
 static OSPifRam __MotorDataBuf[MAXCONTROLLERS] ALIGNED(8);
+#endif
 
 #define READFORMAT(ptr) ((__OSContRamReadFormat*)(ptr))
 
 s32 __osMotorAccess(OSPfs* pfs, s32 flag) {
+#ifdef BBPLAYER
+    return PFS_ERR_INVALID;
+#else
     int i;
     s32 ret;
     u8* ptr = (u8*)&__MotorDataBuf[pfs->channel];
@@ -46,8 +56,10 @@ s32 __osMotorAccess(OSPfs* pfs, s32 flag) {
     __osSiRelAccess();
 
     return ret;
+#endif
 }
 
+#ifndef BBPLAYER
 static void __osMakeMotorData(int channel, OSPifRam* mdata) {
     u8* ptr = (u8*)mdata->ramarray;
     __OSContRamReadFormat ramreadformat;
@@ -70,8 +82,12 @@ static void __osMakeMotorData(int channel, OSPifRam* mdata) {
     ptr += sizeof(__OSContRamReadFormat);
     ptr[0] = CONT_CMD_END;
 }
+#endif
 
 s32 osMotorInit(OSMesgQueue* mq, OSPfs* pfs, int channel) {
+#ifdef BBPLAYER
+    return PFS_ERR_DEVICE;
+#else
     s32 ret;
     u8 temp[32];
 
@@ -128,4 +144,5 @@ s32 osMotorInit(OSMesgQueue* mq, OSPfs* pfs, int channel) {
 
     pfs->status = PFS_MOTOR_INITIALIZED;
     return 0;
+#endif
 }

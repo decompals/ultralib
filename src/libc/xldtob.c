@@ -2,10 +2,12 @@
 #include "string.h"
 #include "xstdio.h"
 
+#ifndef BBPLAYER
 // TODO: these come from headers
 #ident "$Revision: 1.23 $"
 #ident "$Revision: 1.34 $"
 #ident "$Revision: 1.5 $"
+#endif
 
 #define BUFF_LEN 0x20
 

@@ -2,6 +2,11 @@
 #include "PR/ultraerror.h"
 #include "viint.h"
 
+// TODO: this comes from a header
+#ifdef BBPLAYER
+#ident "$Revision: 1.1 $"
+#endif
+
 void* osViGetNextFramebuffer(void) {
     register u32 saveMask;
     void* framep;

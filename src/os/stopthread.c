@@ -1,11 +1,14 @@
 #include "PR/os_internal.h"
 #include "osint.h"
 
+// TODO: this comes from a header
+#ifdef BBPLAYER
+#ident "$Revision: 1.1 $"
+#endif
+
 void osStopThread(OSThread* t) {
     register u32 saveMask = __osDisableInt();
-    register u16 state;
-
-    state = (t == NULL) ? OS_STATE_RUNNING: t->state;
+    register u16 state = (t == NULL) ? OS_STATE_RUNNING: t->state;
 
     switch (state) {
         case OS_STATE_RUNNING:

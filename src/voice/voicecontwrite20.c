@@ -7,6 +7,12 @@
 
 #define WRITE20FORMAT(p) ((__OSVoiceWrite20Format*)(ptr))
 
+// TODO: this comes from a header
+#ifdef BBPLAYER
+#ident "$Revision: 1.1 $"
+#endif
+
+#ifndef BBPLAYER
 s32 __osVoiceContWrite20(OSMesgQueue* mq, int channel, u16 address, u8* buffer) {
     s32 ret = 0;
     u8 status;
@@ -74,3 +80,4 @@ s32 __osVoiceContWrite20(OSMesgQueue* mq, int channel, u16 address, u8* buffer) 
 
     return ret;
 }
+#endif

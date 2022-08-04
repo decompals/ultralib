@@ -24,8 +24,13 @@
 #include <math.h>
 #include <assert.h>
 // TODO: these come from headers
+#ifndef BBPLAYER
 #ident "$Revision: 1.49 $"
 #ident "$Revision: 1.17 $"
+#else
+#ident "$Revision: 1.1 $"
+#endif
+
 #ifdef AUD_PROFILE
 extern u32 cnt_index, env_num, env_cnt, env_max, env_min, lastCnt[];
 extern u32 rate_num, rate_cnt, rate_max, rate_min;

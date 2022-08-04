@@ -2,6 +2,10 @@
 #include "PR/os_internal_flash.h"
 
 void osFlashReadId(u32* flash_type, u32* flash_maker) {
+#ifdef BBPLAYER
+    *flash_type = __osFlashID[0] = 0x11118001;
+    *flash_maker = __osFlashID[1] = 0xc20000;
+#else
     u8 tmp;
 
     // why read status ?
@@ -23,5 +27,6 @@ void osFlashReadId(u32* flash_type, u32* flash_maker) {
 
     *flash_type = __osFlashID[0];
     *flash_maker = __osFlashID[1];
+#endif
     return;
 }

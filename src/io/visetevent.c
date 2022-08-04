@@ -47,7 +47,11 @@
 
 
 // TODO: this comes from a header
+#ifndef BBPLAYER
 #ident "$Revision: 1.17 $"
+#else
+#ident "$Revision: 1.1 $"
+#endif
 
 void osViSetEvent(OSMesgQueue* mq, OSMesg m, u32 retraceCount) {
     register u32 saveMask;

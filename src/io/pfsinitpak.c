@@ -2,6 +2,11 @@
 #include "controller.h"
 #include "siint.h"
 
+// TODO: this comes from a header
+#ifdef BBPLAYER
+#ident "$Revision: 1.1 $"
+#endif
+
 static s32 __osPfsCheckRamArea(OSPfs* pfs);
 
 s32 osPfsInitPak(OSMesgQueue* queue, OSPfs* pfs, int channel) {

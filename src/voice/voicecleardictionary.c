@@ -3,7 +3,15 @@
 #include "PR/os_voice.h"
 #include "voiceinternal.h"
 
+// TODO: this comes from a header
+#ifdef BBPLAYER
+#ident "$Revision: 1.1 $"
+#endif
+
 s32 osVoiceClearDictionary(OSVoiceHandle* hd, u8 words) {
+#ifdef BBPLAYER
+    return CONT_ERR_DEVICE;
+#else
     s32 ret;
     u8 stat;
     u8 buf[4];
@@ -26,4 +34,5 @@ s32 osVoiceClearDictionary(OSVoiceHandle* hd, u8 words) {
     }
 
     return ret;
+#endif
 }

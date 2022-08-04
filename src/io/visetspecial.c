@@ -4,7 +4,11 @@
 #include "viint.h"
 
 // TODO: this comes from a header
+#ifndef BBPLAYER
 #ident "$Revision: 1.17 $"
+#else
+#ident "$Revision: 1.1 $"
+#endif
 
 #define OS_VI_SPECIAL_MAX                                                                                 \
     (OS_VI_GAMMA_ON | OS_VI_GAMMA_OFF | OS_VI_GAMMA_DITHER_ON | OS_VI_GAMMA_DITHER_OFF | OS_VI_DIVOT_ON | \

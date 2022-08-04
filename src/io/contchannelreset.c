@@ -2,6 +2,13 @@
 #include "controller.h"
 #include "siint.h"
 
+// TODO: this comes from a header
+#ifdef BBPLAYER
+#ident "$Revision: 1.1 $"
+#endif
+
+#ifndef BBPLAYER
+
 s32 __osContChannelReset(OSMesgQueue* mq, int channel) {
     s32 i;
     s32 ret;
@@ -26,3 +33,4 @@ s32 __osContChannelReset(OSMesgQueue* mq, int channel) {
     __osSiRelAccess();
     return ret;
 }
+#endif

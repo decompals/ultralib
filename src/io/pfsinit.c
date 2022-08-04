@@ -2,6 +2,11 @@
 #include "controller.h"
 #include "siint.h"
 
+// TODO: this comes from a header
+#ifdef BBPLAYER
+#ident "$Revision: 1.1 $"
+#endif
+
 s32 osPfsInit(OSMesgQueue* queue, OSPfs* pfs, int channel) {
     s32 ret = 0;
 

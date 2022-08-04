@@ -49,7 +49,13 @@
 
 
 // TODO: this comes from a header
+#ifndef BBPLAYER
 #ident "$Revision: 1.17 $"
+#else
+#ident "$Revision: 1.1 $"
+#endif
+
+extern u32 __osBbIsBb;
 
 s32 __osSiRawStartDma(s32 direction, void* dramAddr) {
 #ifdef _DEBUG
@@ -66,6 +72,15 @@ s32 __osSiRawStartDma(s32 direction, void* dramAddr) {
     IO_WRITE(SI_DRAM_ADDR_REG, osVirtualToPhysical(dramAddr));
 
     if (direction == OS_READ) {
+#ifdef BBPLAYER
+        if (__osBbIsBb) {
+            register u32 mask = __osDisableInt();
+
+            skKeepAlive();
+
+            __osRestoreInt(mask);
+        }
+#endif
         IO_WRITE(SI_PIF_ADDR_RD64B_REG, PIF_RAM_START);
     } else {
         IO_WRITE(SI_PIF_ADDR_WR64B_REG, PIF_RAM_START);

@@ -5,13 +5,19 @@
 #include "sys/regdef.h"
 
 .text
+
 .set noreorder
+
 LEAF(osGetIntMask)
     mfc0 v0, C0_SR
     andi v0, v0, OS_IM_CPU
     la t0, __OSGlobalIntMask
     lw t1, 0(t0)
-    xor t0, t1, -1
+#ifdef BBPLAYER
+    xor t0, t1, 0xFFFFFFFF
+#else
+    xor t0, t1, ~0
+#endif
     andi t0, t0, SR_IMASK
     or v0, v0, t0
 
@@ -22,7 +28,11 @@ LEAF(osGetIntMask)
 
     lw t0, 0(t0)
     srl t0, t0, 0x10
-    xor t0, t0, -1
+#ifdef BBPLAYER
+    xor t0, t0, 0xFFFFFFFF
+#else
+    xor t0, t0, ~0
+#endif
     andi t0, t0, 0x3f
     or t1, t1, t0
 1:

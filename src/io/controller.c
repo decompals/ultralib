@@ -3,6 +3,15 @@
 #include "controller.h"
 #include "siint.h"
 
+// TODO: this comes from a header
+#ifdef BBPLAYER
+#ident "$Revision: 1.1 $"
+#endif
+
+extern u32 __osBbIsBb;
+extern u32 __osBbHackFlags;
+extern u32 __osBbPakAddress[4];
+
 OSPifRam __osContPifRam ALIGNED(16);
 u8 __osContLastCmd;
 u8 __osMaxControllers;
@@ -44,7 +53,11 @@ s32 osContInit(OSMesgQueue* mq, u8* bitpattern, OSContStatus* data) {
     osRecvMesg(mq, &dummy, OS_MESG_BLOCK);
 
     __osContGetInitData(bitpattern, data);
+#ifdef BBPLAYER
+    __osContLastCmd = CONT_CMD_CHANNEL_RESET;
+#else
     __osContLastCmd = CONT_CMD_REQUEST_STATUS;
+#endif
     __osSiCreateAccessQueue();
     osCreateMesgQueue(&__osEepromTimerQ, &__osEepromTimerMsg, 1);
 
@@ -67,9 +80,27 @@ void __osContGetInitData(u8* pattern, OSContStatus* data) {
         }
 
         data->type = requestHeader.typel << 8 | requestHeader.typeh;
+#ifdef BBPLAYER
+        data->status = __osBbPakAddress[i] != 0;
+#else
         data->status = requestHeader.status;
+#endif
         bits |= 1 << i;
     }
+#ifdef BBPLAYER
+    if (__osBbIsBb && __osBbHackFlags != 0) {
+        OSContStatus tmp;
+
+        bits = (bits & ~((1 << __osBbHackFlags) | 1)) | ((bits & 1) << __osBbHackFlags) | ((bits & (1 << __osBbHackFlags)) >> __osBbHackFlags);
+
+        data -= __osMaxControllers;
+
+        tmp = data[0];
+        data[0] = data[__osBbHackFlags];
+        data[__osBbHackFlags] = tmp;
+    }
+#endif
+
     *pattern = bits;
 }
 

@@ -3,11 +3,43 @@
 #include "controller.h"
 #include "siint.h"
 
+// TODO: this comes from a header
+#ifdef BBPLAYER
+#ident "$Revision: 1.1 $"
+#endif
+
+extern u32 __osBbPakAddress[4];
+extern u32 __osBbPakSize;
+
+#ifndef BBPLAYER
 s32 __osPfsLastChannel = -1;
+#endif
 
 #define READFORMAT(ptr) ((__OSContRamReadFormat*)(ptr))
 
 s32 __osContRamRead(OSMesgQueue* mq, int channel, u16 address, u8* buffer) {
+#ifdef BBPLAYER
+    s32 ret;
+
+    __osSiGetAccess();
+
+    ret = 0;
+    if (__osBbPakAddress[channel] != 0) {
+        if (__osBbPakSize - 0x20 >= address * 0x20) {
+            int i;
+
+            for (i = 0; i < 0x20; i++) {
+                buffer[i] = *(u8*)(__osBbPakAddress[channel] + address * 0x20 + i);
+            }
+        }
+    } else {
+        ret = 1;
+    }
+
+    __osSiRelAccess();
+
+    return ret;
+#else
     s32 ret = 0;
     s32 i;
     u8* ptr;
@@ -66,4 +98,5 @@ s32 __osContRamRead(OSMesgQueue* mq, int channel, u16 address, u8* buffer) {
     } while ((ret == PFS_ERR_CONTRFAIL) && (retry-- >= 0));
     __osSiRelAccess();
     return ret;
+#endif
 }

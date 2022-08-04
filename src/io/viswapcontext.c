@@ -3,7 +3,11 @@
 #include "viint.h"
 
 // TODO: this comes from a header
+#ifndef BBPLAYER
 #ident "$Revision: 1.17 $"
+#else
+#ident "$Revision: 1.1 $"
+#endif
 
 void __osViSwapContext() {
     register OSViMode* vm;

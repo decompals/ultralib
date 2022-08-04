@@ -1,5 +1,10 @@
 #include "PR/os_internal.h"
 
+// TODO: this comes from a header
+#ifdef BBPLAYER
+#ident "$Revision: 1.1 $"
+#endif
+
 u8 __osContAddressCrc(u16 addr) {
     u32 temp = 0;
     u32 i = 0x400;

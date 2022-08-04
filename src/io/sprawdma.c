@@ -53,7 +53,11 @@
 
 
 // TODO: this comes from a header
+#ifndef BBPLAYER
 #ident "$Revision: 1.17 $"
+#else
+#ident "$Revision: 1.1 $"
+#endif
 
 s32 __osSpRawStartDma(s32 direction, u32 devAddr, void* dramAddr, u32 size) {
     assert(((u32)devAddr & 0x7) == 0);
