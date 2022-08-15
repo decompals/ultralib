@@ -71,8 +71,7 @@ const char *__os_error_message[] = {
     "osCreateRegion: length (%d) too small for buffer size (%d)",
     "osMalloc: invalid or corrupt region (0x%x)",
     "osFree: invalid or corrupt region (0x%x)",
-    "osFree: invalid address (0x%x) or\n                           corrupt "
-    "region (0x%x)",
+    "osFree: invalid address (0x%x) or\n                           corrupt region (0x%x)",
     "osGetRegionBufCount: invalid or corrupt region (0x%x)",
     "osGetRegionBufSize: invalid or corrupt region (0x%x)",
     "osSpTaskLoad: dram_stack not aligned to 16 bytes (0x%x)",
@@ -170,15 +169,15 @@ const char *__os_error_message[] = {
 };
 
 void __commonErrorHandler(s16 code, s16 numArgs, ...) {
-  va_list argPtr;
-  const char *fmt;
+    va_list argPtr;
+    const char *fmt;
 
-  fmt = __os_error_message[code];
-  va_start(argPtr, numArgs);
+    fmt = __os_error_message[code];
+    va_start(argPtr, numArgs);
 
-  osSyncPrintf("0x%08X (%04d):", osGetCount(), code);
-  __osSyncVPrintf(fmt, argPtr);
-  osSyncPrintf("\n");
+    osSyncPrintf("0x%08X (%04d):", osGetCount(), code);
+    __osSyncVPrintf(fmt, argPtr);
+    osSyncPrintf("\n");
 }
 
 #endif
