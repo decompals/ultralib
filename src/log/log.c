@@ -8,8 +8,6 @@
 
 #ifndef _FINALROM
 
-#define	ALIGN(s, align)	(((u32)(s) + ((align)-1)) & ~((align)-1))
-
 static u32 __osLogOKtoWrite = TRUE;
 static u32 __osLogInitialized = FALSE;
 

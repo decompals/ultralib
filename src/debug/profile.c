@@ -9,7 +9,6 @@
 #include "macros.h"
 
 #ifndef _FINALROM
-// NON_MATCHING: 2 bytes but code/data seems fine
 
 static u32 __osProfileActive = FALSE;
 static u32 __osProfileIOActive = FALSE;
