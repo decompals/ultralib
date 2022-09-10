@@ -43,7 +43,7 @@ static s32 __osBbUsbRead(s32 which, __OSBbUsbMesg* ump) {
 
 static s32 __osBbUsbWrite(s32 which, __OSBbUsbMesg* ump) {
     _usb_ext_handle* uhp = (_usb_ext_handle*)ump->u.umrw.umrw_handle;
-    
+
     if (uhp->uh_host_handle == NULL) {
         return -0xC6;
     }
@@ -101,10 +101,10 @@ static s32 __osBbUsbThreadInit(s32 which) {
 
     osCreateMesgQueue(&__osBbUsbCtlrQ[which], &__osBbUsbMesgs[which * 128], 128);
 
-    osCreateThread(&__osBbUsbMgr[which], 0xC45 + which, (void*)__osBbUsbMgrProc, 
-            &__osBbUsbCtlrQ[which], 
-            &__osBbUsbMgrStacks[(which + 1) * 0x2000], 
-            (which == 1) ? 0x000000E6 : 0x000000E8);
+    osCreateThread(&__osBbUsbMgr[which], 0xC45 + which, (void*)__osBbUsbMgrProc,
+            &__osBbUsbCtlrQ[which],
+            &__osBbUsbMgrStacks[(which + 1) * 0x2000],
+            (which == 1) ? 230 : 232);
     osStartThread(&__osBbUsbMgr[which]);
 
     bzero(&__osBbUsbEventMesg[which], 0x28);
@@ -129,7 +129,7 @@ s32 osBbUsbInit(void) {
 
     __usb_svc_callback_reg = osCreateRegion(__usb_svc_callback_buffer, ARRLEN(__usb_svc_callback_buffer), 0xC, 0);
     __usb_endpt_desc_reg = osCreateRegion(__usb_endpt_desc_buffer, ARRLEN(__usb_endpt_desc_buffer), 0x600, 0);
-    
+
     for (i = 0; i < 2; i++) {
         if (__osBbUsbThreadInit(i) == 0) {
             numctlr++;

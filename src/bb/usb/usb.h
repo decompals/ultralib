@@ -110,4 +110,31 @@ extern DEV_GLOBAL_STRUCT dev_global_struct;
 
 extern _usb_host_handle __osArcHostHandle[2];
 
+#define USB_BASE_REG_0  0x04900000
+#define USB_BASE_REG_1  0x04A00000
+
+#define USB_BASE_REG(which)     (((which) == 0) ? USB_BASE_REG_0 : USB_BASE_REG_1)
+#define USB_BASE_REG_ALT(which) (((which) != 0) ? USB_BASE_REG_1 : USB_BASE_REG_0)
+
+#define USB_REG_00(which) (USB_BASE_REG(which) + 0x00)
+#define USB_REG_10(which) (USB_BASE_REG(which) + 0x10)
+#define USB_REG_10_ALT(which) (USB_BASE_REG_ALT(which) + 0x10)
+#define USB_REG_14(which) (USB_BASE_REG(which) + 0x14)
+#define USB_REG_18(which) (USB_BASE_REG(which) + 0x18)
+#define USB_REG_18_ALT(which) (USB_BASE_REG_ALT(which) + 0x18)
+#define USB_REG_1C(which) (USB_BASE_REG(which) + 0x1C)
+#define USB_REG_80(which) (USB_BASE_REG(which) + 0x80)
+#define USB_REG_84(which) (USB_BASE_REG(which) + 0x84)
+#define USB_REG_88(which) (USB_BASE_REG(which) + 0x88)
+#define USB_REG_8C(which) (USB_BASE_REG(which) + 0x8C)
+#define USB_REG_94(which) (USB_BASE_REG(which) + 0x94)
+#define USB_REG_98(which) (USB_BASE_REG(which) + 0x98)
+#define USB_REG_9C(which) (USB_BASE_REG(which) + 0x9C)
+#define USB_REG_B0(which) (USB_BASE_REG(which) + 0xB0)
+#define USB_REG_B4(which) (USB_BASE_REG(which) + 0xB4)
+#define USB_REG_40010(which) (USB_BASE_REG(which) + 0x40010)
+#define USB_REG_80000(which) (USB_BASE_REG_ALT(which) + 0x80000)
+
+#define USB_BUFFER_80100(which, n) (USB_BASE_REG_ALT(which) + 0x80100 + (n))
+
 #endif

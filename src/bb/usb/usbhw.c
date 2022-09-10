@@ -34,8 +34,8 @@ void __usb_splx(void) {
 void _usb_dci_vusb11_isr(_usb_device_handle);
 
 s32 __usbDevInterrupt(s32 which) {
-    u32 val = IO_READ((which != 0) ? 0x04A00010 : 0x04900010);
-    u32 mask = IO_READ((which == 0) ? 0x04900014 : 0x04A00014);
+    u32 val = IO_READ(USB_REG_10_ALT(which));
+    u32 mask = IO_READ(USB_REG_14(which));
     val &= mask;
 
     if (val != 0) {
@@ -56,17 +56,17 @@ s32 __usbDevInterrupt(s32 which) {
 
             msec_count++;
             if (msec_count >= 5) {
-                IO_WRITE((which == 0) ? 0x04900014 : 0x04A00014, 0xAE);
+                IO_WRITE(USB_REG_14(which), 0xAE);
             }
         }
         if ((val & 0x80) != 0) {
             __usbOtgStateChange(which);
         }
-        IO_WRITE((which == 0) ? 0x04900010 : 0x04A00010, val);
+        IO_WRITE(USB_REG_10(which), val);
     }
 
-    val = IO_READ((which == 0) ? 0x04900080 : 0x04A00080);
-    mask = IO_READ((which == 0) ? 0x04900084 : 0x04A00084);
+    val = IO_READ(USB_REG_80(which));
+    mask = IO_READ(USB_REG_84(which));
     val &= mask;
 
     if (_usb_ctlr_state[which].ucs_mode == 1) {
@@ -96,25 +96,25 @@ void __usb_arc_device_setup(s32, _usb_device_handle*);
 static void __usbDeviceMode(s32 which) {
     __usb_arc_device_setup(which, &__osArcDeviceHandle[which]);
 
-    IO_WRITE((which == 0) ? 0x0490001C : 0x04A0001C, 4);
+    IO_WRITE(USB_REG_1C(which), 4);
 
     __osBbDelay(1000);
 
     if (which != 0) {
-        IO_WRITE(0x04A0001C, 0xB4);
+        IO_WRITE(USB_REG_1C(1), 0xB4);
     } else {
-        IO_WRITE(0x0490001C, 0x84);
+        IO_WRITE(USB_REG_1C(0), 0x84);
     }
 
     __osBbDelay(500);
 
-    IO_WRITE((which == 0) ? 0x04900014 : 0x04A00014, 0xFF);
+    IO_WRITE(USB_REG_14(which), 0xFF);
 
     IO_WRITE(MI_BASE_REG + 0x3C, (which == 0) ? 0x00200000 : 0x00800000);
 }
 
 static void __usbOtgStateChange(s32 which) {
-    u32 val = IO_READ((which != 0) ? 0x04A00018 : 0x04900018);
+    u32 val = IO_READ(USB_REG_18_ALT(which));
 
     if (_usb_ctlr_state[which].ucs_mask == 0) {
         _usb_ctlr_state[which].ucs_mode = 0;
@@ -149,22 +149,22 @@ s32 osBbUsbGetResetCount(s32 which) {
 }
 
 static void __usbCtlrInit(s32 which) {
-    u32 addr = (which != 0) ? 0x04A80000 : 0x04980000;
+    u32 addr = USB_REG_80000(which);
 
     IO_WRITE(MI_BASE_REG + 0x3C, (which == 0) ? 0x00100000 : 0x00400000);
 
-    IO_WRITE((which == 0) ? 0x04900094 : 0x04A00094, 0);
-    IO_WRITE((which == 0) ? 0x04900014 : 0x04A00014, 0);
-    IO_WRITE((which == 0) ? 0x0490008C : 0x04A0008C, 0);
-    IO_WRITE((which == 0) ? 0x04900084 : 0x04A00084, 0);
-    IO_WRITE((which == 0) ? 0x04900010 : 0x04A00010, 0xFF);
-    IO_WRITE((which == 0) ? 0x04900088 : 0x04A00088, 0xFF);
-    IO_WRITE((which == 0) ? 0x04900080 : 0x04A00080, 0xFF);
-    IO_WRITE((which == 0) ? 0x04900094 : 0x04A00094, 2);
-    IO_WRITE((which == 0) ? 0x04900098 : 0x04A00098, 0);
-    IO_WRITE((which == 0) ? 0x0490009C : 0x04A0009C, (addr >> 0x08) & 0xFF);
-    IO_WRITE((which == 0) ? 0x049000B0 : 0x04A000B0, (addr >> 0x10) & 0xFF);
-    IO_WRITE((which == 0) ? 0x049000B4 : 0x04A000B4, (addr >> 0x18) & 0xFF);
+    IO_WRITE(USB_REG_94(which), 0);
+    IO_WRITE(USB_REG_14(which), 0);
+    IO_WRITE(USB_REG_8C(which), 0);
+    IO_WRITE(USB_REG_84(which), 0);
+    IO_WRITE(USB_REG_10(which), 0xFF);
+    IO_WRITE(USB_REG_88(which), 0xFF);
+    IO_WRITE(USB_REG_80(which), 0xFF);
+    IO_WRITE(USB_REG_94(which), 2);
+    IO_WRITE(USB_REG_98(which), 0);
+    IO_WRITE(USB_REG_9C(which), (addr >> 0x08) & 0xFF);
+    IO_WRITE(USB_REG_B0(which), (addr >> 0x10) & 0xFF);
+    IO_WRITE(USB_REG_B4(which), (addr >> 0x18) & 0xFF);
 
     __usbOtgStateChange(which);
 
@@ -174,8 +174,8 @@ static void __usbCtlrInit(s32 which) {
 s32 __usbHwInit(void) {
     s32 i;
 
-    IO_WRITE(0x04940010, 1);
-    IO_WRITE(0x04A40010, 1);
+    IO_WRITE(USB_REG_40010(0), 1);
+    IO_WRITE(USB_REG_40010(1), 1);
 
     for (i = 0; i < 2; i++) {
         __usbCtlrTest(i);
