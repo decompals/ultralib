@@ -56,19 +56,19 @@ static void __osBbUnstashState(char* name, BbTicketId* tid, OSBbStateVector* sv,
     u32 p = 0;
 
     if (IO_READ(USB_BUFFER_80100(1, p)) == 0xBABE0002) {
-        p += ALIGN4(sizeof(u32));
+        p += ALIGN(sizeof(u32), 4);
 
         _wcopy(PHYS_TO_K1(USB_BUFFER_80100(1, p)), sv, sizeof(*sv));
-        p += ALIGN4(sizeof(*sv));
+        p += ALIGN(sizeof(*sv), 4);
 
         _wcopy(PHYS_TO_K1(USB_BUFFER_80100(1, p)), binding, sizeof(s32) * 4);
-        p += ALIGN4(sizeof(s32) * 4);
+        p += ALIGN(sizeof(s32) * 4, 4);
         
         _wcopy(PHYS_TO_K1(USB_BUFFER_80100(1, p)), name, sizeof(char) * 16);
-        p += ALIGN4(sizeof(char) * 16);
+        p += ALIGN(sizeof(char) * 16, 4);
 
         _wcopy(PHYS_TO_K1(USB_BUFFER_80100(1, p)), &dummy, sizeof(*tid));
-        p += ALIGN4(sizeof(*tid));
+        p += ALIGN(sizeof(*tid), 4);
 
         *tid = dummy;
 
@@ -114,19 +114,19 @@ static void __osBbStashState(char* name, BbTicketId tid, OSBbStateVector* sv, s3
     u32 p = 0;
 
     IO_WRITE(USB_BUFFER_80100(1, p), 0xBABE0002);
-    p += ALIGN4(sizeof(u32));
+    p += ALIGN(sizeof(u32), 4);
 
     _wcopy(sv, PHYS_TO_K1(USB_BUFFER_80100(1, p)), sizeof(*sv));
-    p += ALIGN4(sizeof(*sv));
+    p += ALIGN(sizeof(*sv), 4);
 
     _wcopy(binding, PHYS_TO_K1(USB_BUFFER_80100(1, p)), sizeof(s32) * 4);
-    p += ALIGN4(sizeof(s32) * 4);
+    p += ALIGN(sizeof(s32) * 4, 4);
 
     _wcopy(name, PHYS_TO_K1(USB_BUFFER_80100(1, p)), sizeof(char) * 16);
-    p += ALIGN4(sizeof(char) * 16);
+    p += ALIGN(sizeof(char) * 16, 4);
 
     _wcopy(&dummy, PHYS_TO_K1(USB_BUFFER_80100(1, p)), sizeof(tid));
-    p += ALIGN4(sizeof(tid));
+    p += ALIGN(sizeof(tid), 4);
 
     _wcopy(&stateDirty, PHYS_TO_K1(USB_BUFFER_80100(1, p)), sizeof(stateDirty));
 }
@@ -148,7 +148,7 @@ static void __osBbGetStateFilename(char* name, char* stateName) {
     stateName[i + 4] = '\0';
 }
 
-#define ALIGN4K(x) (((x) + 0x3FFF) & ~0x3FFF)
+#define ALIGN4K(x) ALIGN(x, 0x4000)
 
 static s32 __osBbSaveState(s8* state_name, OSBbStateVector sv, s32* binding, u32 stateDirty) {
     int i;

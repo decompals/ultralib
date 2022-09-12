@@ -3,7 +3,7 @@
 
 #define ALIGNED(x) __attribute__((aligned(x)))
 
-#define ALIGN4(x) (((x) + 3) & ~3)
+#define ALIGN(x, n) (((x) + ((n) - 1)) & ~((n) -1))
 
 #define ARRLEN(x) ((s32)(sizeof(x) / sizeof(x[0])))
 
