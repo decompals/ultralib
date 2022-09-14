@@ -3,6 +3,8 @@
 
 #define ALIGNED(x) __attribute__((aligned(x)))
 
+#define ALIGN(x, n) (((x) + ((n) - 1)) & ~((n) -1))
+
 #define ARRLEN(x) ((s32)(sizeof(x) / sizeof(x[0])))
 
 #define STUBBED_PRINTF(x) ((void)(x))
