@@ -121,7 +121,6 @@ $(BUILD_DIR)/src/gu/us2dex_emu.marker: GBIDEFINE := -DF3DEX_GBI
 $(BUILD_DIR)/src/sp/sprite.marker: GBIDEFINE := 
 $(BUILD_DIR)/src/sp/spriteex.marker: GBIDEFINE := 
 $(BUILD_DIR)/src/sp/spriteex2.marker: GBIDEFINE := 
-$(BUILD_DIR)/src/sp/spriteex2.marker: GBIDEFINE := 
 $(BUILD_DIR)/src/mgu/%.marker: export VR4300MUL := OFF
 $(BUILD_DIR)/src/mgu/rotate.marker: export VR4300MUL := ON
 $(BUILD_DIR)/src/debug/%.marker: ASFLAGS += -P
@@ -133,6 +132,9 @@ $(BUILD_DIR)/src/libc/%.marker: ASFLAGS += -P
 $(BUILD_DIR)/src/rmon/%.marker: ASFLAGS += -P
 $(BUILD_DIR)/src/voice/%.marker: OPTFLAGS += -DLANG_JAPANESE -I$(WORKING_DIR)/src -I$(WORKING_DIR)/src/voice
 $(BUILD_DIR)/src/voice/%.marker: CC := tools/compile_sjis.py -D__CC=$(WORKING_DIR)/$(CC)
+
+$(BUILD_DIR)/src/monutil.marker: CC := tools/ido/cc
+$(BUILD_DIR)/src/monutil.marker: ASFLAGS := -non_shared -mips2 -fullwarn -verbose -Xcpluscomm -G 0 -woff 516,649,838,712 -Wab,-r4300_mul -nostdinc -o32 -c
 
 $(BUILD_DIR)/%.marker: %.c
 	cd $(<D) && $(WORKING_DIR)/$(CC) $(CFLAGS) $(CPPFLAGS) $(OPTFLAGS) $(<F) -o $(WORKING_DIR)/$(@:.marker=.o)
@@ -149,6 +151,7 @@ ifneq ($(NON_MATCHING),1)
 endif
 
 $(BUILD_DIR)/%.marker: %.s
+	echo $@
 	cd $(<D) && $(WORKING_DIR)/$(CC) $(ASFLAGS) $(CPPFLAGS) -I. $(<F) -o $(WORKING_DIR)/$(@:.marker=.o)
 ifneq ($(NON_MATCHING),1)
 # check if this file is in the archive; patch corrupted bytes and change file timestamps to match original if so
