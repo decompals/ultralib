@@ -3,6 +3,8 @@
 #include "rcp.h"
 #include "macros.h"
 
+#include "../usb/usb.h"
+
 typedef struct /* size=0x8 */ {
     /* 0x0000 */ u8 type;
     /* 0x0004 */ u32 size;
@@ -110,8 +112,8 @@ s32 osBbExecApp(u32 addr) {
     IO_WRITE(PI_BASE_REG + 0x54, 0xFF); // PI_ALLOWED_IO
 
     // USB?
-    IO_WRITE(0x04940000 + 0x10, 1);
-    IO_WRITE(0x04A40000 + 0x10, 1);
+    IO_WRITE(USB_REG_40010(0), 1);
+    IO_WRITE(USB_REG_40010(1), 1);
 
     if (__osBbIsBb >= 2) {
         IO_WRITE(MI_BASE_REG + 0x3C, 0x01000000); // MI_HW_INTR_MASK_REG
