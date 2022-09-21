@@ -23,6 +23,20 @@ Currently this repo supports building the following versions:
 
 After clonning the repo, put a copy of `libgultra_rom.a` on the root of this directory.
 
+## Build dependencies
+
+The build process requires the following packages:
+
+- build-essential
+- python3
+
+Under Debian / Ubunutu you can install them with the following commands:
+
+```bash
+sudo apt update
+sudo apt install build-essential python3
+```
+
 ## Building
 
 - `make setup`
