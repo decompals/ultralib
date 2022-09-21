@@ -6,8 +6,26 @@ Reverse engineering of libultra
 
 Currently this repo supports building the following versions:
 
-- [X] libgultra L
-- TODO: add other libultra versions
+- [ ] libgultra 2.0E
+- [ ] libgultra 2.0F
+- [ ] libgultra 2.0G
+- [ ] libgultra 2.0H
+- [ ] libgultra 2.0I_patchNOA9801
+- [ ] libgultra 2.0J
+- [ ] libgultra 2.0J
+- [ ] libgultra 2.0K
+- [X] libgultra 2.0L
+- [ ] ique_v1.5
+
+- libgultra
+
+|      | `libgultra.a` | `libgultra_d.a` | `libgultra_rom.a` |
+|------| -             | -               | -                 |
+| 2.0H | `[ ]`           | [ ]             | [ ]               |
+| 2.0I | [ ]           | [ ]             | [ ]               |
+| 2.0J | [ ]           | [ ]             | [ ]               |
+| 2.0K | :cross_mark:           | :x:             | [ ]               |
+| 2.0L | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
 
 ## Preparation
 
