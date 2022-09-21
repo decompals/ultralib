@@ -21,7 +21,7 @@ Currently this repo supports building the following versions:
 
 ## Preparation
 
-After clonning the repo, put a copy of `libgultra_rom.a` on the root of this directory.
+After cloning the repo, put a copy of the target archive on the root of this directory.
 
 ## Build dependencies
 
