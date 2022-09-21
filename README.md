@@ -6,19 +6,8 @@ Reverse engineering of libultra
 
 Currently this repo supports building the following versions:
 
-- [ ] libgultra 2.0E
-- [ ] libgultra 2.0F
-- [ ] libgultra 2.0G
-- [ ] libgultra 2.0H
-- [ ] libgultra 2.0I_patchNOA9801
-- [ ] libgultra 2.0J
-- [ ] libgultra 2.0J
-- [ ] libgultra 2.0K
-- [X] libgultra 2.0L
-- [ ] ique_v1.5
-
 | IDO / GCC  | `libultra.a` / `libgultra.a` | `libultra_d.a` / `libgultra_d.a` | `libultra_rom.a` / `libgultra_rom.a` |
-| -          | - | - | - |
+| -          | :-: | :-: | :-: |
 | 2.0E       | :x: / N/A | :x: / N/A | :x: / N/A |
 | 2.0F       | :x: / N/A | :x: / N/A | :x: / N/A |
 | 2.0G       | :x: / N/A | :x: / N/A | :x: / N/A |
