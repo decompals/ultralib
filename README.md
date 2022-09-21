@@ -17,15 +17,18 @@ Currently this repo supports building the following versions:
 - [X] libgultra 2.0L
 - [ ] ique_v1.5
 
-- libgultra
-
-|      | `libgultra.a` | `libgultra_d.a` | `libgultra_rom.a` |
-|------| -             | -               | -                 |
-| 2.0H | `[ ]`           | [ ]             | [ ]               |
-| 2.0I | [ ]           | [ ]             | [ ]               |
-| 2.0J | [ ]           | [ ]             | [ ]               |
-| 2.0K | :cross_mark:           | :x:             | [ ]               |
-| 2.0L | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
+| IDO / GCC  | `libultra.a` / `libgultra.a` | `libultra_d.a` / `libgultra_d.a` | `libultra_rom.a` / `libgultra_rom.a` |
+| -          | - | - | - |
+| 2.0E       | :x: / N/A | :x: / N/A | :x: / N/A |
+| 2.0F       | :x: / N/A | :x: / N/A | :x: / N/A |
+| 2.0G       | :x: / N/A | :x: / N/A | :x: / N/A |
+| 2.0H       | :x: / :x: | :x: / :x: | :x: / :x: |
+| 2.0I       | :x: / :x: | :x: / :x: | :x: / :x: |
+| 2.0I_patch | :x: / :x: | :x: / :x: | :x: / :x: |
+| 2.0J       | :x: / :x: | :x: / :x: | :x: / :x: |
+| 2.0K       | :x: / :x: | :x: / :x: | :x: / :x: |
+| 2.0L       | :x: / :heavy_check_mark: | :x: / :heavy_check_mark: | :x: / :heavy_check_mark: |
+| ique_v1.5  | ? | ? | ? |
 
 ## Preparation
 
