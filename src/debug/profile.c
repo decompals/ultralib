@@ -86,6 +86,7 @@ void osProfileInit(OSProf* profp, u32 profcnt) {
     u32 i;
     OSProf* t;
 
+#ifndef NDEBUG
     if (__osProfileActive) {
         __osError(ERR_OSPROFILEINIT_STR, 0);
         return;
@@ -95,8 +96,10 @@ void osProfileInit(OSProf* profp, u32 profcnt) {
         __osError(ERR_OSPROFILEINIT_CNT, 1, profcnt);
         return;
     }
+#endif
 
     for (t = profp; t < profp + profcnt; t++) {
+#ifndef NDEBUG
         if ((u32)t->histo_base & 1) {
             __osError(ERR_OSPROFILEINIT_ALN, 1, t->histo_base);
             return;
@@ -111,6 +114,7 @@ void osProfileInit(OSProf* profp, u32 profcnt) {
             __osError(ERR_OSPROFILEINIT_SIZ, 1, t->histo_size);
             return;
         }
+#endif
 
         for(i = 0; i < t->histo_size; i++) {
             *(t->histo_base + i) = 0;
@@ -136,6 +140,7 @@ void osProfileInit(OSProf* profp, u32 profcnt) {
 }
 
 void osProfileStart(u32 microseconds) {
+#ifndef NDEBUG
     if (microseconds < 50) {
         __osError(ERR_OSPROFILESTART_TIME, 1, microseconds);
         return;
@@ -145,6 +150,7 @@ void osProfileStart(u32 microseconds) {
         __osError(ERR_OSPROFILESTART_FLAG, 0);
         return;
     }
+#endif
 
     osCreateMesgQueue(&__osProfTimerQ, &__osProfTimerMsg, 1);
     osSetTimer(&__osProfTimer, 0, OS_USEC_TO_CYCLES(microseconds), &__osProfTimerQ, 0);
@@ -154,14 +160,18 @@ void osProfileStart(u32 microseconds) {
 }
 
 void osProfileStop(void) {
+#ifndef NDEBUG
     if (!__osProfileActive) {
         __osError(ERR_OSPROFILESTOP_FLAG, 0);
         return;
     }
+#endif
 
     if (osStopTimer(&__osProfTimer) < 0) {
+#ifndef NDEBUG
         __osError(ERR_OSPROFILESTOP_TIMER, 0);
         return;
+#endif
     }
 
     __osProfileActive = FALSE;
