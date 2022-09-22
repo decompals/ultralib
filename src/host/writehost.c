@@ -17,10 +17,12 @@ void osWriteHost(void * dramAddr, u32 nbytes) {
     u8 dCount[3];
     u32 count;
 
+#ifndef NDEBUG
     if (nbytes == 0) {
         __osError(73, 1, nbytes);
         return;
     }
+#endif
 
     if (writeHostInitialized == FALSE) {
         osCreateMesgQueue(&writeHostMesgQueue, writeHostMesgBuf, ARRLEN(writeHostMesgBuf));

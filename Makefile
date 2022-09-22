@@ -2,7 +2,8 @@ NON_MATCHING ?= 0
 
 #TARGET := libgultra_rom
 
-TARGET := libgultra_d
+# TARGET := libgultra_d
+TARGET := libgultra
 BASE_DIR := base_$(TARGET)
 BASE_AR := $(TARGET).a
 BUILD_DIR := build
@@ -18,7 +19,7 @@ AR_OLD := tools/gcc/ar
 
 export COMPILER_PATH := $(WORKING_DIR)/tools/gcc
 
-CFLAGS := -w -nostdinc -c -G 0 -mgp32 -mfp32 -mips3 -D_LANGUAGE_C 
+CFLAGS := -w -nostdinc -c -G 0 -mgp32 -mfp32 -mips3 -D_LANGUAGE_C
 ASFLAGS := -w -nostdinc -c -G 0 -mgp32 -mfp32 -mips3 -DMIPSEB -D_LANGUAGE_ASSEMBLY -D_MIPS_SIM=1 -D_ULTRA64 -x assembler-with-cpp
 GBIDEFINE := -DF3DEX_GBI_2
 CPPFLAGS = -D_MIPS_SZLONG=32 -D__USE_ISOC99 -I $(WORKING_DIR)/include -I $(WORKING_DIR)/include/gcc -I $(WORKING_DIR)/include/PR $(GBIDEFINE)
@@ -27,8 +28,12 @@ ifeq ($(findstring _d,$(TARGET)),_d)
 CPPFLAGS += -D_DEBUG
 OPTFLAGS := -O0
 else
-CPPFLAGS += -DNDEBUG -D_FINALROM
+CPPFLAGS += -DNDEBUG
 OPTFLAGS := -O3
+endif
+
+ifeq ($(findstring _rom,$(TARGET)),_rom)
+CPPFLAGS += -D_FINALROM
 endif
 
 SRC_DIRS := $(shell find src -type d)
@@ -113,9 +118,6 @@ STRIP =
 $(BUILD_DIR)/src/os/initialize_isv.marker: OPTFLAGS := -O2
 $(BUILD_DIR)/src/os/initialize_isv.marker: STRIP = && tools/gcc/strip-2.7 -N initialize_isv.c $(WORKING_DIR)/$(@:.marker=.o) $(WORKING_DIR)/$(@:.marker=.o)
 $(BUILD_DIR)/src/os/assert.marker: OPTFLAGS := -O0
-$(BUILD_DIR)/src/os/ackramromread.marker: OPTFLAGS := -O0
-$(BUILD_DIR)/src/os/ackramromwrite.marker: OPTFLAGS := -O0
-$(BUILD_DIR)/src/os/exit.marker: OPTFLAGS := -O0
 $(BUILD_DIR)/src/os/seterrorhandler.marker: OPTFLAGS := -O0
 $(BUILD_DIR)/src/gu/parse_gbi.marker: GBIDEFINE := 
 $(BUILD_DIR)/src/gu/us2dex_emu.marker: GBIDEFINE := -DF3DEX_GBI

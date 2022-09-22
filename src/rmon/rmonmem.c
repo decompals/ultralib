@@ -23,7 +23,7 @@ void __rmonWriteWordTo(u32* addr, u32 val) {
 u32 __rmonReadWordAt(u32* addr) {
     u32 data;
 
-    if (addr >= (u32*)SP_DMEM_START && addr < (u32*)0x05000000) {
+    if ((u32)addr >= SP_DMEM_START && (u32)addr < 0x05000000) {
         __osSpRawReadIo((u32)addr, &data);
         return data;
     }

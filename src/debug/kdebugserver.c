@@ -34,14 +34,14 @@ static void send_packet(u8* s, u32 n) {
     for (i = 0; i < n; i++) {
         packet.buf[i] = s[i];
     }
-    *(rdbPacket*)RDB_BASE_REG = packet;
+    *(volatile rdbPacket*)RDB_BASE_REG = packet;
 }
 
 static void clear_IP6(void) {
     while (!(__osGetCause() & CAUSE_IP6)) {
         ;
     }
-    *(u32*)RDB_READ_INTR_REG = 0;
+    *(vu32*)RDB_READ_INTR_REG = 0;
 
     while (__osGetCause() & CAUSE_IP6) {
         ;

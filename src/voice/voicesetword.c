@@ -20,7 +20,7 @@ s32 osVoiceSetWord(OSVoiceHandle *hd, u8 *word) {
         ;
     }
 
-#ifndef	_FINALROM
+#ifndef	NDEBUG
     if (k >= 34) {
         return CONT_ERR_VOICE_WORD;
     }
