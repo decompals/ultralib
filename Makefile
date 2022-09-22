@@ -133,6 +133,7 @@ $(BUILD_DIR)/src/rmon/%.marker: ASFLAGS += -P
 $(BUILD_DIR)/src/voice/%.marker: OPTFLAGS += -DLANG_JAPANESE -I$(WORKING_DIR)/src -I$(WORKING_DIR)/src/voice
 $(BUILD_DIR)/src/voice/%.marker: CC := tools/compile_sjis.py -D__CC=$(WORKING_DIR)/$(CC)
 
+MDEBUG_FILES := $(BUILD_DIR)/src/monutil.marker
 $(BUILD_DIR)/src/monutil.marker: CC := tools/ido/cc
 $(BUILD_DIR)/src/monutil.marker: ASFLAGS := -non_shared -mips2 -fullwarn -verbose -Xcpluscomm -G 0 -woff 516,649,838,712 -Wab,-r4300_mul -nostdinc -o32 -c
 
@@ -152,6 +153,25 @@ endif
 
 $(BUILD_DIR)/%.marker: %.s
 	cd $(<D) && $(WORKING_DIR)/$(CC) $(ASFLAGS) $(CPPFLAGS) -I. $(<F) -o $(WORKING_DIR)/$(@:.marker=.o)
+ifneq ($(NON_MATCHING),1)
+# check if this file is in the archive; patch corrupted bytes and change file timestamps to match original if so
+	@$(if $(findstring $(BASE_DIR)/$(@F:.marker=.o), $(BASE_OBJS)), \
+	 python3 tools/fix_objfile.py $(@:.marker=.o) $(BASE_DIR)/$(@F:.marker=.o) && \
+	 $(COMPARE_OBJ) && \
+	 touch -r $(BASE_DIR)/$(@F:.marker=.o) $(@:.marker=.o), \
+	 echo "Object file $(<F:.marker=.o) is not in the current archive" \
+	)
+# create or update the marker file
+	@touch $@
+endif
+
+# Rule for building files that require specific file paths in the mdebug section
+# TODO clean up the tmp folder that's created for ido automatically somehow
+$(MDEBUG_FILES): $(BUILD_DIR)/src/%.marker: src/%.s
+	cp $(<:.marker=.s) $(dir $@)
+	mkdir -p $(@:.marker=) $(WORKING_DIR)/tmp
+	fakechroot chroot $(WORKING_DIR) /bin/bash -c "cd $(@:.marker=) && /$(CC) $(ASFLAGS) ../$(<F) -I/usr/include -o $(notdir $(<:.s=.o))"
+	mv $(@:.marker=)/$(<F:.s=.o) $(@:.marker=)/..
 ifneq ($(NON_MATCHING),1)
 # check if this file is in the archive; patch corrupted bytes and change file timestamps to match original if so
 	@$(if $(findstring $(BASE_DIR)/$(@F:.marker=.o), $(BASE_OBJS)), \
