@@ -59,6 +59,7 @@ UNMATCHED_OBJS = $(filter-out $(MATCHED_OBJS),$(AR_ORDER))
 NUM_OBJS = $(words $(AR_ORDER))
 NUM_OBJS_MATCHED = $(words $(MATCHED_OBJS))
 NUM_OBJS_UNMATCHED = $(words $(UNMATCHED_OBJS))
+BINLINK := binlink
 
 $(shell mkdir -p asm $(BASE_DIR) src $(BUILD_DIR)/$(BASE_DIR) $(foreach dir,$(ASM_DIRS) $(SRC_DIRS),$(BUILD_DIR)/$(dir)))
 
@@ -167,10 +168,10 @@ endif
 
 # Rule for building files that require specific file paths in the mdebug section
 # TODO clean up the tmp folder that's created for ido automatically somehow
-$(MDEBUG_FILES): $(BUILD_DIR)/src/%.marker: src/%.s
+$(MDEBUG_FILES): $(BUILD_DIR)/src/%.marker: src/%.s | $(BINLINK)
 	cp $(<:.marker=.s) $(dir $@)
 	mkdir -p $(@:.marker=) $(WORKING_DIR)/tmp
-	fakechroot chroot $(WORKING_DIR) /bin/bash -c "cd $(@:.marker=) && /$(CC) $(ASFLAGS) ../$(<F) -I/usr/include -o $(notdir $(<:.s=.o))"
+	fakechroot chroot $(WORKING_DIR) /binlink/bash -c "cd $(@:.marker=) && /$(CC) $(ASFLAGS) ../$(<F) -I/usr/include -o $(notdir $(<:.s=.o))"
 	mv $(@:.marker=)/$(<F:.s=.o) $(@:.marker=)/..
 ifneq ($(NON_MATCHING),1)
 # check if this file is in the archive; patch corrupted bytes and change file timestamps to match original if so
@@ -183,6 +184,9 @@ ifneq ($(NON_MATCHING),1)
 # create or update the marker file
 	@touch $@
 endif
+
+$(BINLINK):
+	ln -s /bin $@
 
 # Disable built-in rules
 .SUFFIXES:
