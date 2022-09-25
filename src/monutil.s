@@ -46,11 +46,11 @@
 
 
 
-
 #define EXC(code) (EXC_##code >> CAUSE_EXCSHIFT)
+
 .text
-LEAF(__isExpJP)
-.set noreorder
+
+LEAF(__isExpJP); .set noreorder
     j       __isExp
      nop
     sw      k0, -0x10(sp)
@@ -59,8 +59,8 @@ LEAF(__isExpJP)
      nop
 .set reorder
 END(__isExpJP)
-LEAF(__isExp)
-.set noreorder
+
+LEAF(__isExp); .set noreorder
     sw      k0, -0x10(sp)
     sw      k1, -8(sp)
 
@@ -171,8 +171,8 @@ w:
 .set reorder
 END(__isExp)
 
-LEAF(MonitorInitBreak)
-.set noreorder
+
+LEAF(MonitorInitBreak); .set noreorder
     nop
     nop
 INIT_BREAK_POSITION:
