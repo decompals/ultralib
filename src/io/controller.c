@@ -56,7 +56,7 @@ void __osContGetInitData(u8* pattern, OSContStatus* data) {
     int i;
     u8 bits = 0;
 
-    ptr = __osContPifRam.ramarray;
+    ptr = (u8*)__osContPifRam.ramarray;
     for (i = 0; i < __osMaxControllers; i++, ptr += sizeof(requestHeader), data++) {
         requestHeader = *(__OSContRequesFormat*)ptr;
         data->errno = CHNL_ERR(requestHeader);

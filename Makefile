@@ -1,12 +1,12 @@
 NON_MATCHING ?= 0
 
-#TARGET := libgultra_rom
+# One of libgultra_rom, libgultra_d, libgultra
+TARGET ?= libgultra_d
 
-# TARGET := libgultra_d
-TARGET := libgultra
 BASE_DIR := base_$(TARGET)
 BASE_AR := $(TARGET).a
-BUILD_DIR := build
+BUILD_ROOT := build
+BUILD_DIR := $(BUILD_ROOT)/$(TARGET)
 BUILD_AR := $(BUILD_DIR)/$(TARGET).a
 
 WORKING_DIR := $(shell pwd)
@@ -82,7 +82,7 @@ ifneq ($(NON_MATCHING),1)
 endif
 
 clean:
-	$(RM) -rf $(BUILD_DIR)
+	$(RM) -rf $(BUILD_ROOT)
 
 distclean: clean
 	$(MAKE) -C tools distclean
@@ -134,7 +134,8 @@ $(BUILD_DIR)/src/gu/%.marker: ASFLAGS += -P
 $(BUILD_DIR)/src/libc/%.marker: ASFLAGS += -P
 $(BUILD_DIR)/src/rmon/%.marker: ASFLAGS += -P
 $(BUILD_DIR)/src/voice/%.marker: OPTFLAGS += -DLANG_JAPANESE -I$(WORKING_DIR)/src -I$(WORKING_DIR)/src/voice
-$(BUILD_DIR)/src/voice/%.marker: CC := tools/compile_sjis.py -D__CC=$(WORKING_DIR)/$(CC)
+$(BUILD_DIR)/src/voice/%.marker: CC := tools/compile_sjis.py -D__CC=$(WORKING_DIR)/$(CC) -D__BUILD_DIR=$(BUILD_DIR)
+$(BUILD_DIR)/src/host/host_ptn64.marker: CFLAGS += -fno-builtin # Probably a better way to solve this
 
 MDEBUG_FILES := $(BUILD_DIR)/src/monutil.marker
 $(BUILD_DIR)/src/monutil.marker: CC := tools/ido/cc
