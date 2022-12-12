@@ -1,5 +1,5 @@
 #include "PR/os_internal.h"
-#include "rcp.h"
+#include "PR/bcp.h"
 
 s32 __osBbCardGetAccess(void);
 void __osBbCardRelAccess(void);
@@ -17,11 +17,11 @@ s32 osBbCardReadId(u32 dev, u32* mfg, u32* type) {
         return rv;
     }
 
-    IO_WRITE(PI_BASE_REG + 0x70, 0); // PI_CARD_BLK_OFFSET_REG
-    IO_WRITE(PI_BASE_REG + 0x48, (dev << 12) | 0xD1900004); // PI_CARD_CNT_REG
+    IO_WRITE(PI_70_REG, 0);
+    IO_WRITE(PI_48_REG, (dev << 12) | 0xD1900004);
 
     rv = __osBbCardWaitEvent();
-    status = IO_READ(PI_BASE_REG + 0x10000); // PI_EX_DMA_BUF
+    status = IO_READ(PI_10000_REG(0));
     *mfg = status >> 0x18;
     *type = (status >> 0x10) & 0xFF;
     __osBbCardMultiplane = (status & 0xFF) == 0xC0;

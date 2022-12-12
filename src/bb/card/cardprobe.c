@@ -1,5 +1,5 @@
 #include "PR/os_internal.h"
-#include "PR/rcp.h"
+#include "PR/bcp.h"
 
 s32 __osBbCardFlushEvent(void);
 s32 __osBbCardGetAccess(void);
@@ -19,14 +19,14 @@ s32 osBbCardProbe(u32 dev) {
         return rv;
     }
 
-    IO_WRITE(PI_BASE_REG + 0x10000, 0);
-    IO_WRITE(PI_BASE_REG + 0x48, (dev << 0xC) | 0x90700001);
+    IO_WRITE(PI_10000_REG(0), 0);
+    IO_WRITE(PI_48_REG, (dev << 0xC) | 0x90700001);
 
     rv = -1;
 
     for (count = 0; count < 1000; count++) {
-        if (!(IO_READ(PI_BASE_REG + 0x48) & 0x80000000)) {
-            if ((IO_READ(PI_BASE_REG + 0x10000) >> 0x18) == 0xC0) {
+        if (!(IO_READ(PI_48_REG) & 0x80000000)) {
+            if ((IO_READ(PI_10000_REG(0)) >> 0x18) == 0xC0) {
                 rv = 0;
 
 #ifndef NDEBUG
@@ -39,7 +39,7 @@ s32 osBbCardProbe(u32 dev) {
         }
         __osBbDelay(10);
     }
-    IO_WRITE(PI_BASE_REG + 0x48, 0);
+    IO_WRITE(PI_48_REG, 0);
     __osBbCardChange = save;
 #ifndef NDEBUG
     osSyncPrintf("probe fails\n");

@@ -1,5 +1,5 @@
 #include "PR/os_internal.h"
-#include "PR/rcp.h"
+#include "PR/bcp.h"
 #include "../../io/viint.h"
 
 void __osBbDelay(u32);
@@ -15,13 +15,13 @@ void __osBbVideoPllInit(s32 tvType) {
 
     __osBbDelay(50);
 
-    avctrl = IO_READ(MI_BASE_REG + 0x30);
+    avctrl = IO_READ(MI_30_REG);
     avctrl &= ~0x2000000;
-    IO_WRITE(MI_BASE_REG + 0x30, avctrl);
+    IO_WRITE(MI_30_REG, avctrl);
 
     __osBbDelay(50);
 
-    IO_WRITE(MI_BASE_REG + 0x30, avctrl | 1);
+    IO_WRITE(MI_30_REG, avctrl | 1);
 
     __osBbDelay(50);
 
@@ -33,18 +33,18 @@ void __osBbVideoPllInit(s32 tvType) {
         avctrl = 0x194244;
     }
 
-    IO_WRITE(MI_BASE_REG + 0x30, avctrl | 0x800001);
-    IO_READ(MI_BASE_REG + 0x30);
+    IO_WRITE(MI_30_REG, avctrl | 0x800000 | 1);
+    IO_READ(MI_30_REG);
 
     __osBbDelay(2);
 
-    IO_WRITE(MI_BASE_REG + 0x30, avctrl);
-    IO_READ(MI_BASE_REG + 0x30);
+    IO_WRITE(MI_30_REG, avctrl);
+    IO_READ(MI_30_REG);
 
     __osBbDelay(1000);
 
-    IO_WRITE(MI_BASE_REG + 0x30, avctrl | 0x2000000);
-    IO_READ(MI_BASE_REG + 0x30);
+    IO_WRITE(MI_30_REG, avctrl | 0x2000000);
+    IO_READ(MI_30_REG);
 
     __osRestoreInt(mask);
 }
