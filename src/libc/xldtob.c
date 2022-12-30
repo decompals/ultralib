@@ -184,7 +184,7 @@ void _Genld(_Pft* px, char code, u8* p, s16 nsig, s16 xexp) {
     const unsigned char point = '.';
 
     if (nsig <= 0) {
-        nsig = 1, p = "0"; // memes
+        nsig = 1, p = "0";
     }
 
     if (code == 'f' || (code == 'g' || code == 'G') && xexp >= -4 && xexp < px->prec) {
@@ -217,7 +217,7 @@ void _Genld(_Pft* px, char code, u8* p, s16 nsig, s16 xexp) {
                 nsig = px->prec;
             }
 
-            memcpy(&px->s[px->n1], p, px->n2 = nsig); // , memes (this one is insane)
+            memcpy(&px->s[px->n1], p, px->n2 = nsig);
             px->nz2 = px->prec - nsig;
         } else if (nsig < xexp) {
             memcpy(&px->s[px->n1], p, nsig);
@@ -287,11 +287,11 @@ void _Genld(_Pft* px, char code, u8* p, s16 nsig, s16 xexp) {
 
         if (xexp >= 100) {
             if (xexp >= 1000) {
-                *p++ = (xexp / 1000) + '0', xexp %= 1000; // , memes
+                *p++ = (xexp / 1000) + '0', xexp %= 1000;
             }
-            *p++ = (xexp / 100) + '0', xexp %= 100; // , memes
+            *p++ = (xexp / 100) + '0', xexp %= 100;
         }
-        *p++ = (xexp / 10) + '0', xexp %= 10; // , memes
+        *p++ = (xexp / 10) + '0', xexp %= 10;
 
         *p++ = xexp + '0';
         px->n2 = (size_t)p - ((size_t)px->s + px->n1);

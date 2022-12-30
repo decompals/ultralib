@@ -106,7 +106,7 @@ int _Printf(outfun prout, char *arg, const char *fmt, va_list args) {
         _Putfld(&x, &args, *s, ac);
         x.width -= x.n0 + x.nz0 + x.n1 + x.nz1 + x.n2 + x.nz2;
 
-       { 
+       {
 
             if (!(x.flags & FLAGS_MINUS)) {
                 int i, j;
