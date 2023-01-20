@@ -4,6 +4,7 @@ export COMPILER_PATH := $(WORKING_DIR)/tools/ido
 CC := $(COMPILER_PATH)/cc
 AR_OLD := tools/ar.py
 PATCH_AR_FLAGS := 40001 110 100644
+OBJCOPY := $(CROSS)objcopy
 STRIP =
 
 CFLAGS := -c -Wab,-r4300_mul -G 0 -nostdinc -Xcpluscomm -fullwarn -woff 516,649,838,712

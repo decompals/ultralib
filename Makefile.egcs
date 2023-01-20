@@ -4,6 +4,7 @@ export COMPILER_PATH := $(WORKING_DIR)/tools/egcs
 CC := $(COMPILER_PATH)/gcc
 AR_OLD := $(COMPILER_PATH)/ar
 PATCH_AR_FLAGS := 0 0 37777700
+OBJCOPY := $(COMPILER_PATH)/objcopy
 STRIP =
 
 CFLAGS := -w -nostdinc -c -G 0 -D_LANGUAGE_C -fno-PIC -mno-abicalls -mcpu=4300 -D__sgi
