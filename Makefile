@@ -12,14 +12,13 @@ CPP := cpp -P
 AR := ar
 
 ifeq ($(findstring _iQue,$(TARGET)),_iQue)
-export COMPILER_PATH := $(WORKING_DIR)/tools/gcc-ique
-CC := mips-linux-gcc
-AR_OLD := mips-linux-ar
+export COMPILER_PATH := $(WORKING_DIR)/tools/egcs
 else
 export COMPILER_PATH := $(WORKING_DIR)/tools/gcc
-CC := $(WORKING_DIR)/tools/gcc/gcc
-AR_OLD := tools/gcc/ar
 endif
+CC := $(COMPILER_PATH)/gcc
+AR_OLD := $(COMPILER_PATH)/ar
+OBJCOPY := $(COMPILER_PATH)/objcopy
 
 REG_SIZES := -mgp32 -mfp32
 ifeq ($(findstring _iQue,$(TARGET)),_iQue)
@@ -73,8 +72,8 @@ MARKER_FILES := $(O_FILES:.o=.marker)
 ifneq ($(NON_MATCHING),1)
 
 ifeq ($(findstring _iQue,$(TARGET)),_iQue)
-COMPARE_OBJ = mips-linux-objcopy -p -S $(BASE_DIR)/$(@F:.marker=.o) $(BASE_DIR)/$(@F:.marker=.cmp.o) && \
-              mips-linux-objcopy -p -S $(WORKING_DIR)/$(@:.marker=.o) $(WORKING_DIR)/$(@:.marker=.cmp.o) && \
+COMPARE_OBJ = $(OBJCOPY) -p -S $(BASE_DIR)/$(@F:.marker=.o) $(BASE_DIR)/$(@F:.marker=.cmp.o) && \
+              $(OBJCOPY) -p -S $(WORKING_DIR)/$(@:.marker=.o) $(WORKING_DIR)/$(@:.marker=.cmp.o) && \
               dd if=$(BASE_DIR)/$(@F:.marker=.o) bs=1 count=4 skip=36 seek=36 conv=notrunc of=$(WORKING_DIR)/$(@:.marker=.cmp.o) 2>/dev/null && \
               cmp $(BASE_DIR)/$(@F:.marker=.cmp.o) $(WORKING_DIR)/$(@:.marker=.cmp.o) && echo "$(@:.marker=.o): OK"
 COMPARE_AR = echo "$@: Cannot compare archive currently"
