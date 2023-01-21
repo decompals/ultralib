@@ -1,5 +1,5 @@
 #include "PR/os_internal.h"
-#include "PR/rcp.h"
+#include "PR/bcp.h"
 
 #include "usb.h"
 
@@ -75,7 +75,7 @@ s32 __usbDevInterrupt(s32 which) {
         _usb_dci_vusb11_isr(__osArcDeviceHandle[which]);
     }
 
-    IO_WRITE(MI_BASE_REG + 0x3C, (which == 0) ? 0x00200000 : 0x00800000);
+    IO_WRITE(MI_3C_REG, (which == 0) ? 0x200000 : 0x800000);
     return 0;
 }
 
@@ -110,7 +110,7 @@ static void __usbDeviceMode(s32 which) {
 
     IO_WRITE(USB_REG_14(which), 0xFF);
 
-    IO_WRITE(MI_BASE_REG + 0x3C, (which == 0) ? 0x00200000 : 0x00800000);
+    IO_WRITE(MI_3C_REG, (which == 0) ? 0x200000 : 0x800000);
 }
 
 static void __usbOtgStateChange(s32 which) {
@@ -151,7 +151,7 @@ s32 osBbUsbGetResetCount(s32 which) {
 static void __usbCtlrInit(s32 which) {
     u32 addr = USB_REG_80000(which);
 
-    IO_WRITE(MI_BASE_REG + 0x3C, (which == 0) ? 0x00100000 : 0x00400000);
+    IO_WRITE(MI_3C_REG, (which == 0) ? 0x100000 : 0x400000);
 
     IO_WRITE(USB_REG_94(which), 0);
     IO_WRITE(USB_REG_14(which), 0);

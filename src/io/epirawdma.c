@@ -5,6 +5,7 @@
 #ifndef BBPLAYER
 #ident "$Revision: 1.17 $"
 #else
+#include "PR/bcp.h"
 #ident "$Revision: 1.1 $"
 #endif
 
@@ -122,7 +123,7 @@ s32 __osEPiRawStartDma(OSPiHandle* pihandle, s32 direction, u32 devAddr, void* d
     }
 
     if ((pihandle->baseAddress | devAddr) <= 0x400) {
-        IO_WRITE((direction == OS_READ) ? (PI_BASE_REG + 0x5C) : (PI_BASE_REG + 0x58), size - 1);
+        IO_WRITE((direction == OS_READ) ? PI_5C_REG : PI_58_REG, size - 1);
     } else {
         IO_WRITE((direction == OS_READ) ? PI_WR_LEN_REG : PI_RD_LEN_REG, size - 1);
     }

@@ -1,6 +1,6 @@
 #include "PR/os_internal.h"
-#include "PR/rcp.h"
+#include "PR/bcp.h"
 
 u32 osBbGetBoxId(void) {
-    return IO_READ(PI_BASE_REG + 0x60) >> 0x10;
+    return IO_READ(PI_60_REG) >> 0x10;
 }

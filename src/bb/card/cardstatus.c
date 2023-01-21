@@ -1,5 +1,5 @@
 #include "PR/os_internal.h"
-#include "PR/rcp.h"
+#include "PR/bcp.h"
 
 s32 __osBbCardWaitEvent(void);
 
@@ -29,11 +29,11 @@ s32 __osBbCardStatus(u32 dev, u8* status, u32 buf) {
 
     cmd = __osBbCardMultiplane ? 0x71 : 0x70;
 
-    IO_WRITE(PI_BASE_REG + 0x48, 0xD0000000 | (cmd << 0x10) | (buf << 0xE) | (dev << 0xC) | 1);
+    IO_WRITE(PI_48_REG, 0xD0000000 | (cmd << 0x10) | (buf << 0xE) | (dev << 0xC) | 1);
 
     rv = __osBbCardWaitEvent();
     if (rv == 0) {
-        *status = IO_READ(PI_BASE_REG + 0x10000 + ((buf != 0) ? 0x200 : 0x000)) >> 0x18;
+        *status = IO_READ(PI_10000_REG((buf != 0) ? 0x200 : 0x000)) >> 0x18;
     } else {
         *status = 0;
     }
