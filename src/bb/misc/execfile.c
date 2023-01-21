@@ -1,6 +1,6 @@
 #include "PR/os_internal.h"
 #include "PR/os_pi.h"
-#include "rcp.h"
+#include "PR/bcp.h"
 #include "macros.h"
 
 #include "../usb/usb.h"
@@ -55,8 +55,8 @@ u32 osBbLoadApp(OSBbLaunchMetaData* md, u16* blockList, s32 listSize, s32 loadAl
 
     handler = osCartRomInit();
 
-    IO_WRITE(PI_BASE_REG + 0x44, 0);
-    IO_WRITE(PI_BASE_REG + 0x48, 0x1F008BFF);
+    IO_WRITE(PI_44_REG, 0);
+    IO_WRITE(PI_48_REG, 0x1F008BFF);
 
     // Read app entry point from ROM header
     osEPiReadIo(handler, 8, &addr);
@@ -109,18 +109,18 @@ s32 osBbExecApp(u32 addr) {
     int (*f)() = (void*)addr;
 
     // Set all PI operations allowed
-    IO_WRITE(PI_BASE_REG + 0x54, 0xFF); // PI_ALLOWED_IO
+    IO_WRITE(PI_54_REG, 0xFF);
 
     // USB?
     IO_WRITE(USB_REG_40010(0), 1);
     IO_WRITE(USB_REG_40010(1), 1);
 
     if (__osBbIsBb >= 2) {
-        IO_WRITE(MI_BASE_REG + 0x3C, 0x01000000); // MI_HW_INTR_MASK_REG
-        IO_WRITE(MI_BASE_REG + 0x3C, 0x02000000);
-        IO_WRITE(MI_BASE_REG + 0x14, 0x03000000); // MI_SK_EXCEPTION_REG
+        IO_WRITE(MI_3C_REG, 0x01000000);
+        IO_WRITE(MI_3C_REG, 0x02000000);
+        IO_WRITE(MI_14_REG, 0x03000000);
     } else {
-        IO_WRITE(MI_BASE_REG + 0x14, 0x01000000);
+        IO_WRITE(MI_14_REG, 0x01000000);
     }
 
     __osDisableInt();
@@ -176,9 +176,9 @@ s32 osBbExecFile(s32 fd, char* name, OSBbLaunchMetaData* md, u8* buffer) {
 
         handler = osCartRomInit();
 
-        IO_WRITE(PI_BASE_REG + 0x50, 0);
-        IO_WRITE(PI_BASE_REG + 0x44, 0);
-        IO_WRITE(PI_BASE_REG + 0x48, 0x1F008BFF);
+        IO_WRITE(PI_50_REG, 0);
+        IO_WRITE(PI_44_REG, 0);
+        IO_WRITE(PI_48_REG, 0x1F008BFF);
 
         // Read game entry point from ROM header
         osEPiReadIo(handler, 8, &addr);
@@ -251,14 +251,14 @@ s32 osBbExecFile(s32 fd, char* name, OSBbLaunchMetaData* md, u8* buffer) {
     osInvalICache((void*)K0BASE, 0x10000);
 
     // Set all PI operations allowed
-    IO_WRITE(PI_BASE_REG + 0x54, 0xFF); // PI_ALLOWED_IO
-    IO_WRITE(PI_BASE_REG + 0x44, 0x80000000);
+    IO_WRITE(PI_54_REG, 0xFF);
+    IO_WRITE(PI_44_REG, 0x80000000);
 
     // USB?
-    IO_WRITE(0x4940000 + 0x10, 1);
-    IO_WRITE(0x4A40000 + 0x10, 1);
+    IO_WRITE(USB_REG_40010(0), 1);
+    IO_WRITE(USB_REG_40010(1), 1);
 
-    IO_WRITE(MI_BASE_REG + 0x14, (__osBbIsBb >= 2) ? 0x03000000 : 0x01000000); // MI_SK_EXCEPTION_REG
+    IO_WRITE(MI_14_REG, (__osBbIsBb >= 2) ? 0x03000000 : 0x01000000);
 
     __osDisableInt();
     return f();

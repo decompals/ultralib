@@ -1,5 +1,5 @@
 #include "PR/os_internal.h"
-#include "rcp.h"
+#include "PR/bcp.h"
 #include "memory.h"
 #include "macros.h"
 
@@ -245,11 +245,11 @@ s32 osBbGameCommitState(void) {
     s32 rv;
     s32 binding[4];
     u32 stateDirty = 0;
-    u32 old = IO_READ(PI_BASE_REG + 0x48);
+    u32 old = IO_READ(PI_48_REG);
 
     __osBbGameUnstashState(state_name, &sv, binding, &stateDirty);
     rv = __osBbSaveState(state_name, sv, binding, stateDirty);
-    IO_WRITE(PI_BASE_REG + 0x48, old);
+    IO_WRITE(PI_48_REG, old);
     return rv;
 }
 
@@ -390,9 +390,9 @@ s32 osBbGetLaunchMetaData(OSBbLaunchMetaData* md, u16* blockList, s32 listSize) 
     handler = osCartRomInit();
 
     // ?
-    IO_WRITE(PI_BASE_REG + 0x50, 0); // PI_AES_CNT_REG
-    IO_WRITE(PI_BASE_REG + 0x44, 0); // 
-    IO_WRITE(PI_BASE_REG + 0x48, 0x1F008BFF); // PI_CARD_CNT_REG
+    IO_WRITE(PI_50_REG, 0);
+    IO_WRITE(PI_44_REG, 0);
+    IO_WRITE(PI_48_REG, 0x1F008BFF);
 
     // Read the CMD from the end of the block with programmed IO reads
     for (i = 0x4000 - sizeof(*md); i < 0x4000; i += 4) {
@@ -408,7 +408,7 @@ s32 osBbGetLaunchMetaData(OSBbLaunchMetaData* md, u16* blockList, s32 listSize) 
 label:
         // Could not read CMD, create a "default" one?
         bzero(md, sizeof(*md));
-        md->memSize = 0x00400000;
+        md->memSize = 0x400000;
         md->tvType = OS_TV_NTSC;
         md->romBase = PHYS_TO_K1(PI_DOM1_ADDR2);
     }
