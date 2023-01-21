@@ -32,7 +32,7 @@ $(GCC_DIR):
 	mkdir -p $@
 
 $(IDO-5.3): | $(IDO_DIR)
-	wget https://github.com/decompals/ido-static-recomp/releases/download/master/ido-5.3-recomp-ubuntu-latest.tar.gz
+	wget https://github.com/decompals/ido-static-recomp/releases/download/v0.2/ido-5.3-recomp-ubuntu-latest.tar.gz
 	tar xf ido-5.3-recomp-ubuntu-latest.tar.gz -C $(IDO_DIR)
 	$(RM) ido-5.3-recomp-ubuntu-latest.tar.gz
 
