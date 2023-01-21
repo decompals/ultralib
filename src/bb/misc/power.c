@@ -1,12 +1,12 @@
 #include "PR/os_internal.h"
-#include "rcp.h"
+#include "PR/bcp.h"
 
 void osBbPowerOn(void) {
     // Power control = 1, Power mask = 1
-    IO_WRITE(PI_BASE_REG + 0x60, 0x11);
+    IO_WRITE(PI_60_REG, 0x11);
 }
 
 void osBbPowerOff(void) {
     // Power control = 0, Power mask = 1
-    IO_WRITE(PI_BASE_REG + 0x60, 0x10);
+    IO_WRITE(PI_60_REG, 0x10);
 }

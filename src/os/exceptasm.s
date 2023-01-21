@@ -12,6 +12,7 @@
 #define KMC_STAT        0xBFF08004
 
 #ifdef BBPLAYER
+#include "PR/bcp.h"
 .set mips3
 #endif
 
@@ -599,7 +600,7 @@ cart:
     jal     send_mesg
 #else
 
-    lw      s1, PHYS_TO_K1(MI_BASE_REG + 0x38)
+    lw      s1, PHYS_TO_K1(MI_38_REG)
 
 flash:
     andi    t1, s1, 0x40
@@ -607,7 +608,7 @@ flash:
 
     andi    s1, s1, 0x3f80
     li      t1, 0
-    sw      t1, PHYS_TO_K1(PI_BASE_REG + 0x48)
+    sw      t1, PHYS_TO_K1(PI_48_REG)
     li      a0, MESG(OS_EVENT_FLASH)
     jal     send_mesg
 flashx:
@@ -618,7 +619,7 @@ md:
 
     andi    s1, s1, 0x1fc0
     li      t1, 0x2000
-    sw      t1, PHYS_TO_K1(MI_BASE_REG + 0x38)
+    sw      t1, PHYS_TO_K1(MI_38_REG)
     li      a0, MESG(OS_EVENT_MD)
     jal     send_mesg
 mdx:
@@ -629,7 +630,7 @@ aes:
 
     andi    s1, s1, 0x3f40
     li      t1, 0x4000
-    sw      t1, PHYS_TO_K1(MI_BASE_REG + 0x3C)
+    sw      t1, PHYS_TO_K1(MI_3C_REG)
     li      a0, MESG(OS_EVENT_AES)
     jal     send_mesg
 aesx:
@@ -640,7 +641,7 @@ ide:
 
     andi    s1, s1, 0x3ec0
     li      t1, 0x10000
-    sw      t1, PHYS_TO_K1(MI_BASE_REG + 0x3C)
+    sw      t1, PHYS_TO_K1(MI_3C_REG)
     li      a0, MESG(OS_EVENT_IDE)
     jal     send_mesg
 idex:
@@ -651,7 +652,7 @@ pi_err:
 
     andi    s1, s1, 0x3dc0
     li      t1, 0x40000
-    sw      t1, PHYS_TO_K1(MI_BASE_REG + 0x3C)
+    sw      t1, PHYS_TO_K1(MI_3C_REG)
     li      a0, MESG(OS_EVENT_PI_ERR)
     jal     send_mesg
 pi_errx:
@@ -662,7 +663,7 @@ usb0:
 
     andi    s1, s1, 0x3bc0
     li      t1, 0x100000
-    sw      t1, PHYS_TO_K1(MI_BASE_REG + 0x3C)
+    sw      t1, PHYS_TO_K1(MI_3C_REG)
     li      a0, MESG(OS_EVENT_USB0)
     jal     send_mesg
 usb0x:
@@ -673,7 +674,7 @@ usb1:
 
     andi    s1, s1, 0x37c0
     li      t1, 0x400000
-    sw      t1, PHYS_TO_K1(MI_BASE_REG + 0x3C)
+    sw      t1, PHYS_TO_K1(MI_3C_REG)
     li      a0, MESG(OS_EVENT_USB1)
     jal     send_mesg
 usb1x:

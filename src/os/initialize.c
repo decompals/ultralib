@@ -13,6 +13,7 @@ extern OSPiHandle __Dom1SpeedParam;
 extern OSPiHandle __Dom2SpeedParam;
 
 #ifdef BBPLAYER
+#include "PR/bcp.h"
 extern u32 __osBbIsBb;
 extern u32 __osBbEepromSize;
 extern u32 __osBbPakSize;
@@ -69,16 +70,16 @@ void __osInitialize_common() {
     {
         u32 x, y;
 
-        IO_WRITE(MI_BASE_REG + 0x3C, 0x22000);
-        x = IO_READ(MI_BASE_REG + 0x3C); // MI_HW_INTR_MASK_REG
-        IO_WRITE(MI_BASE_REG + 0x3C, 0x11000);
-        y = IO_READ(MI_BASE_REG + 0x3C); // MI_HW_INTR_MASK_REG
+        IO_WRITE(MI_3C_REG, 0x22000);
+        x = IO_READ(MI_3C_REG);
+        IO_WRITE(MI_3C_REG, 0x11000);
+        y = IO_READ(MI_3C_REG);
 
         __osBbIsBb = ((x & 0x140) == 0x140) && ((y & 0x140) == 0);
     }
 
     if (__osBbIsBb) {
-        if (IO_READ(PI_BASE_REG + 0x60) & 0xC0000000) { // PI_MISC_REG
+        if (IO_READ(PI_60_REG) & 0xC0000000) {
             __osBbIsBb = 2;
         }
     }
@@ -145,10 +146,10 @@ void __osInitialize_common() {
         __osBbSramSize = 0x20000;
         __osBbSramAddress = 0x803E0000;
     } else {
-        IO_WRITE(PI_BASE_REG + 0x64, IO_READ(PI_BASE_REG + 0x64) & 0x7FFFFFFF);
-        IO_WRITE(MI_BASE_REG + 0x3C, 0x20000); // MI_HW_INTR_MASK_REG
-        IO_WRITE(SI_BASE_REG + 0x0C, 0);
-        IO_WRITE(SI_BASE_REG + 0x1C, (IO_READ(SI_BASE_REG + 0x1C) & 0x80FFFFFF) | 0x2F400000);
+        IO_WRITE(PI_64_REG, IO_READ(PI_64_REG) & 0x7FFFFFFF);
+        IO_WRITE(MI_3C_REG, 0x20000);
+        IO_WRITE(SI_0C_REG, 0);
+        IO_WRITE(SI_1C_REG, (IO_READ(SI_1C_REG) & 0x80FFFFFF) | 0x2F400000);
     }
 #endif
     IO_WRITE(AI_CONTROL_REG, AI_CONTROL_DMA_ON);

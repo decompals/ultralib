@@ -1,5 +1,5 @@
 #include "PR/os_internal.h"
-#include "PR/rcp.h"
+#include "PR/bcp.h"
 
 u8 __osBbCardChange = TRUE;
 
@@ -37,7 +37,7 @@ s32 __osBbCardPresent(void) {
     if (__osBbCardFlushEvent()) {
         __osBbCardChange = TRUE;
     }
-    return !(IO_READ(MI_BASE_REG + 0x38) >> 0x19 & 1);
+    return !(IO_READ(MI_38_REG) >> 0x19 & 1);
 }
 
 void __osBbCardRelAccess(void) {
@@ -67,7 +67,7 @@ void osBbCardInit(void) {
         osSendMesg(&__osBbCardAccessQueue, NULL, 0);
         __osBbCardInitEvent();
 
-        IO_WRITE(MI_BASE_REG + 0x3C, 0x08002000);
+        IO_WRITE(MI_3C_REG, 0x08002000);
 
         __osBbCardHandler.type = 6;
         __osBbCardHandler.baseAddress = 0;
@@ -84,21 +84,21 @@ void osBbCardInit(void) {
         __osBbCardInit = TRUE;
     }
 
-    IO_WRITE(PI_BASE_REG + 0x48, 0);
+    IO_WRITE(PI_48_REG, 0);
     __osBbCardChange = FALSE;
 
     __osBbCardFlushEvent();
 
-    if (!(IO_READ(MI_BASE_REG + 0x38) & 0x2000000)) {
+    if (!(IO_READ(MI_38_REG) & 0x2000000)) {
         u16 i;
 
-        IO_WRITE(PI_BASE_REG + 0x4C, __osBbCardConfig[0].config);
+        IO_WRITE(PI_4C_REG, __osBbCardConfig[0].config);
         osBbCardReadId(0, &mfg, &type);
 
         for (i = 0; __osBbCardConfig[i].mfg != 0xFF; i++) {
             if (__osBbCardConfig[i].mfg == mfg && __osBbCardConfig[i].dev == type) {
                 __osBbCardBlocks = __osBbCardConfig[i].blocks;
-                IO_WRITE(PI_BASE_REG + 0x4C, __osBbCardConfig[i].config);
+                IO_WRITE(PI_4C_REG, __osBbCardConfig[i].config);
                 break;
             }
         }
