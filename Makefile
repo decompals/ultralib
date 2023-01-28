@@ -22,7 +22,8 @@ export COMPILER_PATH := $(WORKING_DIR)/tools/gcc
 CFLAGS := -w -nostdinc -c -G 0 -mgp32 -mfp32 -mips3 -D_LANGUAGE_C
 ASFLAGS := -w -nostdinc -c -G 0 -mgp32 -mfp32 -mips3 -DMIPSEB -D_LANGUAGE_ASSEMBLY -D_MIPS_SIM=1 -D_ULTRA64 -x assembler-with-cpp
 GBIDEFINE := -DF3DEX_GBI_2
-CPPFLAGS = -D_MIPS_SZLONG=32 -D__USE_ISOC99 -I . -I $(WORKING_DIR)/include -I $(WORKING_DIR)/include/gcc -I $(WORKING_DIR)/include/PR $(GBIDEFINE)
+CPPFLAGS = -D_MIPS_SZLONG=32 -D__USE_ISOC99 $(GBIDEFINE)
+INCLUDES = -I . -I $(WORKING_DIR)/include -I $(WORKING_DIR)/include/gcc -I $(WORKING_DIR)/include/PR
 
 ifeq ($(findstring _d,$(TARGET)),_d)
 CPPFLAGS += -D_DEBUG
@@ -142,7 +143,7 @@ $(BUILD_DIR)/src/monutil.marker: CC := tools/ido/cc
 $(BUILD_DIR)/src/monutil.marker: ASFLAGS := -non_shared -mips2 -fullwarn -verbose -Xcpluscomm -G 0 -woff 516,649,838,712 -Wab,-r4300_mul -nostdinc -o32 -c
 
 $(BUILD_DIR)/%.marker: %.c
-	cd $(<D) && $(WORKING_DIR)/$(CC) $(CFLAGS) $(CPPFLAGS) $(OPTFLAGS) $(<F) -o $(WORKING_DIR)/$(@:.marker=.o)
+	cd $(<D) && $(WORKING_DIR)/$(CC) $(CFLAGS) $(CPPFLAGS) $(OPTFLAGS) $(<F) $(INCLUDES) -o $(WORKING_DIR)/$(@:.marker=.o)
 ifneq ($(NON_MATCHING),1)
 # check if this file is in the archive; patch corrupted bytes and change file timestamps to match original if so
 		$(if $(findstring $(BASE_DIR)/$(@F:.marker=.o), $(BASE_OBJS)), \
@@ -156,7 +157,7 @@ ifneq ($(NON_MATCHING),1)
 endif
 
 $(BUILD_DIR)/%.marker: %.s
-	cd $(<D) && $(WORKING_DIR)/$(CC) $(ASFLAGS) $(CPPFLAGS) $(<F) -o $(WORKING_DIR)/$(@:.marker=.o)
+	cd $(<D) && $(WORKING_DIR)/$(CC) $(ASFLAGS) $(CPPFLAGS) $(<F) $(INCLUDES) -o $(WORKING_DIR)/$(@:.marker=.o)
 ifneq ($(NON_MATCHING),1)
 # check if this file is in the archive; patch corrupted bytes and change file timestamps to match original if so
 	@$(if $(findstring $(BASE_DIR)/$(@F:.marker=.o), $(BASE_OBJS)), \
@@ -173,7 +174,7 @@ endif
 $(MDEBUG_FILES): $(BUILD_DIR)/src/%.marker: src/%.s
 	cp $(<:.marker=.s) $(dir $@)
 	mkdir -p $(@:.marker=)
-	export INCLUDE_DIR=$(WORKING_DIR)/include && cd $(@:.marker=) && $(WORKING_DIR)/$(CC) $(ASFLAGS) ../$(<F) -I/usr/include -o $(notdir $(<:.s=.o))
+	export USR_INCLUDE=$(WORKING_DIR)/include && cd $(@:.marker=) && $(WORKING_DIR)/$(CC) $(ASFLAGS) $(CPPFLAGS) ../$(<F) -I/usr/include -o $(notdir $(<:.s=.o))
 	mv $(@:.marker=)/$(<F:.s=.o) $(@:.marker=)/..
 ifneq ($(NON_MATCHING),1)
 # check if this file is in the archive; patch corrupted bytes and change file timestamps to match original if so

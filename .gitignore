@@ -24,9 +24,3 @@ tools/ido
 
 # Tool artifacts
 ctx.c
-
-# Root tmp directory for ido when running in the chroot
-tmp/
-
-# Symlink to /bin for the chroot
-./binlink
