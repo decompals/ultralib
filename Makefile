@@ -1,7 +1,7 @@
 NON_MATCHING ?= 0
 
 # One of libgultra_rom, libgultra_d, libgultra
-TARGET ?= libgultra_d
+TARGET ?= libgultra_rom
 
 BASE_DIR := base_$(TARGET)
 BASE_AR := $(TARGET).a
