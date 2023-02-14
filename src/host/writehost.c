@@ -2,6 +2,7 @@
 
 #include "PR/os_internal.h"
 #include "PR/rdb.h"
+#include "PR/ultraerror.h"
 
 #include "macros.h"
 
@@ -19,7 +20,7 @@ void osWriteHost(void * dramAddr, u32 nbytes) {
 
 #ifndef NDEBUG
     if (nbytes == 0) {
-        __osError(73, 1, nbytes);
+        __osError(ERR_OSWRITEHOST_SIZE, 1, nbytes);
         return;
     }
 #endif

@@ -17,7 +17,7 @@ static OSMesg __osLogMsgBuf;
 void __osLogWrite(OSLog* log, s16 code, s16 numArgs, va_list argPtr);
 
 void osCreateLog(OSLog* log, u32* base, s32 byteLen) {
-    log->magic = 0x20736A73;
+    log->magic = OS_LOG_MAGIC;
     log->base = base;
     log->len = byteLen;
     log->startCount = osGetCount();

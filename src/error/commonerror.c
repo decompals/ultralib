@@ -9,10 +9,10 @@
 #ifndef _FINALROM
 
 static u32 errorLogData[19] ALIGNED(8);
-static OSLog errorLog = {0x6B617479, 76, errorLogData, 0, 0};
+static OSLog errorLog = {OS_ERROR_MAGIC, 76, errorLogData, 0, 0};
 
 static void __commonErrorHandler(s16 code, s16 numArgs, ...);
-void (*__osCommonHandler)(s16, s16, ...) = __commonErrorHandler;
+OSErrorHandler __osCommonHandler = __commonErrorHandler;
 
 char NULSTR[] = {'\0'};
 

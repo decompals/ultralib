@@ -65,7 +65,6 @@ UNMATCHED_OBJS = $(filter-out $(MATCHED_OBJS),$(AR_ORDER))
 NUM_OBJS = $(words $(AR_ORDER))
 NUM_OBJS_MATCHED = $(words $(MATCHED_OBJS))
 NUM_OBJS_UNMATCHED = $(words $(UNMATCHED_OBJS))
-BINLINK := binlink
 
 $(shell mkdir -p asm $(BASE_DIR) src $(BUILD_DIR)/$(BASE_DIR) $(foreach dir,$(ASM_DIRS) $(SRC_DIRS),$(BUILD_DIR)/$(dir)))
 
