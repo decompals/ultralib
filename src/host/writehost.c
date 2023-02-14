@@ -7,7 +7,7 @@
 #include "macros.h"
 
 static int writeHostInitialized = FALSE;
-static OSMesgQueue writeHostMesgQueue;
+static OSMesgQueue writeHostMesgQueue ALIGNED(8);
 static OSMesg writeHostMesgBuf[1];
 
 #define MIN(a,b) (((a)<(b)) ? (a) : (b))
