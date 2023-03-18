@@ -1,6 +1,7 @@
-# CI file for GCC/KMC builds
+# CI file for EGCS builds
+# TODO: rename to `ci_egcs.yml` when the repo has EGCS / iQue support
 
-name: Build GCC libgultra
+name: Build EGCS libultra
 
 # Build on every branch push, tag push, and pull request change:
 on: [push, pull_request_target]
@@ -13,7 +14,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        version: [L] # [H, I, I_patch, J, K, L]
+        version: [ique_v1.5]
         suffix: [_rom] # [, _d, _rom]
 
     steps:
@@ -35,7 +36,7 @@ jobs:
       run: cp deps_repo/libultra/${{ matrix.version }}/* .
 
     - name: Setup
-      run: make setup -j $(nproc) TARGET=libgultra${{ matrix.suffix }} VERSION=${{ matrix.version }}
+      run: make setup -j $(nproc) TARGET=libultra${{ matrix.suffix }} VERSION=${{ matrix.version }}
 
-    - name: Build libgultra${{ matrix.suffix }} ${{ matrix.version }}
-      run: make -j $(nproc) TARGET=libgultra${{ matrix.suffix }} VERSION=${{ matrix.version }}
+    - name: Build libultra${{ matrix.suffix }} ${{ matrix.version }}
+      run: make -j $(nproc) TARGET=libultra${{ matrix.suffix }} VERSION=${{ matrix.version }}
