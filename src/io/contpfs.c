@@ -15,7 +15,7 @@ u16 __osSumcalc(u8 *ptr, int length) {
         sum += *tmp++;
     }
 
-    return sum & 0xFFFF;
+    return sum;
 }
 
 s32 __osIdCheckSum(u16 *ptr, u16 *csum, u16 *icsum) {

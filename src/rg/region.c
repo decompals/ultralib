@@ -187,7 +187,7 @@ void *osCreateRegion(void *startAddress, u32 length, u32 bufferSize, u32 alignSi
     register int i;
     register char *addr;
 
-    assert(startAddress != (void *)NULL);
+    assert(startAddress != NULL);
 
 #ifdef _DEBUG
     if ((alignSize != 0) &&

@@ -64,7 +64,7 @@ void osCreateViManager(OSPri pri)
         __osRestoreInt(savedMask);
 
         if (oldPri != -1) {
-            osSetThreadPri(0, oldPri);
+            osSetThreadPri(NULL, oldPri);
         }
 }
 

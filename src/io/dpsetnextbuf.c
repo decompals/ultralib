@@ -26,7 +26,7 @@ s32 osDpSetNextBuffer(void *bufPtr, u64 size) {
 
     IO_WRITE(DPC_STATUS_REG, DPC_CLR_XBUS_DMEM_DMA);
     
-    while (1) {
+    while (TRUE) {
         stat = IO_READ(DPC_STATUS_REG);
         if ((stat & DPC_STATUS_XBUS_DMEM_DMA) == 0) {
             break;
