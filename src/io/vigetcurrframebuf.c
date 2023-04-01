@@ -8,13 +8,13 @@ void *osViGetCurrentFramebuffer(void) {
 
 #ifdef _DEBUG
     if (!__osViDevMgr.active) {
-	__osError(ERR_OSVIGETCURRENTFRAMEBUFFER, 0);
-	return 0;
+	    __osError(ERR_OSVIGETCURRENTFRAMEBUFFER, 0);
+	    return 0;
     }
 #endif
 
     saveMask = __osDisableInt();
     framep = __osViCurr->framep;
     __osRestoreInt(saveMask);
-    return(framep);
+    return framep;
 }
