@@ -12,24 +12,23 @@ void osViSetXScale(f32 value) {
 
 #ifdef _DEBUG
     if (!__osViDevMgr.active) {
-	__osError(ERR_OSVISETXSCALE_VIMGR, 0);
-	return;
+        __osError(ERR_OSVISETXSCALE_VIMGR, 0);
+        return;
     }
 
     if ((value < 0.25f) || (value > 1.0f)) {
-	__osError(ERR_OSVISETXSCALE_VALUE, 1, OS_LOG_FLOAT(value));
+        __osError(ERR_OSVISETXSCALE_VALUE, 1, OS_LOG_FLOAT(value));
 
-	if (value < 0.25f) {
-	    value = 0.25f;
-	  } else {
-	    value = 1.0f;
-	  }	
-    		     
+        if (value < 0.25f) {
+            value = 0.25f;
+        } else {
+            value = 1.0f;
+        }
     }
 #endif
 
     saveMask = __osDisableInt();
-    
+
     __osViNext->x.factor = value;
     __osViNext->state |= VI_STATE_XSCALE_UPDATED;
     nomValue = __osViNext->modep->comRegs.xScale & VI_SCALE_MASK;

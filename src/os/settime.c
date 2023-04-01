@@ -6,10 +6,10 @@
 void osSetTime(OSTime time) {
 
 #ifdef _DEBUG
-	if (!__osViDevMgr.active) {
-	    __osError(ERR_OSSETTIME, 0);
-	    return 0;
-	}
+    if (!__osViDevMgr.active) {
+        __osError(ERR_OSSETTIME, 0);
+        return 0;
+    }
 #endif
 
     __osCurrentTime = time;

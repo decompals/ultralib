@@ -10,8 +10,8 @@ s32 __osEPiRawWriteIo(OSPiHandle* pihandle, u32 devAddr, u32 data) {
 
 #ifdef _DEBUG
     if (devAddr & 0x3) {
-	__osError(ERR_OSPIRAWWRITEIO, 1, devAddr);
-	return -1;
+        __osError(ERR_OSPIRAWWRITEIO, 1, devAddr);
+        return -1;
     }
 #endif
 

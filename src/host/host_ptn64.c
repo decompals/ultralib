@@ -61,9 +61,9 @@ static u32 getPT(void) {
 }
 
 void osReadHost_pt(void* dramAddr, u32 nbytes) {
-    u8 * tPtr;
+    u8* tPtr;
     u32 buf[256];
-    u32 * bp;
+    u32* bp;
     u32 data;
     u32 ct;
     u32 ct1;
@@ -140,9 +140,9 @@ osReadHost_ret:
 }
 
 void osWriteHost_pt(void* dramAddr, u32 nbytes) {
-    u8 *tPtr;
+    u8* tPtr;
     u32 buf[256];
-    u32 *bp;
+    u32* bp;
     u32 ct;
     u32 ct1;
     u32 ct1_bak;

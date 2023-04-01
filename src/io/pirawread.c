@@ -53,8 +53,8 @@ s32 __osPiRawReadIo(u32 devAddr, u32* data) {
 
 #ifdef _DEBUG
     if (devAddr & 0x3) {
-	__osError(ERR_OSPIRAWREADIO, 1, devAddr);
-	return -1;
+        __osError(ERR_OSPIRAWREADIO, 1, devAddr);
+        return -1;
     }
 
     assert(data != NULL);

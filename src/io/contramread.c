@@ -40,7 +40,7 @@ s32 __osContRamRead(OSMesgQueue* mq, int channel, u16 address, u8* buffer) {
         }
 
         READFORMAT(ptr)->addrh = address >> 3;
-        READFORMAT(ptr)->addrl = (u8)( (address << 5) | __osContAddressCrc(address));
+        READFORMAT(ptr)->addrl = (u8)((address << 5) | __osContAddressCrc(address));
 
         ret = __osSiRawStartDma(OS_WRITE, &__osPfsPifRam);
         osRecvMesg(mq, NULL, OS_MESG_BLOCK);
@@ -56,7 +56,7 @@ s32 __osContRamRead(OSMesgQueue* mq, int channel, u16 address, u8* buffer) {
 
                 if (ret) {
                     break;
-                }else {
+                } else {
                     ret = PFS_ERR_CONTRFAIL;
                 }
             } else {
@@ -65,7 +65,7 @@ s32 __osContRamRead(OSMesgQueue* mq, int channel, u16 address, u8* buffer) {
         } else {
             ret = PFS_ERR_NOPACK;
         }
-	} while ((ret == PFS_ERR_CONTRFAIL) && (retry-- >= 0));
-	__osSiRelAccess();
-	return ret;
+    } while ((ret == PFS_ERR_CONTRFAIL) && (retry-- >= 0));
+    __osSiRelAccess();
+    return ret;
 }

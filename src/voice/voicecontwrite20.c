@@ -7,7 +7,7 @@
 #define WRITE20FORMAT(p) ((__OSVoiceWrite20Format*)(ptr))
 
 s32 __osVoiceContWrite20(OSMesgQueue* mq, int channel, u16 address, u8* buffer) {
-    s32 ret = 0 ;
+    s32 ret = 0;
     u8 status;
     int i;
     u8* ptr;
@@ -62,7 +62,7 @@ s32 __osVoiceContWrite20(OSMesgQueue* mq, int channel, u16 address, u8* buffer) 
                 if (ret != 0) {
                     break;
                 } else {
-                ret = CONT_ERR_CONTRFAIL;
+                    ret = CONT_ERR_CONTRFAIL;
                 }
             }
         } else {

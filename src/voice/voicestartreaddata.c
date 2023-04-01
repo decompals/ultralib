@@ -10,9 +10,9 @@ s32 osVoiceStartReadData(OSVoiceHandle* hd) {
 
     ret = __osVoiceGetStatus(hd->__mq, hd->__channel, &stat);
     if (ret != 0) {
-      return ret;
+        return ret;
     } else if (stat & 2) {
-      return CONT_ERR_VOICE_NO_RESPONSE;
+        return CONT_ERR_VOICE_NO_RESPONSE;
     }
 
     if (hd->__mode != 0) {

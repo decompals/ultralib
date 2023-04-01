@@ -3,7 +3,7 @@
 #include "osint.h"
 #include "../io/viint.h"
 
-int osSetTimer(OSTimer *t, OSTime countdown, OSTime interval, OSMesgQueue *mq, OSMesg msg) {
+int osSetTimer(OSTimer* t, OSTime countdown, OSTime interval, OSMesgQueue* mq, OSMesg msg) {
     OSTime time;
     OSTimer* next;
     u32 count;
@@ -11,10 +11,10 @@ int osSetTimer(OSTimer *t, OSTime countdown, OSTime interval, OSMesgQueue *mq, O
     u32 saveMask;
 
 #ifdef _DEBUG
-	if (!__osViDevMgr.active) {
-	    __osError(ERR_OSSETTIMER, 0);
-	    return 0;
-	}
+    if (!__osViDevMgr.active) {
+        __osError(ERR_OSSETTIMER, 0);
+        return 0;
+    }
 #endif
 
     t->next = NULL;
@@ -23,7 +23,7 @@ int osSetTimer(OSTimer *t, OSTime countdown, OSTime interval, OSMesgQueue *mq, O
     t->value = (countdown == 0) ? interval : countdown;
     t->mq = mq;
     t->msg = msg;
-    
+
     saveMask = __osDisableInt();
     if (__osTimerList->next == __osTimerList) {
 

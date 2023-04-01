@@ -12,5 +12,4 @@ int __osDpDeviceBusy(void) {
     } else {
         return FALSE;
     }
-    
 }

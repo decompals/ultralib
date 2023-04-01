@@ -3,16 +3,15 @@
 #include "osint.h"
 #include "../io/viint.h"
 
-
-int osStopTimer(OSTimer *t) {
+int osStopTimer(OSTimer* t) {
     register u32 savedMask;
-    OSTimer *timep;
+    OSTimer* timep;
 
 #ifdef _DEBUG
-	if (!__osViDevMgr.active) {
-	    __osError(ERR_OSSTOPTIMER, 0);
-	    return 0;
-	}
+    if (!__osViDevMgr.active) {
+        __osError(ERR_OSSTOPTIMER, 0);
+        return 0;
+    }
 #endif
 
     if (t->next == NULL) {

@@ -8,8 +8,8 @@ u32 osViGetCurrentMode(void) {
 
 #ifdef _DEBUG
     if (!__osViDevMgr.active) {
-	__osError(ERR_OSVIGETCURRENTMODE, 0);
-	return -1;
+        __osError(ERR_OSVIGETCURRENTMODE, 0);
+        return -1;
     }
 #endif
 

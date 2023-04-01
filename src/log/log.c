@@ -24,7 +24,6 @@ void osCreateLog(OSLog* log, u32* base, s32 byteLen) {
     log->writeOffset = 0;
 }
 
-
 void osLogEvent(OSLog* log, s16 code, s16 numArgs, ...) {
     va_list argPtr;
 
@@ -57,14 +56,14 @@ void osFlushLog(OSLog* log) {
     count = log->writeOffset * 4;
     __osRestoreInt(mask);
 
-    while(count != 0) {
+    while (count != 0) {
         subcount = (count < 0x8000) ? count : 0x8000;
         dCount[0] = (subcount & 0xFF0000) >> 0x10;
         dCount[1] = (subcount & 0xFF00) >> 8;
         dCount[2] = subcount & 0xFF;
 
         sent = 0;
-        while(sent < 3) {
+        while (sent < 3) {
             sent += __osRdbSend(dCount + sent, 3 - sent, RDB_TYPE_GtoH_LOG_CT);
         }
 

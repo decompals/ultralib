@@ -4,11 +4,11 @@
 
 
 
-// whitespace required due to stupid assert statement
 
-// complaints can be filed at
 
-// 2023 Sterling Court Mountain View, CA 94043 United States, 1996 A.D.
+
+
+
 
 
 
@@ -35,8 +35,8 @@ s32 __osEPiRawReadIo(OSPiHandle* pihandle, u32 devAddr, u32* data) {
 
 #ifdef _DEBUG
     if (devAddr & 0x3) {
-	__osError(ERR_OSPIRAWREADIO, 1, devAddr);
-	return -1;
+        __osError(ERR_OSPIRAWREADIO, 1, devAddr);
+        return -1;
     }
 
     assert(data != NULL);

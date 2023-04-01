@@ -2,14 +2,14 @@
 #include <PR/ultraerror.h>
 #include "viint.h"
 
-void *osViGetCurrentFramebuffer(void) {
+void* osViGetCurrentFramebuffer(void) {
     register u32 saveMask;
-    void *framep;
+    void* framep;
 
 #ifdef _DEBUG
     if (!__osViDevMgr.active) {
-	    __osError(ERR_OSVIGETCURRENTFRAMEBUFFER, 0);
-	    return 0;
+        __osError(ERR_OSVIGETCURRENTFRAMEBUFFER, 0);
+        return 0;
     }
 #endif
 

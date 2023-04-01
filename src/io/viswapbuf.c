@@ -52,18 +52,18 @@
 
 void osViSwapBuffer(void* frameBufPtr) {
     u32 saveMask;
-    
+
 #ifdef _DEBUG
     if (!__osViDevMgr.active) {
-	__osError(ERR_OSVISWAPBUFFER_VIMGR, 0);
-	return;
+        __osError(ERR_OSVISWAPBUFFER_VIMGR, 0);
+        return;
     }
 
-    assert(frameBufPtr != NULL);	
+    assert(frameBufPtr != NULL);
 
     if ((u32)frameBufPtr & 0x3f) {
-	__osError(ERR_OSVISWAPBUFFER_ADDR, 1, frameBufPtr);
-	return;
+        __osError(ERR_OSVISWAPBUFFER_ADDR, 1, frameBufPtr);
+        return;
     }
 #endif
 

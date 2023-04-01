@@ -60,7 +60,7 @@ s32 __osVoiceContWrite4(OSMesgQueue* mq, int channel, u16 address, u8 dst[4]) {
                 if (ret != 0) {
                     break;
                 } else {
-                ret = CONT_ERR_CONTRFAIL;
+                    ret = CONT_ERR_CONTRFAIL;
                 }
             }
         } else {

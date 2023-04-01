@@ -46,15 +46,15 @@
 // TODO: this comes from a header
 #ident "$Revision: 1.17 $"
 
-void osViSetMode(OSViMode *modep) {
+void osViSetMode(OSViMode* modep) {
     register u32 saveMask;
-    
+
 #ifdef _DEBUG
     if (!__osViDevMgr.active) {
-	__osError(ERR_OSVISETMODE, 0);
-	return 0;
+        __osError(ERR_OSVISETMODE, 0);
+        return 0;
     }
-    
+
     assert(modep != NULL);
 #endif
 
