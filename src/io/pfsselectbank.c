@@ -1,7 +1,7 @@
 #include "PR/os_internal.h"
 #include "controller.h"
 
-s32 __osPfsSelectBank(OSPfs *pfs, u8 bank) {
+s32 __osPfsSelectBank(OSPfs* pfs, u8 bank) {
     u8 temp[BLOCKSIZE];
     int i;
     s32 ret = 0;

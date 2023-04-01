@@ -12,7 +12,7 @@
 #ident "$Revision: 1.4 $"
 
 void __rmonMaskIdleThreadInts(void) {
-    register OSThread *tptr = __osGetActiveQueue();
+    register OSThread* tptr = __osGetActiveQueue();
 
     while (tptr->priority != -1) {
         if (tptr->priority == OS_PRIORITY_IDLE) {
@@ -24,8 +24,8 @@ void __rmonMaskIdleThreadInts(void) {
     }
 }
 
-OSThread *__rmonGetTCB(int threadNumber) {
-    register OSThread *tptr = __osGetActiveQueue();
+OSThread* __rmonGetTCB(int threadNumber) {
+    register OSThread* tptr = __osGetActiveQueue();
 
     if (threadNumber < 1) {
         return NULL;
@@ -43,7 +43,7 @@ OSThread *__rmonGetTCB(int threadNumber) {
 
 int __rmonStopUserThreads(int whichThread) {
     register int whichOne = 0;
-    register OSThread *tptr = __osGetActiveQueue();
+    register OSThread* tptr = __osGetActiveQueue();
 
     STUBBED_PRINTF(("StopThreads %d\n", whichThread));
 
@@ -85,9 +85,9 @@ int __rmonStopUserThreads(int whichThread) {
     return whichOne;
 }
 
-int __rmonListThreads(KKHeader *req) {
-    register KKObjectRequest *request = (KKObjectRequest *)req;
-    KKObjsEvent *reply = (KKObjsEvent *)__rmonUtilityBuffer;
+int __rmonListThreads(KKHeader* req) {
+    register KKObjectRequest* request = (KKObjectRequest*)req;
+    KKObjsEvent* reply = (KKObjsEvent*)__rmonUtilityBuffer;
 
     STUBBED_PRINTF(("ListThreads\n"));
 
@@ -97,7 +97,7 @@ int __rmonListThreads(KKHeader *req) {
         reply->objs.number = 1;
         reply->objs.objects[0] = RMON_TID_RSP;
     } else {
-        register OSThread *tptr = __osGetActiveQueue();
+        register OSThread* tptr = __osGetActiveQueue();
 
         reply->objs.number = 0;
 
@@ -116,7 +116,7 @@ int __rmonListThreads(KKHeader *req) {
     return TV_ERROR_NO_ERROR;
 }
 
-int __rmonGetThreadStatus(int method, int id, KKStatusEvent *reply) {
+int __rmonGetThreadStatus(int method, int id, KKStatusEvent* reply) {
     u32 inst;
 
     STUBBED_PRINTF(("ThreadStatus %d method %d\n", id, method));
@@ -140,8 +140,8 @@ int __rmonGetThreadStatus(int method, int id, KKStatusEvent *reply) {
             reply->status.instr = 0;
         } else {
             reply->status.flags = OS_STATE_STOPPED;
-            reply->status.info.addr = __rmonReadWordAt((u32 *)SP_PC_REG) + SP_IMEM_START;
-            inst = __rmonReadWordAt((u32 *)reply->status.info.addr);
+            reply->status.info.addr = __rmonReadWordAt((u32*)SP_PC_REG) + SP_IMEM_START;
+            inst = __rmonReadWordAt((u32*)reply->status.info.addr);
             if ((inst & MIPS_BREAK_MASK) == MIPS_BREAK_OPCODE) {
                 inst = MIPS_BREAK_OPCODE;
             }
@@ -154,7 +154,7 @@ int __rmonGetThreadStatus(int method, int id, KKStatusEvent *reply) {
             reply->status.instr = inst;
         }
     } else {
-        OSThread *tptr = __osGetActiveQueue();
+        OSThread* tptr = __osGetActiveQueue();
 
         while (tptr->priority != -1) {
             if (tptr->id == id) {
@@ -170,7 +170,7 @@ int __rmonGetThreadStatus(int method, int id, KKStatusEvent *reply) {
         reply->status.flags = (tptr->state != 0) ? tptr->state : OS_STATE_STOPPED;
         reply->status.info.addr = tptr->context.pc;
 
-        inst = *(u32 *)(tptr->context.pc);
+        inst = *(u32*)(tptr->context.pc);
         if ((inst & MIPS_BREAK_MASK) == MIPS_BREAK_OPCODE) {
             inst = MIPS_BREAK_OPCODE;
         }
@@ -194,8 +194,8 @@ int __rmonGetThreadStatus(int method, int id, KKStatusEvent *reply) {
     return TV_ERROR_NO_ERROR;
 }
 
-int __rmonThreadStatus(KKHeader *req) {
-    KKObjectRequest *request = (KKObjectRequest *)req;
+int __rmonThreadStatus(KKHeader* req) {
+    KKObjectRequest* request = (KKObjectRequest*)req;
     KKStatusEvent reply;
 
     if (__rmonGetThreadStatus(req->method, request->object, &reply) != TV_ERROR_NO_ERROR) {
@@ -208,10 +208,10 @@ int __rmonThreadStatus(KKHeader *req) {
     return TV_ERROR_NO_ERROR;
 }
 
-int __rmonStopThread(KKHeader *req) {
-    KKObjectRequest *request = (KKObjectRequest *)req;
+int __rmonStopThread(KKHeader* req) {
+    KKObjectRequest* request = (KKObjectRequest*)req;
     KKStatusEvent reply;
-    u32 *pc;
+    u32* pc;
 
     STUBBED_PRINTF(("StopThread %d\n", request->object));
 
@@ -223,14 +223,14 @@ int __rmonStopThread(KKHeader *req) {
             if (__rmonRCPrunning()) {
                 /* Stop the rsp */
                 __rmonIdleRCP();
-                pc = (u32 *)__rmonReadWordAt((u32 *)SP_PC_REG);
+                pc = (u32*)__rmonReadWordAt((u32*)SP_PC_REG);
                 if (pc == NULL) {
                     break;
                 }
                 pc--;
                 /* Check if the RSP is stopped in a branch delay slot, if it is step out of it. The RSP would otherwise
                    lose information about whether the branch should or should not be taken when reading registers. */
-                if (__rmonGetBranchTarget(RMON_RSP, RMON_TID_RSP, (void *)((u32)pc + SP_IMEM_START)) % 4 == 0) {
+                if (__rmonGetBranchTarget(RMON_RSP, RMON_TID_RSP, (void*)((u32)pc + SP_IMEM_START)) % 4 == 0) {
                     __rmonStepRCP();
                 }
             }
@@ -252,11 +252,11 @@ int __rmonStopThread(KKHeader *req) {
     return TV_ERROR_NO_ERROR;
 }
 
-int __rmonRunThread(KKHeader *req) {
-    KKRunThreadRequest *request = (KKRunThreadRequest *)req;
+int __rmonRunThread(KKHeader* req) {
+    KKRunThreadRequest* request = (KKRunThreadRequest*)req;
     KKObjectEvent reply;
     KKStatusEvent exceptionReply;
-    register OSThread *tptr;
+    register OSThread* tptr;
     register int runNeeded = FALSE;
 
     STUBBED_PRINTF(("RunThread %d\n", request->tid));
@@ -281,8 +281,7 @@ int __rmonRunThread(KKHeader *req) {
             if (request->actions.flags & KK_RUN_SETPC) {
                 tptr->context.pc = request->actions.vaddr;
             }
-            if ((request->actions.flags & KK_RUN_SSTEP) &&
-                !__rmonSetSingleStep(request->tid, (u32 *)tptr->context.pc)) {
+            if ((request->actions.flags & KK_RUN_SSTEP) && !__rmonSetSingleStep(request->tid, (u32*)tptr->context.pc)) {
                 return TV_ERROR_OPERATIONS_PROTECTED;
             }
             runNeeded = TRUE;
@@ -292,12 +291,12 @@ int __rmonRunThread(KKHeader *req) {
                 return TV_ERROR_OPERATIONS_PROTECTED;
             }
             if (request->actions.flags & KK_RUN_SETPC) {
-                __rmonWriteWordTo((u32 *)SP_PC_REG, request->actions.vaddr - SP_IMEM_START);
+                __rmonWriteWordTo((u32*)SP_PC_REG, request->actions.vaddr - SP_IMEM_START);
             }
             if (request->actions.flags & KK_RUN_SSTEP) {
                 /* If the RSP is stopped at a branch step twice so as to not stop in a branch delay slot. */
                 if (__rmonGetBranchTarget(RMON_RSP, RMON_TID_RSP,
-                                          (void *)(__rmonReadWordAt((u32 *)SP_PC_REG) + SP_IMEM_START)) %
+                                          (void*)(__rmonReadWordAt((u32*)SP_PC_REG) + SP_IMEM_START)) %
                         4 ==
                     0) {
                     __rmonStepRCP();

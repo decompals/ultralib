@@ -2,7 +2,7 @@
 #include "PR/ultraerror.h"
 #include "osint.h"
 
-s32 osJamMesg(OSMesgQueue *mq, OSMesg msg, s32 flag) {
+s32 osJamMesg(OSMesgQueue* mq, OSMesg msg, s32 flag) {
     register u32 saveMask;
 
 #ifdef _DEBUG

@@ -1,9 +1,9 @@
 #include "stdarg.h"
 #include "PR/os.h"
 
-extern void *__printfunc;
+extern void* __printfunc;
 
-void __osSyncVPrintf(const char *fmt, va_list args) {
+void __osSyncVPrintf(const char* fmt, va_list args) {
 
     int ans;
 #ifndef _FINALROM
@@ -13,7 +13,7 @@ void __osSyncVPrintf(const char *fmt, va_list args) {
 #endif
 }
 
-void osSyncPrintf(const char *fmt, ...) {
+void osSyncPrintf(const char* fmt, ...) {
     int ans;
     va_list ap;
 
@@ -24,7 +24,7 @@ void osSyncPrintf(const char *fmt, ...) {
 #endif
 }
 
-void rmonPrintf(const char *fmt, ...) {
+void rmonPrintf(const char* fmt, ...) {
     int ans;
     va_list ap;
 

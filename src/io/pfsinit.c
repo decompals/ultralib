@@ -2,7 +2,7 @@
 #include "controller.h"
 #include "siint.h"
 
-s32 osPfsInit(OSMesgQueue *queue, OSPfs *pfs, int channel) {
+s32 osPfsInit(OSMesgQueue* queue, OSPfs* pfs, int channel) {
     s32 ret = 0;
 
     __osSiGetAccess();

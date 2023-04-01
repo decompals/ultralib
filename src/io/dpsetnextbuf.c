@@ -6,7 +6,7 @@
 // TODO: this comes from a header
 #ident "$Revision: 1.17 $"
 
-s32 osDpSetNextBuffer(void *bufPtr, u64 size) {
+s32 osDpSetNextBuffer(void* bufPtr, u64 size) {
     register u32 stat;
 
 #ifdef _DEBUG

@@ -2,7 +2,7 @@
 #include "PR/ultraerror.h"
 #include "piint.h"
 
-s32 osPiStartDma(OSIoMesg *mb, s32 priority, s32 direction, u32 devAddr, void *dramAddr, u32 size, OSMesgQueue *mq) {
+s32 osPiStartDma(OSIoMesg* mb, s32 priority, s32 direction, u32 devAddr, void* dramAddr, u32 size, OSMesgQueue* mq) {
     register s32 ret;
     if (!__osPiDevMgr.active) {
 #ifdef _DEBUG

@@ -1,7 +1,7 @@
 #include "piint.h"
 #include "PR/ultraerror.h"
 
-s32 osEPiWriteIo(OSPiHandle *pihandle, u32 devAddr, u32 data) {
+s32 osEPiWriteIo(OSPiHandle* pihandle, u32 devAddr, u32 data) {
     register s32 ret;
 
 #ifdef _DEBUG

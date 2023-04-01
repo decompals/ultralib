@@ -8,7 +8,7 @@
 // TODO: this comes from a header
 #ident "$Revision: 1.4 $"
 
-static int NotImplemented(KKHeader *dummy UNUSED) {
+static int NotImplemented(KKHeader* dummy UNUSED) {
     return TV_ERROR_ILLEGAL_CALL;
 }
 
@@ -26,7 +26,7 @@ static FUNPTR dispatchTable[] = {
     __rmonSetSRegs,      __rmonGetVRegs,      __rmonSetVRegs,       NotImplemented,
 };
 
-int __rmonExecute(KKHeader *request) {
+int __rmonExecute(KKHeader* request) {
     int retval;
     KKHeader reply;
 

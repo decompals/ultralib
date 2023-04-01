@@ -3,9 +3,9 @@
 #include "osint.h"
 #include "../io/viint.h"
 
-int osSetTimer(OSTimer *t, OSTime countdown, OSTime interval, OSMesgQueue *mq, OSMesg msg) {
+int osSetTimer(OSTimer* t, OSTime countdown, OSTime interval, OSMesgQueue* mq, OSMesg msg) {
     OSTime time;
-    OSTimer *next;
+    OSTimer* next;
     u32 count;
     u32 value;
     u32 saveMask;

@@ -8,8 +8,8 @@
 #ident "$Revision: 1.17 $"
 
 static __OSViContext vi[2] ALIGNED(8) = { 0 };
-__OSViContext *__osViCurr = &vi[0];
-__OSViContext *__osViNext = &vi[1];
+__OSViContext* __osViCurr = &vi[0];
+__OSViContext* __osViNext = &vi[1];
 
 void __osViInit(void) {
     bzero(vi, sizeof(vi));
@@ -17,8 +17,8 @@ void __osViInit(void) {
     __osViNext = &vi[1];
     __osViNext->retraceCount = 1;
     __osViCurr->retraceCount = 1;
-    __osViNext->framep = (void *)K0BASE;
-    __osViCurr->framep = (void *)K0BASE;
+    __osViNext->framep = (void*)K0BASE;
+    __osViCurr->framep = (void*)K0BASE;
 
     if (osTvType == OS_TV_TYPE_PAL) {
         __osViNext->modep = &osViModePalLan1;

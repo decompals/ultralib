@@ -14,9 +14,9 @@ static u32 __osLogInitialized = FALSE;
 static OSMesgQueue __osLogDoneMsgQ ALIGNED(8);
 static OSMesg __osLogMsgBuf;
 
-void __osLogWrite(OSLog *log, s16 code, s16 numArgs, va_list argPtr);
+void __osLogWrite(OSLog* log, s16 code, s16 numArgs, va_list argPtr);
 
-void osCreateLog(OSLog *log, u32 *base, s32 byteLen) {
+void osCreateLog(OSLog* log, u32* base, s32 byteLen) {
     log->magic = OS_LOG_MAGIC;
     log->base = base;
     log->len = byteLen;
@@ -24,7 +24,7 @@ void osCreateLog(OSLog *log, u32 *base, s32 byteLen) {
     log->writeOffset = 0;
 }
 
-void osLogEvent(OSLog *log, s16 code, s16 numArgs, ...) {
+void osLogEvent(OSLog* log, s16 code, s16 numArgs, ...) {
     va_list argPtr;
 
     if (numArgs > 16) {
@@ -36,12 +36,12 @@ void osLogEvent(OSLog *log, s16 code, s16 numArgs, ...) {
     va_end(argPtr);
 }
 
-void osFlushLog(OSLog *log) {
+void osFlushLog(OSLog* log) {
     s32 mask;
     u32 sent;
     u32 count;
     u32 subcount;
-    u8 *base;
+    u8* base;
     u8 dCount[3];
 
     if (!__osLogInitialized) {
@@ -82,14 +82,14 @@ void osFlushLog(OSLog *log) {
     __osRestoreInt(mask);
 }
 
-void __osLogWrite(OSLog *log, s16 code, s16 numArgs, va_list argPtr) {
+void __osLogWrite(OSLog* log, s16 code, s16 numArgs, va_list argPtr) {
     int i;
     u32 saveEnable;
     u32 buf[19];
-    u32 *bufp;
-    OSLogItem *hdr;
-    s32 *args;
-    s32 *dest;
+    u32* bufp;
+    OSLogItem* hdr;
+    s32* args;
+    s32* dest;
     int numLongs;
 
     bufp = buf;

@@ -1,6 +1,6 @@
 #include "piint.h"
 
-s32 osEPiLinkHandle(OSPiHandle *EPiHandle) {
+s32 osEPiLinkHandle(OSPiHandle* EPiHandle) {
     u32 saveMask = __osDisableInt();
 
     EPiHandle->next = __osPiTable;

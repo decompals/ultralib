@@ -17,7 +17,7 @@ u32 osThreadProfileReadCount(OSId id) {
     return thprof[id].count;
 }
 
-u32 osThreadProfileReadCountTh(OSThread *thread) {
+u32 osThreadProfileReadCountTh(OSThread* thread) {
     OSId id;
 
 #ifndef NDEBUG

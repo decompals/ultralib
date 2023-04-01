@@ -26,7 +26,7 @@ unsigned long long __ll_mul(unsigned long long a0, unsigned long long a1) {
     return a0 * a1;
 }
 
-void __ull_divremi(unsigned long long *div, unsigned long long *rem, unsigned long long a2, unsigned short a3) {
+void __ull_divremi(unsigned long long* div, unsigned long long* rem, unsigned long long a2, unsigned short a3) {
     *div = a2 / a3;
     *rem = a2 % a3;
 }

@@ -7,7 +7,7 @@ OSTimer __osGbpakTimer;
 OSMesg __osGbpakTimerMsg;
 OSMesgQueue __osGbpakTimerQ ALIGNED(8);
 
-s32 osGbpakInit(OSMesgQueue *mq, OSPfs *pfs, int channel) {
+s32 osGbpakInit(OSMesgQueue* mq, OSPfs* pfs, int channel) {
     int i;
     s32 ret;
     u8 temp[BLOCKSIZE];

@@ -7,13 +7,13 @@
 #define SIZE_8MB 0x800000
 
 u32 osGetMemSize(void) {
-    vu32 *ptr;
+    vu32* ptr;
     u32 size = SIZE_4MB;
     u32 data0;
     u32 data1;
 
     while (size < SIZE_8MB) {
-        ptr = (vu32 *)(K1BASE + size);
+        ptr = (vu32*)(K1BASE + size);
 
         data0 = *ptr;
         data1 = ptr[STEP / 4 - 1];

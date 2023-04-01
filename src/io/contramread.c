@@ -5,18 +5,18 @@
 
 s32 __osPfsLastChannel = -1;
 
-#define READFORMAT(ptr) ((__OSContRamReadFormat *)(ptr))
+#define READFORMAT(ptr) ((__OSContRamReadFormat*)(ptr))
 
-s32 __osContRamRead(OSMesgQueue *mq, int channel, u16 address, u8 *buffer) {
+s32 __osContRamRead(OSMesgQueue* mq, int channel, u16 address, u8* buffer) {
     s32 ret = 0;
     s32 i;
-    u8 *ptr;
+    u8* ptr;
     s32 retry = 2;
 
     __osSiGetAccess();
 
     do {
-        ptr = (u8 *)&__osPfsPifRam;
+        ptr = (u8*)&__osPfsPifRam;
 
         if (__osContLastCmd != CONT_CMD_READ_PAK || __osPfsLastChannel != channel) {
             __osContLastCmd = CONT_CMD_READ_PAK;

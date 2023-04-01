@@ -1,7 +1,7 @@
 #include "PR/os_internal.h"
 #include "controller.h"
 
-s32 osPfsFileState(OSPfs *pfs, s32 file_no, OSPfsState *state) {
+s32 osPfsFileState(OSPfs* pfs, s32 file_no, OSPfsState* state) {
     s32 ret;
     int pages;
     __OSInode inode;
@@ -17,7 +17,7 @@ s32 osPfsFileState(OSPfs *pfs, s32 file_no, OSPfsState *state) {
     ERRCK(__osCheckId(pfs));
     SET_ACTIVEBANK_TO_ZERO;
 
-    ERRCK(__osContRamRead(pfs->queue, pfs->channel, pfs->dir_table + file_no, (u8 *)&dir));
+    ERRCK(__osContRamRead(pfs->queue, pfs->channel, pfs->dir_table + file_no, (u8*)&dir));
 
     if (dir.company_code == 0 || dir.game_code == 0) {
         return PFS_ERR_INVALID;

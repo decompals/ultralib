@@ -6,7 +6,7 @@
 // Use this function to determine the semisyllable count before adding a word with osVoiceSetWord,
 //  to properly see whether it will fit.
 
-void osVoiceCountSyllables(u8 *data, u32 *syllable) {
+void osVoiceCountSyllables(u8* data, u32* syllable) {
     s32 k;
     u16 sjis;
     u16 old;

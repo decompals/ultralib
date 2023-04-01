@@ -4,12 +4,12 @@
 #include "voiceinternal.h"
 #include "io/controller_voice.h"
 
-#define SWRITEFORMAT(p) ((__OSVoiceSWriteFormat *)(p))
+#define SWRITEFORMAT(p) ((__OSVoiceSWriteFormat*)(p))
 
-s32 __osVoiceSetADConverter(OSMesgQueue *mq, s32 channel, u8 data) {
+s32 __osVoiceSetADConverter(OSMesgQueue* mq, s32 channel, u8 data) {
     s32 ret = 0;
     int i;
-    u8 *ptr;
+    u8* ptr;
     u8 status;
     int retry = 2;
 
@@ -17,7 +17,7 @@ s32 __osVoiceSetADConverter(OSMesgQueue *mq, s32 channel, u8 data) {
 
     do {
 
-        ptr = (u8 *)__osPfsPifRam.ramarray;
+        ptr = (u8*)__osPfsPifRam.ramarray;
 
         if ((__osContLastCmd != CONT_CMD_SWRITE_VOICE) || (__osPfsLastChannel != channel)) {
             __osContLastCmd = CONT_CMD_SWRITE_VOICE;

@@ -4,7 +4,7 @@
 
 static void __osPackReadData(void);
 
-s32 osContStartReadData(OSMesgQueue *mq) {
+s32 osContStartReadData(OSMesgQueue* mq) {
     s32 ret = 0;
 
     __osSiGetAccess();
@@ -22,13 +22,13 @@ s32 osContStartReadData(OSMesgQueue *mq) {
     return ret;
 }
 
-void osContGetReadData(OSContPad *data) {
-    u8 *ptr = __osContPifRam.ramarray;
+void osContGetReadData(OSContPad* data) {
+    u8* ptr = __osContPifRam.ramarray;
     __OSContReadFormat readformat;
     int i;
 
     for (i = 0; i < __osMaxControllers; i++, ptr += sizeof(__OSContReadFormat), data++) {
-        readformat = *(__OSContReadFormat *)ptr;
+        readformat = *(__OSContReadFormat*)ptr;
         data->errno = CHNL_ERR(readformat);
 
         if (data->errno != 0) {
@@ -42,7 +42,7 @@ void osContGetReadData(OSContPad *data) {
 }
 
 static void __osPackReadData(void) {
-    u8 *ptr = __osContPifRam.ramarray;
+    u8* ptr = __osContPifRam.ramarray;
     __OSContReadFormat readformat;
     int i;
 
@@ -60,7 +60,7 @@ static void __osPackReadData(void) {
     readformat.stick_y = -1;
 
     for (i = 0; i < __osMaxControllers; i++) {
-        *(__OSContReadFormat *)ptr = readformat;
+        *(__OSContReadFormat*)ptr = readformat;
         ptr += sizeof(__OSContReadFormat);
     }
 

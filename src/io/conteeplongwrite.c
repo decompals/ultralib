@@ -1,7 +1,7 @@
 #include "PR/os_internal.h"
 #include "controller.h"
 
-s32 osEepromLongWrite(OSMesgQueue *mq, u8 address, u8 *buffer, int length) {
+s32 osEepromLongWrite(OSMesgQueue* mq, u8 address, u8* buffer, int length) {
     s32 ret = 0;
 
     while (length > 0) {

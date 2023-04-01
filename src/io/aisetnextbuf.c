@@ -6,9 +6,9 @@
 // TODO: this comes from a header
 #ident "$Revision: 1.17 $"
 
-s32 osAiSetNextBuffer(void *bufPtr, u32 size) {
+s32 osAiSetNextBuffer(void* bufPtr, u32 size) {
     static u8 hdwrBugFlag = FALSE;
-    char *bptr;
+    char* bptr;
 
     if (__osAiDeviceBusy()) {
         return -1;
@@ -29,7 +29,7 @@ s32 osAiSetNextBuffer(void *bufPtr, u32 size) {
     bptr = bufPtr;
 
     if (hdwrBugFlag) {
-        bptr = (u8 *)bufPtr - 0x2000;
+        bptr = (u8*)bufPtr - 0x2000;
     }
 
     if ((((u32)bufPtr + size) & 0x1fff) == 0) {

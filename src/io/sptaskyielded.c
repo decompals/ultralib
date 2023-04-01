@@ -2,7 +2,7 @@
 #include "PR/sptask.h"
 #include "PR/rcp.h"
 
-OSYieldResult osSpTaskYielded(OSTask *tp) {
+OSYieldResult osSpTaskYielded(OSTask* tp) {
     u32 status;
     OSYieldResult result;
 

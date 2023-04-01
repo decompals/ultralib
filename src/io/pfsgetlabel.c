@@ -1,7 +1,7 @@
 #include "PR/os_internal.h"
 #include "controller.h"
 
-s32 osPfsGetLabel(OSPfs *pfs, u8 *label, int *len) {
+s32 osPfsGetLabel(OSPfs* pfs, u8* label, int* len) {
     int i;
 
     if (label == NULL) {

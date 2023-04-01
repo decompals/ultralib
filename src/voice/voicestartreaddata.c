@@ -3,7 +3,7 @@
 #include "PR/os_voice.h"
 #include "voiceinternal.h"
 
-s32 osVoiceStartReadData(OSVoiceHandle *hd) {
+s32 osVoiceStartReadData(OSVoiceHandle* hd) {
     s32 ret;
     u8 stat;
     u8 temp[4];
@@ -19,7 +19,7 @@ s32 osVoiceStartReadData(OSVoiceHandle *hd) {
         return CONT_ERR_INVALID;
     }
 
-    *(u32 *)temp = 0x5000000;
+    *(u32*)temp = 0x5000000;
     ret = __osVoiceContWrite4(hd->__mq, hd->__channel, 0, temp);
 
     if (ret == 0) {

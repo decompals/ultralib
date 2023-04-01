@@ -14,19 +14,19 @@ static OSMesgQueue getRamromQ ALIGNED(8);
 static OSMesg getRamromBuf[1];
 static OSMesgQueue freeRamromQ ALIGNED(8);
 static OSMesg freeRamromBuf[1];
-static void ramromMain(void *);
+static void ramromMain(void*);
 #endif
 
 static OSMesgQueue piEventQueue ALIGNED(8);
 static OSMesg piEventBuf[1];
 
 OSDevMgr __osPiDevMgr = { 0 };
-OSPiHandle *__osPiTable = NULL;
+OSPiHandle* __osPiTable = NULL;
 OSPiHandle __Dom1SpeedParam ALIGNED(8);
 OSPiHandle __Dom2SpeedParam ALIGNED(8);
-OSPiHandle *__osCurrentHandle[2] ALIGNED(8) = { &__Dom1SpeedParam, &__Dom2SpeedParam };
+OSPiHandle* __osCurrentHandle[2] ALIGNED(8) = { &__Dom1SpeedParam, &__Dom2SpeedParam };
 
-void osCreatePiManager(OSPri pri, OSMesgQueue *cmdQ, OSMesg *cmdBuf, s32 cmdMsgCnt) {
+void osCreatePiManager(OSPri pri, OSMesgQueue* cmdQ, OSMesg* cmdBuf, s32 cmdMsgCnt) {
     u32 savedMask;
     OSPri oldPri;
     OSPri myPri;
@@ -42,7 +42,7 @@ void osCreatePiManager(OSPri pri, OSMesgQueue *cmdQ, OSMesg *cmdBuf, s32 cmdMsgC
         return;
     }
     osCreateMesgQueue(cmdQ, cmdBuf, cmdMsgCnt);
-    osCreateMesgQueue(&piEventQueue, (OSMesg *)piEventBuf, 1);
+    osCreateMesgQueue(&piEventQueue, (OSMesg*)piEventBuf, 1);
 
     if (!__osPiAccessQueueEnabled) {
         __osPiCreateAccessQueue();
@@ -80,7 +80,7 @@ void osCreatePiManager(OSPri pri, OSMesgQueue *cmdQ, OSMesg *cmdBuf, s32 cmdMsgC
 }
 
 #ifndef _FINALROM
-static void ramromMain(void *arg) {
+static void ramromMain(void* arg) {
     u32 sent;
     u8 tmp[3];
 

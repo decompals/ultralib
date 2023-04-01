@@ -50,7 +50,7 @@
 // TODO: this comes from a header
 #ident "$Revision: 1.17 $"
 
-void osViSwapBuffer(void *frameBufPtr) {
+void osViSwapBuffer(void* frameBufPtr) {
     u32 saveMask;
 
 #ifdef _DEBUG

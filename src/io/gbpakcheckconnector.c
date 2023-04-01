@@ -2,7 +2,7 @@
 #include "PR/os_internal.h"
 #include "controller.h"
 
-s32 osGbpakCheckConnector(OSPfs *pfs, u8 *status) {
+s32 osGbpakCheckConnector(OSPfs* pfs, u8* status) {
     s32 ret;
     s32 bufn = 1;
     s32 oldbufn = 0;

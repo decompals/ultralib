@@ -1,14 +1,14 @@
 #include "PR/os_internal.h"
 #include "controller.h"
 
-s32 corrupted_init(OSPfs *pfs, __OSInodeCache *cache);
-s32 corrupted(OSPfs *pfs, __OSInodeUnit fpage, __OSInodeCache *cache);
+s32 corrupted_init(OSPfs* pfs, __OSInodeCache* cache);
+s32 corrupted(OSPfs* pfs, __OSInodeUnit fpage, __OSInodeCache* cache);
 
 #define CHECK_IPAGE(p)                                                                                        \
     (((p).ipage >= pfs->inode_start_page) && ((p).inode_t.bank < pfs->banks) && ((p).inode_t.page >= 0x01) && \
      ((p).inode_t.page < 0x80))
 
-s32 osPfsChecker(OSPfs *pfs) {
+s32 osPfsChecker(OSPfs* pfs) {
     int j;
     s32 ret;
     __OSInodeUnit next_page;
@@ -37,7 +37,7 @@ s32 osPfsChecker(OSPfs *pfs) {
     ERRCK(corrupted_init(pfs, &cache));
 
     for (j = 0; j < pfs->dir_size; j++) {
-        ERRCK(__osContRamRead(pfs->queue, pfs->channel, pfs->dir_table + j, (u8 *)&tmp_dir));
+        ERRCK(__osContRamRead(pfs->queue, pfs->channel, pfs->dir_table + j, (u8*)&tmp_dir));
 
         if (tmp_dir.company_code != 0 || tmp_dir.game_code != 0) {
             if (tmp_dir.company_code == 0 || tmp_dir.game_code == 0) {
@@ -74,13 +74,13 @@ s32 osPfsChecker(OSPfs *pfs) {
                 bzero(&tmp_dir, sizeof(__OSDir));
 
                 SET_ACTIVEBANK_TO_ZERO;
-                ERRCK(__osContRamWrite(pfs->queue, pfs->channel, pfs->dir_table + j, (u8 *)&tmp_dir, FALSE));
+                ERRCK(__osContRamWrite(pfs->queue, pfs->channel, pfs->dir_table + j, (u8*)&tmp_dir, FALSE));
                 fixed++;
             }
         }
     }
     for (j = 0; j < pfs->dir_size; j++) {
-        ERRCK(__osContRamRead(pfs->queue, pfs->channel, pfs->dir_table + j, (u8 *)&tmp_dir));
+        ERRCK(__osContRamRead(pfs->queue, pfs->channel, pfs->dir_table + j, (u8*)&tmp_dir));
 
         if (tmp_dir.company_code != 0 && tmp_dir.game_code != 0 &&
             tmp_dir.start_page.ipage >= (u16)pfs->inode_start_page) {
@@ -125,7 +125,7 @@ s32 osPfsChecker(OSPfs *pfs) {
     return 0;
 }
 
-s32 corrupted_init(OSPfs *pfs, __OSInodeCache *cache) {
+s32 corrupted_init(OSPfs* pfs, __OSInodeCache* cache) {
     int i;
     int n;
     int offset;
@@ -161,7 +161,7 @@ s32 corrupted_init(OSPfs *pfs, __OSInodeCache *cache) {
     return 0;
 }
 
-s32 corrupted(OSPfs *pfs, __OSInodeUnit fpage, __OSInodeCache *cache) {
+s32 corrupted(OSPfs* pfs, __OSInodeUnit fpage, __OSInodeCache* cache) {
     int j;
     int n;
     int hit;

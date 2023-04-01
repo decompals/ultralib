@@ -13,7 +13,7 @@ OSThread __osThreadSave;
 static u8 buffer[12];
 static u32 numChars = 0;
 
-static u32 string_to_u32(u8 *s) {
+static u32 string_to_u32(u8* s) {
     u32 k;
 
     k = ((s[0] & 0xFF) << 0x18);
@@ -24,7 +24,7 @@ static u32 string_to_u32(u8 *s) {
     return k;
 }
 
-static void send_packet(u8 *s, u32 n) {
+static void send_packet(u8* s, u32 n) {
     rdbPacket packet;
     u32 i;
 
@@ -34,21 +34,21 @@ static void send_packet(u8 *s, u32 n) {
     for (i = 0; i < n; i++) {
         packet.buf[i] = s[i];
     }
-    *(volatile rdbPacket *)RDB_BASE_REG = packet;
+    *(volatile rdbPacket*)RDB_BASE_REG = packet;
 }
 
 static void clear_IP6(void) {
     while (!(__osGetCause() & CAUSE_IP6)) {
         ;
     }
-    *(vu32 *)RDB_READ_INTR_REG = 0;
+    *(vu32*)RDB_READ_INTR_REG = 0;
 
     while (__osGetCause() & CAUSE_IP6) {
         ;
     }
 }
 
-static void send(u8 *s, u32 n) {
+static void send(u8* s, u32 n) {
     u32 ct;
     u32 i = 0;
     u32 getLastIP6;
@@ -76,14 +76,14 @@ static void send(u8 *s, u32 n) {
 void kdebugserver(rdbPacket packet) {
     u32 i;
     u32 length;
-    u8 *addr;
+    u8* addr;
 
     for (i = 0; i < 3; i++) {
         buffer[numChars++] = packet.buf[i];
     }
 
     if (buffer[0] == 2) {
-        send((char *)&__osRunningThread->context, sizeof(__OSThreadContext));
+        send((char*)&__osRunningThread->context, sizeof(__OSThreadContext));
         numChars = 0;
     } else if (numChars >= 9 && buffer[0] == 1) {
         addr = string_to_u32(&buffer[1]);

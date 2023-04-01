@@ -1,14 +1,14 @@
 #include "PR/os_internal.h"
 #include "controller.h"
 
-static s32 __osPfsCheckRamArea(OSPfs *pfs);
+static s32 __osPfsCheckRamArea(OSPfs* pfs);
 
-s32 osPfsInitPak(OSMesgQueue *queue, OSPfs *pfs, int channel) {
+s32 osPfsInitPak(OSMesgQueue* queue, OSPfs* pfs, int channel) {
     s32 ret = 0;
     u16 sum;
     u16 isum;
     u8 temp[BLOCKSIZE];
-    __OSPackId *id;
+    __OSPackId* id;
     __OSPackId newid;
 
     __osSiGetAccess();
@@ -29,8 +29,8 @@ s32 osPfsInitPak(OSMesgQueue *queue, OSPfs *pfs, int channel) {
     ERRCK(__osPfsSelectBank(pfs, 0));
     ERRCK(__osContRamRead(pfs->queue, pfs->channel, PFS_ID_0AREA, temp));
 
-    __osIdCheckSum((u16 *)temp, &sum, &isum);
-    id = (__OSPackId *)temp;
+    __osIdCheckSum((u16*)temp, &sum, &isum);
+    id = (__OSPackId*)temp;
 
     if ((id->checksum != sum) || (id->inverted_checksum != isum)) {
         ret = __osCheckPackId(pfs, id);
@@ -76,7 +76,7 @@ s32 osPfsInitPak(OSMesgQueue *queue, OSPfs *pfs, int channel) {
     return ret;
 }
 
-static s32 __osPfsCheckRamArea(OSPfs *pfs) {
+static s32 __osPfsCheckRamArea(OSPfs* pfs) {
     s32 i;
     s32 ret = 0;
     u8 temp1[BLOCKSIZE];

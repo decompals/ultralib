@@ -28,12 +28,12 @@ OSMesg __osProfAckMesg;
 
 u32 __osProfNumSections;
 
-void __osProfileIO(void *arg) {
+void __osProfileIO(void* arg) {
     s32 totalBytes;
     u32 bytesThisBlock;
     u32 ct;
-    u8 *sendPtr;
-    OSProf *t;
+    u8* sendPtr;
+    OSProf* t;
 
     while (TRUE) {
         osRecvMesg(&__osProfFlushMQ, NULL, OS_MESG_BLOCK);
@@ -68,7 +68,7 @@ void __osProfileIO(void *arg) {
 
 void osProfSendWord(u32 word) {
     u32 ct;
-    u8 *sendPtr;
+    u8* sendPtr;
 
     ct = 0;
     sendPtr = &word;
@@ -82,9 +82,9 @@ void osProfileFlush(void) {
     osSendMesg(&__osProfFlushMQ, NULL, OS_MESG_BLOCK);
 }
 
-void osProfileInit(OSProf *profp, u32 profcnt) {
+void osProfileInit(OSProf* profp, u32 profcnt) {
     u32 i;
-    OSProf *t;
+    OSProf* t;
 
 #ifndef NDEBUG
     if (__osProfileActive) {

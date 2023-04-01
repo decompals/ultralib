@@ -2,7 +2,7 @@
 #include "PR/ultraerror.h"
 #include "osint.h"
 
-void osSetThreadPri(OSThread *t, OSPri pri) {
+void osSetThreadPri(OSThread* t, OSPri pri) {
     register u32 saveMask;
 
 #ifdef _DEBUG

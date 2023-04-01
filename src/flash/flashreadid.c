@@ -1,6 +1,6 @@
 #include "PR/os_internal.h"
 
-void osFlashReadId(u32 *flash_type, u32 *flash_maker) {
+void osFlashReadId(u32* flash_type, u32* flash_maker) {
     u8 tmp;
 
     // why read status ?

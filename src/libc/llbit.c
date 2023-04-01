@@ -1,6 +1,6 @@
 #include "PR/ultratypes.h"
 
-s64 __ll_bit_extract(u64 *addr, unsigned int start_bit, unsigned int length) {
+s64 __ll_bit_extract(u64* addr, unsigned int start_bit, unsigned int length) {
     unsigned int words;
     unsigned int lbits;
     unsigned int rbits;
@@ -16,7 +16,7 @@ s64 __ll_bit_extract(u64 *addr, unsigned int start_bit, unsigned int length) {
     return (s64)((*addr & mask) >> rbits);
 }
 
-u64 __ull_bit_extract(u64 *addr, unsigned int start_bit, unsigned int length) {
+u64 __ull_bit_extract(u64* addr, unsigned int start_bit, unsigned int length) {
     unsigned int words;
     unsigned int lbits;
     unsigned int rbits;
@@ -31,7 +31,7 @@ u64 __ull_bit_extract(u64 *addr, unsigned int start_bit, unsigned int length) {
     return (u64)((*addr & mask) >> rbits);
 }
 
-u64 __ll_bit_insert(u64 *addr, unsigned int start_bit, unsigned int length, u64 val) {
+u64 __ll_bit_insert(u64* addr, unsigned int start_bit, unsigned int length, u64 val) {
     unsigned int words;
     unsigned int lbits;
     unsigned int rbits;

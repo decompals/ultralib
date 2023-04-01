@@ -4,6 +4,6 @@
 // TODO: this comes from a header
 #ident "$Revision: 1.17 $"
 
-__OSViContext *__osViGetCurrentContext(void) {
+__OSViContext* __osViGetCurrentContext(void) {
     return __osViCurr;
 }

@@ -4,20 +4,20 @@
 #include "voiceinternal.h"
 #include "io/controller_voice.h"
 
-#define READ36FORMAT(p) ((__OSVoiceRead36Format *)(ptr))
+#define READ36FORMAT(p) ((__OSVoiceRead36Format*)(ptr))
 
-s32 __osVoiceContRead36(OSMesgQueue *mq, s32 channel, u16 address, u8 *buffer) {
+s32 __osVoiceContRead36(OSMesgQueue* mq, s32 channel, u16 address, u8* buffer) {
     s32 ret = 0;
     u8 status;
     s32 i;
-    u8 *ptr;
+    u8* ptr;
     s32 retry = 2;
 
     __osSiGetAccess();
 
     do {
 
-        ptr = (u8 *)&__osPfsPifRam.ramarray;
+        ptr = (u8*)&__osPfsPifRam.ramarray;
 
         if ((__osContLastCmd != CONT_CMD_READ36_VOICE) || (__osPfsLastChannel != channel)) {
             __osContLastCmd = CONT_CMD_READ36_VOICE;

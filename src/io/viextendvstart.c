@@ -3,7 +3,6 @@
 #include "viint.h"
 
 void osViExtendVStart(u32 value) {
-
 #ifdef _DEBUG
     if (!__osViDevMgr.active) {
         __osError(134, 0);

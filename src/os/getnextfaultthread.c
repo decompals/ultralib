@@ -1,9 +1,9 @@
 #include "PR/os_internal.h"
 #include "osint.h"
 
-OSThread *__osGetNextFaultedThread(OSThread *lastFault) {
+OSThread* __osGetNextFaultedThread(OSThread* lastFault) {
     register int saveMask = __osDisableInt();
-    register OSThread *fault;
+    register OSThread* fault;
 
     fault = lastFault == NULL ? __osActiveQueue : lastFault;
 

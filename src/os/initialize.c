@@ -19,7 +19,7 @@ u32 __OSGlobalIntMask = OS_IM_ALL;
 #ifdef _FINALROM
 u32 __osFinalrom;
 #else
-void *__printfunc = NULL;
+void* __printfunc = NULL;
 u32 __kmc_pt_mode;
 #endif
 
@@ -54,12 +54,12 @@ void __osInitialize_common() {
     while (__osSiRawWriteIo(PIF_RAM_END - 3, pifdata | 8)) {
         ; // todo: magic contant
     }
-    *(__osExceptionVector *)UT_VEC = __osExceptionPreamble;
-    *(__osExceptionVector *)XUT_VEC = __osExceptionPreamble;
-    *(__osExceptionVector *)ECC_VEC = __osExceptionPreamble;
-    *(__osExceptionVector *)E_VEC = __osExceptionPreamble;
-    osWritebackDCache((void *)UT_VEC, E_VEC - UT_VEC + sizeof(__osExceptionVector));
-    osInvalICache((void *)UT_VEC, E_VEC - UT_VEC + sizeof(__osExceptionVector));
+    *(__osExceptionVector*)UT_VEC = __osExceptionPreamble;
+    *(__osExceptionVector*)XUT_VEC = __osExceptionPreamble;
+    *(__osExceptionVector*)ECC_VEC = __osExceptionPreamble;
+    *(__osExceptionVector*)E_VEC = __osExceptionPreamble;
+    osWritebackDCache((void*)UT_VEC, E_VEC - UT_VEC + sizeof(__osExceptionVector));
+    osInvalICache((void*)UT_VEC, E_VEC - UT_VEC + sizeof(__osExceptionVector));
     __createSpeedParam();
     osUnmapTLBAll();
     osMapTLBRdb();

@@ -4,7 +4,7 @@
 
 void __osPackResetData(void);
 
-s32 osContReset(OSMesgQueue *mq, OSContStatus *data) {
+s32 osContReset(OSMesgQueue* mq, OSContStatus* data) {
     u8 pattern;
     s32 ret;
 
@@ -37,7 +37,7 @@ s32 osContReset(OSMesgQueue *mq, OSContStatus *data) {
 }
 
 void __osPackResetData(void) {
-    u8 *ptr;
+    u8* ptr;
     int i;
 
     __osContPifRam.pifstatus = CONT_CMD_EXE;

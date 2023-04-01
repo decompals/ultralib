@@ -1,7 +1,7 @@
 #include "PR/os_internal.h"
 #include "osint.h"
 
-void osStopThread(OSThread *t) {
+void osStopThread(OSThread* t) {
     register u32 saveMask = __osDisableInt();
     register u16 state;
 

@@ -2,7 +2,7 @@
 #include "PR/ultraerror.h"
 #include "osint.h"
 
-void osStartThread(OSThread *t) {
+void osStartThread(OSThread* t) {
     register u32 saveMask = __osDisableInt();
 
     switch (t->state) {

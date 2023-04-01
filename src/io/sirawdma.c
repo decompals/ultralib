@@ -51,7 +51,7 @@
 // TODO: this comes from a header
 #ident "$Revision: 1.17 $"
 
-s32 __osSiRawStartDma(s32 direction, void *dramAddr) {
+s32 __osSiRawStartDma(s32 direction, void* dramAddr) {
 #ifdef _DEBUG
     assert(((u32)dramAddr & 0x3) == 0);
 #endif

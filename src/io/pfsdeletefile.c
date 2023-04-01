@@ -1,7 +1,7 @@
 #include "PR/os_internal.h"
 #include "controller.h"
 
-s32 osPfsDeleteFile(OSPfs *pfs, u16 company_code, u32 game_code, u8 *game_name, u8 *ext_name) {
+s32 osPfsDeleteFile(OSPfs* pfs, u16 company_code, u32 game_code, u8* game_name, u8* ext_name) {
     s32 file_no;
     s32 ret;
     __OSInode inode;
@@ -16,7 +16,7 @@ s32 osPfsDeleteFile(OSPfs *pfs, u16 company_code, u32 game_code, u8 *game_name, 
 
     ERRCK(osPfsFindFile(pfs, company_code, game_code, game_name, ext_name, &file_no));
     SET_ACTIVEBANK_TO_ZERO;
-    ERRCK(__osContRamRead(pfs->queue, pfs->channel, pfs->dir_table + file_no, (u8 *)&dir));
+    ERRCK(__osContRamRead(pfs->queue, pfs->channel, pfs->dir_table + file_no, (u8*)&dir));
 
     startpage = dir.start_page.inode_t.page;
 
@@ -39,12 +39,12 @@ s32 osPfsDeleteFile(OSPfs *pfs, u16 company_code, u32 game_code, u8 *game_name, 
 
     bzero(&dir, sizeof(__OSDir));
 
-    ret = __osContRamWrite(pfs->queue, pfs->channel, pfs->dir_table + file_no, (u8 *)&dir, FALSE);
+    ret = __osContRamWrite(pfs->queue, pfs->channel, pfs->dir_table + file_no, (u8*)&dir, FALSE);
 
     return ret;
 }
 
-s32 __osPfsReleasePages(OSPfs *pfs, __OSInode *inode, u8 start_page, u8 bank, __OSInodeUnit *last_page) {
+s32 __osPfsReleasePages(OSPfs* pfs, __OSInode* inode, u8 start_page, u8 bank, __OSInodeUnit* last_page) {
     __OSInodeUnit next_page;
     __OSInodeUnit old_page;
     s32 ret = 0;

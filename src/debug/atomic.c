@@ -1,6 +1,6 @@
 #include "PR/os_internal.h"
 
-int __osAtomicDec(unsigned int *p) {
+int __osAtomicDec(unsigned int* p) {
     u32 mask;
     int result;
 

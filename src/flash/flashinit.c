@@ -9,7 +9,7 @@ s32 __osFlashVersion;
 OSIoMesg __osFlashMsg ALIGNED(8);
 u32 __osFlashID[4] ALIGNED(8);
 
-OSPiHandle *osFlashInit(void) {
+OSPiHandle* osFlashInit(void) {
     u32 flash_type;
     u32 flash_maker;
 

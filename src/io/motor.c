@@ -5,12 +5,12 @@
 
 static OSPifRam __MotorDataBuf[MAXCONTROLLERS] ALIGNED(8);
 
-#define READFORMAT(ptr) ((__OSContRamReadFormat *)(ptr))
+#define READFORMAT(ptr) ((__OSContRamReadFormat*)(ptr))
 
-s32 __osMotorAccess(OSPfs *pfs, s32 flag) {
+s32 __osMotorAccess(OSPfs* pfs, s32 flag) {
     int i;
     s32 ret;
-    u8 *ptr = (u8 *)&__MotorDataBuf[pfs->channel];
+    u8* ptr = (u8*)&__MotorDataBuf[pfs->channel];
 
     if (!(pfs->status & PFS_MOTOR_INITIALIZED)) {
         return 5;
@@ -48,8 +48,8 @@ s32 __osMotorAccess(OSPfs *pfs, s32 flag) {
     return ret;
 }
 
-static void __osMakeMotorData(int channel, OSPifRam *mdata) {
-    u8 *ptr = (u8 *)mdata->ramarray;
+static void __osMakeMotorData(int channel, OSPifRam* mdata) {
+    u8* ptr = (u8*)mdata->ramarray;
     __OSContRamReadFormat ramreadformat;
     int i;
 
@@ -71,7 +71,7 @@ static void __osMakeMotorData(int channel, OSPifRam *mdata) {
     ptr[0] = CONT_CMD_END;
 }
 
-s32 osMotorInit(OSMesgQueue *mq, OSPfs *pfs, int channel) {
+s32 osMotorInit(OSMesgQueue* mq, OSPfs* pfs, int channel) {
     s32 ret;
     u8 temp[32];
 

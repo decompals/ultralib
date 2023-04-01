@@ -2,7 +2,7 @@
 #include "controller.h"
 #include "siint.h"
 
-s32 osContStartQuery(OSMesgQueue *mq) {
+s32 osContStartQuery(OSMesgQueue* mq) {
     s32 ret = 0;
 
     __osSiGetAccess();
@@ -19,7 +19,7 @@ s32 osContStartQuery(OSMesgQueue *mq) {
     return ret;
 }
 
-void osContGetQuery(OSContStatus *data) {
+void osContGetQuery(OSContStatus* data) {
     u8 pattern;
     __osContGetInitData(&pattern, data);
 }

@@ -2,7 +2,7 @@
 #include "io/controller.h"
 #include "PR/os_voice.h"
 
-s32 osVoiceCheckWord(u8 *word) {
+s32 osVoiceCheckWord(u8* word) {
     s32 k;
     s32 ret = 0;
     u16 sjis;

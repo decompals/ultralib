@@ -1,7 +1,7 @@
 #include "PR/os_internal.h"
 #include "controller.h"
 
-s32 osGbpakReadWrite(OSPfs *pfs, u16 flag, u16 address, u8 *buffer, u16 size) {
+s32 osGbpakReadWrite(OSPfs* pfs, u16 flag, u16 address, u8* buffer, u16 size) {
     s32 i;
     s32 ret;
     u8 bank;

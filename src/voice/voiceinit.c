@@ -2,7 +2,7 @@
 #include "io/controller.h"
 #include "PR/os_voice.h"
 
-s32 osVoiceInit(OSMesgQueue *mq, OSVoiceHandle *handle, int channel) {
+s32 osVoiceInit(OSMesgQueue* mq, OSVoiceHandle* handle, int channel) {
     s32 ret;
     s32 i;
     u8 stat = 0;
@@ -29,7 +29,7 @@ s32 osVoiceInit(OSMesgQueue *mq, OSVoiceHandle *handle, int channel) {
         return CONT_ERR_VOICE_NO_RESPONSE;
     }
 
-    *(u32 *)buf = 0x100;
+    *(u32*)buf = 0x100;
     ERRCK(__osVoiceContWrite4(mq, channel, 0, buf));
 
     ret = __osVoiceCheckResult(handle, &stat);

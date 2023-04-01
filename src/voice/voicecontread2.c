@@ -4,13 +4,13 @@
 #include "voiceinternal.h"
 #include "io/controller_voice.h"
 
-#define READ2FORMAT(p) ((__OSVoiceRead2Format *)(ptr))
+#define READ2FORMAT(p) ((__OSVoiceRead2Format*)(ptr))
 
-s32 __osVoiceContRead2(OSMesgQueue *mq, int channel, u16 address, u8 *buffer) {
+s32 __osVoiceContRead2(OSMesgQueue* mq, int channel, u16 address, u8* buffer) {
     s32 ret = 0;
     u8 status;
     int i;
-    u8 *ptr;
+    u8* ptr;
     int retry;
 
     retry = 2;
@@ -19,7 +19,7 @@ s32 __osVoiceContRead2(OSMesgQueue *mq, int channel, u16 address, u8 *buffer) {
 
     do {
 
-        ptr = (u8 *)&__osPfsPifRam.ramarray;
+        ptr = (u8*)&__osPfsPifRam.ramarray;
 
         if ((__osContLastCmd != CONT_CMD_READ2_VOICE) || (__osPfsLastChannel != channel)) {
             __osContLastCmd = CONT_CMD_READ2_VOICE;

@@ -3,7 +3,7 @@
 #include "PR/os_voice.h"
 #include "voiceinternal.h"
 
-s32 osVoiceMaskDictionary(OSVoiceHandle *hd, u8 *pattern, int size) {
+s32 osVoiceMaskDictionary(OSVoiceHandle* hd, u8* pattern, int size) {
     s32 ret = 0;
     s32 i;
     s32 j;
