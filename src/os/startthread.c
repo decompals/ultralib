@@ -4,20 +4,17 @@
 
 void osStartThread(OSThread *t) {
     register u32 saveMask = __osDisableInt();
-    
+
     switch (t->state) {
         case OS_STATE_WAITING:
             t->state = OS_STATE_RUNNABLE;
             __osEnqueueThread(&__osRunQueue, t);
             break;
         case OS_STATE_STOPPED:
-            if (t->queue == NULL || t->queue == &__osRunQueue)
-               {
+            if (t->queue == NULL || t->queue == &__osRunQueue) {
                 t->state = OS_STATE_RUNNABLE;
                 __osEnqueueThread(&__osRunQueue, t);
-            }
-            else
-               {
+            } else {
                 t->state = OS_STATE_WAITING;
                 __osEnqueueThread(t->queue, t);
                 __osEnqueueThread(&__osRunQueue, __osPopThread(t->queue));
@@ -25,9 +22,9 @@ void osStartThread(OSThread *t) {
             break;
 #ifdef _DEBUG
         default:
-		    __osError(ERR_OSSTARTTHREAD, 0);
-		    __osRestoreInt(saveMask);
-		    return 0;
+            __osError(ERR_OSSTARTTHREAD, 0);
+            __osRestoreInt(saveMask);
+            return 0;
 #endif
     }
 

@@ -54,8 +54,8 @@ void osViSetEvent(OSMesgQueue *mq, OSMesg m, u32 retraceCount) {
 
 #ifdef _DEBUG
     if (!__osViDevMgr.active) {
-	__osError(ERR_OSVISETEVENT, 0);
-	return 0;
+        __osError(ERR_OSVISETEVENT, 0);
+        return 0;
     }
 
     assert(mq != NULL);

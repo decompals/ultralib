@@ -5,12 +5,12 @@
 
 extern s32 __osPfsLastChannel;
 
-#define READFORMAT(ptr) ((__OSContRamReadFormat*)(ptr))
+#define READFORMAT(ptr) ((__OSContRamReadFormat *)(ptr))
 
-s32 __osContRamWrite(OSMesgQueue* mq, int channel, u16 address, u8* buffer, int force) {
+s32 __osContRamWrite(OSMesgQueue *mq, int channel, u16 address, u8 *buffer, int force) {
     s32 ret = 0;
     s32 i;
-    u8* ptr;
+    u8 *ptr;
     s32 retry = 2;
     u8 crc;
 

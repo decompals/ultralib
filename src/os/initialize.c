@@ -1,12 +1,11 @@
 #include "PR/os_internal.h"
 #include "PR/rcp.h"
 
-typedef struct
-{
-   /* 0x0 */ unsigned int inst1;
-   /* 0x4 */ unsigned int inst2;
-   /* 0x8 */ unsigned int inst3;
-   /* 0xC */ unsigned int inst4;
+typedef struct {
+    /* 0x0 */ unsigned int inst1;
+    /* 0x4 */ unsigned int inst2;
+    /* 0x8 */ unsigned int inst3;
+    /* 0xC */ unsigned int inst4;
 } __osExceptionVector;
 extern __osExceptionVector __osExceptionPreamble;
 
@@ -20,7 +19,7 @@ u32 __OSGlobalIntMask = OS_IM_ALL;
 #ifdef _FINALROM
 u32 __osFinalrom;
 #else
-void* __printfunc = NULL;
+void *__printfunc = NULL;
 u32 __kmc_pt_mode;
 #endif
 
@@ -45,15 +44,15 @@ void __osInitialize_common() {
     __osFinalrom = TRUE;
 #endif
 
-    __osSetSR(__osGetSR() | SR_CU1);    //enable fpu
-    __osSetFpcCsr(FPCSR_FS | FPCSR_EV); //flush denorm to zero, enable invalid operation
+    __osSetSR(__osGetSR() | SR_CU1);    // enable fpu
+    __osSetFpcCsr(FPCSR_FS | FPCSR_EV); // flush denorm to zero, enable invalid operation
     __osSetWatchLo(0x4900000);
 
-    while (__osSiRawReadIo(PIF_RAM_END - 3, &pifdata)) { //last byte of joychannel ram
+    while (__osSiRawReadIo(PIF_RAM_END - 3, &pifdata)) { // last byte of joychannel ram
         ;
     }
     while (__osSiRawWriteIo(PIF_RAM_END - 3, pifdata | 8)) {
-        ; //todo: magic contant
+        ; // todo: magic contant
     }
     *(__osExceptionVector *)UT_VEC = __osExceptionPreamble;
     *(__osExceptionVector *)XUT_VEC = __osExceptionPreamble;
@@ -66,7 +65,7 @@ void __osInitialize_common() {
     osMapTLBRdb();
     osClockRate = osClockRate * 3 / 4;
 
-    if (osResetType == 0 ) { // cold reset
+    if (osResetType == 0) { // cold reset
         bzero(osAppNMIBuffer, OS_APP_NMI_BUFSIZE);
     }
 

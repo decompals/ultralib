@@ -31,6 +31,6 @@ void osDestroyThread(OSThread *t) {
     if (t == __osRunningThread) {
         __osDispatchThread();
     }
-    
+
     __osRestoreInt(saveMask);
 }

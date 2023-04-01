@@ -37,7 +37,7 @@ u64 __ll_bit_insert(u64 *addr, unsigned int start_bit, unsigned int length, u64 
     unsigned int rbits;
     unsigned long long llval;
     unsigned long long mask;
-    
+
     words = start_bit / 64;
     lbits = start_bit & 0x3f;
     rbits = 64 - (lbits + length);

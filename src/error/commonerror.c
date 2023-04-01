@@ -9,12 +9,12 @@
 #ifndef _FINALROM
 
 static u32 errorLogData[19] ALIGNED(8);
-static OSLog errorLog = {OS_ERROR_MAGIC, 76, errorLogData, 0, 0};
+static OSLog errorLog = { OS_ERROR_MAGIC, 76, errorLogData, 0, 0 };
 
 static void __commonErrorHandler(s16 code, s16 numArgs, ...);
 OSErrorHandler __osCommonHandler = __commonErrorHandler;
 
-char NULSTR[] = {'\0'};
+char NULSTR[] = { '\0' };
 
 const char *__os_error_message[] = {
     NULSTR,

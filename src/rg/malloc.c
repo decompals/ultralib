@@ -54,17 +54,16 @@ void *osMalloc(void *region) {
 
 #ifdef _DEBUG
     assert(rp != NULL);
-    if (((char *)rp + ALIGN(sizeof(OSRegion), rp->r_alignSize)) != 
-        rp->r_startBufferAddress) {
-	__osError(ERR_OSMALLOC, 1, region);
-	return 0;
+    if (((char *)rp + ALIGN(sizeof(OSRegion), rp->r_alignSize)) != rp->r_startBufferAddress) {
+        __osError(ERR_OSMALLOC, 1, region);
+        return 0;
     }
 #endif
 
     if (rp->r_freeList == MAX_BUFCOUNT) {
         return NULL;
     }
-    
+
     addr = &rp->r_startBufferAddress[rp->r_freeList * rp->r_bufferSize];
     rp->r_freeList = *(u16 *)addr;
     return addr;

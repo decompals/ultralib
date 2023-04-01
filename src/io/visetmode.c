@@ -48,13 +48,13 @@
 
 void osViSetMode(OSViMode *modep) {
     register u32 saveMask;
-    
+
 #ifdef _DEBUG
     if (!__osViDevMgr.active) {
-	__osError(ERR_OSVISETMODE, 0);
-	return 0;
+        __osError(ERR_OSVISETMODE, 0);
+        return 0;
     }
-    
+
     assert(modep != NULL);
 #endif
 

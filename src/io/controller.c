@@ -12,7 +12,7 @@ OSTimer __osEepromTimer;
 OSMesgQueue __osEepromTimerQ ALIGNED(8);
 OSMesg __osEepromTimerMsg;
 
-s32 osContInit(OSMesgQueue* mq, u8* bitpattern, OSContStatus* data) {
+s32 osContInit(OSMesgQueue *mq, u8 *bitpattern, OSContStatus *data) {
     OSMesg dummy;
     s32 ret = 0;
     OSTime t;
@@ -50,15 +50,15 @@ s32 osContInit(OSMesgQueue* mq, u8* bitpattern, OSContStatus* data) {
     return ret;
 }
 
-void __osContGetInitData(u8* pattern, OSContStatus* data) {
-    u8* ptr;
+void __osContGetInitData(u8 *pattern, OSContStatus *data) {
+    u8 *ptr;
     __OSContRequesFormat requestHeader;
     int i;
     u8 bits = 0;
 
-    ptr = (u8*)__osContPifRam.ramarray;
+    ptr = (u8 *)__osContPifRam.ramarray;
     for (i = 0; i < __osMaxControllers; i++, ptr += sizeof(requestHeader), data++) {
-        requestHeader = *(__OSContRequesFormat*)ptr;
+        requestHeader = *(__OSContRequesFormat *)ptr;
         data->errno = CHNL_ERR(requestHeader);
         if (data->errno != 0) {
         } else {
@@ -72,7 +72,7 @@ void __osContGetInitData(u8* pattern, OSContStatus* data) {
 }
 
 void __osPackRequestData(u8 cmd) {
-    u8* ptr;
+    u8 *ptr;
     __OSContRequesFormat requestHeader;
     s32 i;
 
@@ -92,7 +92,7 @@ void __osPackRequestData(u8 cmd) {
     requestHeader.dummy1 = CONT_CMD_NOP;
 
     for (i = 0; i < __osMaxControllers; i++) {
-        *(__OSContRequesFormat*)ptr = requestHeader;
+        *(__OSContRequesFormat *)ptr = requestHeader;
         ptr += sizeof(requestHeader);
     }
     *ptr = CONT_CMD_END;

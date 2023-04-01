@@ -23,7 +23,7 @@ OSTime osThreadProfileReadTime(OSId id) {
     return thprof[id].time + adjust;
 }
 
-OSTime osThreadProfileReadTimeTh(OSThread* thread) {
+OSTime osThreadProfileReadTimeTh(OSThread *thread) {
     OSId id;
     OSTime adjust = 0;
     u32 now_time = osGetCount();

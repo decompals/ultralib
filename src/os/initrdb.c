@@ -2,13 +2,13 @@
 #include "rdb.h"
 #include "PR/os_internal.h"
 
-rdbPacket* __osRdb_IP6_Data;
+rdbPacket *__osRdb_IP6_Data;
 u32 __osRdb_IP6_Size;
 u32 __osRdb_IP6_Ct;
 u32 __osRdb_IP6_CurWrite;
 u32 __osRdb_IP6_CurSend;
 
-void osInitRdb(u8* sendBuf, u32 sendSize) {
+void osInitRdb(u8 *sendBuf, u32 sendSize) {
     u32 mask;
 
     sendSize /= 4;

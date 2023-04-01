@@ -6,12 +6,11 @@
 
 #include "macros.h"
 
-typedef struct
-{
-   /* 0x0 */ unsigned int inst1;
-   /* 0x4 */ unsigned int inst2;
-   /* 0x8 */ unsigned int inst3;
-   /* 0xC */ unsigned int inst4;
+typedef struct {
+    /* 0x0 */ unsigned int inst1;
+    /* 0x4 */ unsigned int inst2;
+    /* 0x8 */ unsigned int inst3;
+    /* 0xC */ unsigned int inst4;
 } __osExceptionVector;
 
 extern __osExceptionVector __isExpJP;
@@ -21,15 +20,15 @@ void MonitorInitBreak(void);
 typedef struct {
     /* 0x00 */ u32 magic; // IS64
     /* 0x04 */ u32 get;
-    /* 0x08 */ u8 unk_08[0x14-0x08];
+    /* 0x08 */ u8 unk_08[0x14 - 0x08];
     /* 0x14 */ u32 put;
-    /* 0x18 */ u8 unk_18[0x20-0x18];
-    /* 0x20 */ u8 data[0x10000-0x20];
+    /* 0x18 */ u8 unk_18[0x20 - 0x18];
+    /* 0x20 */ u8 data[0x10000 - 0x20];
 } ISVDbg;
 
 #define IS64_MAGIC 'IS64'
 
-ISVDbg* gISVDbgPrnAdrs;
+ISVDbg *gISVDbgPrnAdrs;
 
 u32 leoComuBuffAdd;
 u32 gISVFlag;
@@ -37,7 +36,7 @@ u16 gISVChk;
 
 __osExceptionVector ramOldVector ALIGNED(8);
 
-static OSPiHandle* is_Handle;
+static OSPiHandle *is_Handle;
 
 void isPrintfInit(void) {
     is_Handle = osCartRomInit();
@@ -47,7 +46,7 @@ void isPrintfInit(void) {
     osEPiWriteIo(is_Handle, gISVDbgPrnAdrs, IS64_MAGIC);
 }
 
-static void* is_proutSyncPrintf(void* arg, const u8* str, u32 count) {
+static void *is_proutSyncPrintf(void *arg, const u8 *str, u32 count) {
     u32 data;
     s32 p;
     s32 start;
@@ -106,7 +105,7 @@ int __checkHardware_isv(void) {
     u32 data; // BUG: data is used uninitialized
     u32 save[4];
     u32 addr;
-    OSPiHandle* hnd = osCartRomInit();
+    OSPiHandle *hnd = osCartRomInit();
 
     gISVDbgPrnAdrs = NULL;
     leoComuBuffAdd = 0;
@@ -128,7 +127,7 @@ int __checkHardware_isv(void) {
             data = 0;
             osEPiWriteIo(hnd, 0xB0000100, data);
             gISVChk |= 1;
-            osEPiReadIo(hnd, 0xB0000104, (void*)&gISVDbgPrnAdrs);
+            osEPiReadIo(hnd, 0xB0000104, (void *)&gISVDbgPrnAdrs);
             osEPiReadIo(hnd, 0xB0000108, &leoComuBuffAdd);
             break;
         }
@@ -147,7 +146,7 @@ int __checkHardware_isv(void) {
 
 void __osInitialize_isv(void) {
     void (*fn)(void);
-    OSPiHandle* hnd;
+    OSPiHandle *hnd;
 
     if (gISVFlag == IS64_MAGIC || __checkHardware_isv()) {
         if (gISVDbgPrnAdrs != NULL) {
@@ -157,8 +156,8 @@ void __osInitialize_isv(void) {
         if (gISVChk & 2) {
             hnd = osCartRomInit();
 
-            ramOldVector = *(__osExceptionVector*)E_VEC;
-            *(__osExceptionVector*)E_VEC = __isExpJP;
+            ramOldVector = *(__osExceptionVector *)E_VEC;
+            *(__osExceptionVector *)E_VEC = __isExpJP;
 
             osWritebackDCache(&ramOldVector, 0x10);
             osInvalICache(&ramOldVector, 0x10);

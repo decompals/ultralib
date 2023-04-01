@@ -1,7 +1,7 @@
 #include "PR/os_internal.h"
 #include "controller.h"
 
-s32 __osGbpakSetBank(OSPfs* pfs, u8 bank) {
+s32 __osGbpakSetBank(OSPfs *pfs, u8 bank) {
     int i;
     s32 ret;
     u8 temp[BLOCKSIZE];
@@ -10,7 +10,9 @@ s32 __osGbpakSetBank(OSPfs* pfs, u8 bank) {
         return PFS_ERR_INVALID;
     }
 
-    for (i = 0; i < BLOCKSIZE; temp[i++] = bank);
+    for (i = 0; i < BLOCKSIZE; temp[i++] = bank) {
+        ;
+    }
 
     ret = __osContRamWrite(pfs->queue, pfs->channel, CONT_BLOCK_GB_BANK, temp, FALSE);
 

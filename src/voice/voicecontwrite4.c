@@ -4,13 +4,13 @@
 #include "voiceinternal.h"
 #include "io/controller_voice.h"
 
-#define WRITE4FORMAT(p) ((__OSVoiceWrite4Format*)(ptr))
+#define WRITE4FORMAT(p) ((__OSVoiceWrite4Format *)(ptr))
 
-s32 __osVoiceContWrite4(OSMesgQueue* mq, int channel, u16 address, u8 dst[4]) {
+s32 __osVoiceContWrite4(OSMesgQueue *mq, int channel, u16 address, u8 dst[4]) {
     s32 ret = 0;
     u8 status;
     int i;
-    u8* ptr;
+    u8 *ptr;
     s32 retry = 2;
     u8 crc;
 
@@ -18,7 +18,7 @@ s32 __osVoiceContWrite4(OSMesgQueue* mq, int channel, u16 address, u8 dst[4]) {
 
     do {
 
-        ptr = (u8*)&__osPfsPifRam;
+        ptr = (u8 *)&__osPfsPifRam;
 
         if ((__osContLastCmd != CONT_CMD_WRITE4_VOICE) || (__osPfsLastChannel != channel)) {
             __osContLastCmd = CONT_CMD_WRITE4_VOICE;
@@ -60,7 +60,7 @@ s32 __osVoiceContWrite4(OSMesgQueue* mq, int channel, u16 address, u8 dst[4]) {
                 if (ret != 0) {
                     break;
                 } else {
-                ret = CONT_ERR_CONTRFAIL;
+                    ret = CONT_ERR_CONTRFAIL;
                 }
             }
         } else {

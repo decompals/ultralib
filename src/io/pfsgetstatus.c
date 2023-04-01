@@ -29,7 +29,7 @@ s32 __osPfsGetStatus(OSMesgQueue *queue, int channel) {
     } else if ((data.status & CONT_ADDR_CRC_ER) != 0) {
         return PFS_ERR_CONTRFAIL;
     }
-    
+
     return ret;
 }
 
@@ -40,7 +40,7 @@ void __osPfsRequestOneChannel(int channel, u8 cmd) {
 
     __osContLastCmd = CONT_CMD_END;
     __osPfsPifRam.pifstatus = CONT_CMD_READ_BUTTON;
-    
+
     ptr = (u8 *)&__osPfsPifRam;
 
     requestformat.txsize = CONT_CMD_REQUEST_STATUS_TX;
@@ -60,10 +60,10 @@ void __osPfsRequestOneChannel(int channel, u8 cmd) {
 }
 
 void __osPfsGetOneChannelData(int channel, OSContStatus *data) {
-    u8 *ptr = (u8*)&__osPfsPifRam;
+    u8 *ptr = (u8 *)&__osPfsPifRam;
     __OSContRequesFormatShort requestformat;
     int i;
-    
+
     for (i = 0; i < channel; i++) {
         ptr++;
     }
@@ -74,6 +74,6 @@ void __osPfsGetOneChannelData(int channel, OSContStatus *data) {
     if (data->errno) {
         return;
     }
-        data->type = (requestformat.typel << 8) | (requestformat.typeh);
-        data->status = requestformat.status;
+    data->type = (requestformat.typel << 8) | (requestformat.typeh);
+    data->status = requestformat.status;
 }

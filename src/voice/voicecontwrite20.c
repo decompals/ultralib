@@ -4,13 +4,13 @@
 #include "voiceinternal.h"
 #include "io/controller_voice.h"
 
-#define WRITE20FORMAT(p) ((__OSVoiceWrite20Format*)(ptr))
+#define WRITE20FORMAT(p) ((__OSVoiceWrite20Format *)(ptr))
 
-s32 __osVoiceContWrite20(OSMesgQueue* mq, int channel, u16 address, u8* buffer) {
-    s32 ret = 0 ;
+s32 __osVoiceContWrite20(OSMesgQueue *mq, int channel, u16 address, u8 *buffer) {
+    s32 ret = 0;
     u8 status;
     int i;
-    u8* ptr;
+    u8 *ptr;
     int retry;
     u8 crc;
 
@@ -20,7 +20,7 @@ s32 __osVoiceContWrite20(OSMesgQueue* mq, int channel, u16 address, u8* buffer) 
 
     do {
 
-        ptr = (u8*)&__osPfsPifRam;
+        ptr = (u8 *)&__osPfsPifRam;
 
         if ((__osContLastCmd != CONT_CMD_WRITE20_VOICE) || (__osPfsLastChannel != channel)) {
             __osContLastCmd = CONT_CMD_WRITE20_VOICE;
@@ -62,7 +62,7 @@ s32 __osVoiceContWrite20(OSMesgQueue* mq, int channel, u16 address, u8* buffer) 
                 if (ret != 0) {
                     break;
                 } else {
-                ret = CONT_ERR_CONTRFAIL;
+                    ret = CONT_ERR_CONTRFAIL;
                 }
             }
         } else {

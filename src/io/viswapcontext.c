@@ -18,7 +18,7 @@ void __osViSwapContext() {
     vc = __osViNext;
     vm = vc->modep;
 
-    field = IO_READ(VI_CURRENT_REG) & 1; //field num
+    field = IO_READ(VI_CURRENT_REG) & 1; // field num
 
     origin = osVirtualToPhysical(vc->framep) + (vm->fldRegs[field].origin);
     if (vc->state & VI_STATE_XSCALE_UPDATED) {

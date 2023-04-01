@@ -8,8 +8,8 @@ void *osViGetNextFramebuffer(void) {
 
 #ifdef _DEBUG
     if (!__osViDevMgr.active) {
-	    __osError(ERR_OSVIGETNEXTFRAMEBUFFER, 0);
-	    return NULL;
+        __osError(ERR_OSVIGETNEXTFRAMEBUFFER, 0);
+        return NULL;
     }
 #endif
 

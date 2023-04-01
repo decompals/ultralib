@@ -19,11 +19,11 @@ static u32 inbuffer[280] ALIGNED(0x10);
 static u8 cmdinptr;
 static u8 cmdoutptr;
 static int state;
-static char* inPointer;
+static char *inPointer;
 
-void __rmonSendHeader(KKHeader* const block, u32 blockSize, u32 type) {
+void __rmonSendHeader(KKHeader *const block, u32 blockSize, u32 type) {
     int sent;
-    char* cPtr = (char*)block;
+    char *cPtr = (char *)block;
 
     block->rev = KK_REV;
     block->type = type;
@@ -34,12 +34,12 @@ void __rmonSendHeader(KKHeader* const block, u32 blockSize, u32 type) {
     }
 }
 
-void __rmonSendReply(KKHeader* const block, u32 blockSize, u32 replyType) {
-    char* cPtr;
+void __rmonSendReply(KKHeader *const block, u32 blockSize, u32 replyType) {
+    char *cPtr;
     int sent = 0;
 
     block->length = blockSize;
-    cPtr = (char*)&blockSize;
+    cPtr = (char *)&blockSize;
 
     /* send size */
     while (sent < (signed)sizeof(blockSize)) {
@@ -51,8 +51,8 @@ void __rmonSendReply(KKHeader* const block, u32 blockSize, u32 replyType) {
     __rmonIOflush();
 }
 
-void __rmonSendData(char* const block, unsigned int blockSize) {
-    int* blockPointer = (int*)block;
+void __rmonSendData(char *const block, unsigned int blockSize) {
+    int *blockPointer = (int *)block;
     unsigned int wordCount = (u32)(blockSize + 3) / 4;
     u32 data;
     union {
@@ -69,11 +69,12 @@ void __rmonSendData(char* const block, unsigned int blockSize) {
                 __rmonIOputw(*(blockPointer++));
             }
         }
-    } else while (wordCount--) {
-        __rmonMemcpy((u8*)buffer.bufBytes, (u8*)blockPointer, sizeof(buffer));
-        __rmonIOputw(buffer.bufWord);
-        blockPointer++;
-    }
+    } else
+        while (wordCount--) {
+            __rmonMemcpy((u8 *)buffer.bufBytes, (u8 *)blockPointer, sizeof(buffer));
+            __rmonIOputw(buffer.bufWord);
+            blockPointer++;
+        }
     __rmonIOflush();
 }
 
@@ -92,7 +93,7 @@ void rmonMain(void) {
 
     state = 0;
     newChars = 0;
-    inPointer = (void*)&inbuffer;
+    inPointer = (void *)&inbuffer;
 
     for (;;) {
         OSMesg work;

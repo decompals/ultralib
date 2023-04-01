@@ -3,18 +3,17 @@
 #include "PR/R4300.h"
 
 #ifndef _FINALROM
-extern rdbPacket* __osRdb_IP6_Data;
-extern u32  __osRdb_IP6_Size;
-extern u32  __osRdb_IP6_Ct;
-extern u32  __osRdb_IP6_CurWrite;
+extern rdbPacket *__osRdb_IP6_Data;
+extern u32 __osRdb_IP6_Size;
+extern u32 __osRdb_IP6_Ct;
+extern u32 __osRdb_IP6_CurWrite;
 
 u32 __osRdb_IP6_Empty = 1;
 
+#define MIN(a, b) (((a) < (b)) ? (a) : (b))
 
-#define MIN(a,b) (((a) < (b)) ? (a) : (b))
-
-u32 __osRdbSend(u8* buf, u32 size, u32 type) {
-    rdbPacket* pPtr;
+u32 __osRdbSend(u8 *buf, u32 size, u32 type) {
+    rdbPacket *pPtr;
     rdbPacket pkt;
     u32 len;
     u32 c;
@@ -33,7 +32,7 @@ u32 __osRdbSend(u8* buf, u32 size, u32 type) {
 
         pkt.length = len;
 
-        c = 0; 
+        c = 0;
         while (c < len) {
             pkt.buf[c++] = buf[inCt++];
         }
@@ -67,7 +66,7 @@ u32 __osRdbSend(u8* buf, u32 size, u32 type) {
     }
 
     if (needFirst) {
-        *(rdbPacket*)RDB_BASE_REG = pkt; 
+        *(rdbPacket *)RDB_BASE_REG = pkt;
     }
     __osRestoreInt(mask);
 

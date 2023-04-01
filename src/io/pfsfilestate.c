@@ -17,24 +17,24 @@ s32 osPfsFileState(OSPfs *pfs, s32 file_no, OSPfsState *state) {
     ERRCK(__osCheckId(pfs));
     SET_ACTIVEBANK_TO_ZERO;
 
-    ERRCK(__osContRamRead(pfs->queue, pfs->channel, pfs->dir_table + file_no, (u8*)&dir));
-    
+    ERRCK(__osContRamRead(pfs->queue, pfs->channel, pfs->dir_table + file_no, (u8 *)&dir));
+
     if (dir.company_code == 0 || dir.game_code == 0) {
         return PFS_ERR_INVALID;
     }
-    
+
     pages = 0;
     next_page = dir.start_page;
     bank = 0xFF;
-    
+
     while (TRUE) {
         if (next_page.ipage < pfs->inode_start_page) {
             break;
-        }else if (next_page.inode_t.bank != bank) {
+        } else if (next_page.inode_t.bank != bank) {
             bank = next_page.inode_t.bank;
             ERRCK(__osPfsRWInode(pfs, &inode, PFS_READ, bank));
         }
-        
+
         pages++;
         next_page = inode.inode_page[next_page.inode_t.page];
     }

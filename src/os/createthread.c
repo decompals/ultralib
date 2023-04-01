@@ -10,15 +10,15 @@ void osCreateThread(OSThread *t, OSId id, void (*entry)(void *), void *arg, void
     OSIntMask mask;
 
 #ifdef _DEBUG
-	if ((u32)sp & 0x7) {
-	    __osError(ERR_OSCREATETHREAD_SP, 1, sp);
-	    return 0;
-	}
+    if ((u32)sp & 0x7) {
+        __osError(ERR_OSCREATETHREAD_SP, 1, sp);
+        return 0;
+    }
 
-	if ((p < OS_PRIORITY_IDLE) || (p > OS_PRIORITY_MAX)) {
-	    __osError(ERR_OSCREATETHREAD_PRI, 1, p);
-	    return 0;
-	}
+    if ((p < OS_PRIORITY_IDLE) || (p > OS_PRIORITY_MAX)) {
+        __osError(ERR_OSCREATETHREAD_PRI, 1, p);
+        return 0;
+    }
 #endif
 
     t->id = id;
@@ -38,10 +38,10 @@ void osCreateThread(OSThread *t, OSId id, void (*entry)(void *), void *arg, void
     t->flags = 0;
 
 #ifndef _FINALROM
-	if (id < THPROF_IDMAX){
-	  t->thprof = &thprof[id];
+    if (id < THPROF_IDMAX) {
+        t->thprof = &thprof[id];
     } else {
-	  t->thprof = &thprof[THPROF_IDMAX-1];
+        t->thprof = &thprof[THPROF_IDMAX - 1];
     }
 #endif
 

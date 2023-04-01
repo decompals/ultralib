@@ -7,9 +7,9 @@ void __osSyncVPrintf(const char *fmt, va_list args) {
 
     int ans;
 #ifndef _FINALROM
-if (__printfunc != NULL) {
-    ans = _Printf(__printfunc, NULL, fmt, args);
-}
+    if (__printfunc != NULL) {
+        ans = _Printf(__printfunc, NULL, fmt, args);
+    }
 #endif
 }
 
@@ -18,9 +18,9 @@ void osSyncPrintf(const char *fmt, ...) {
     va_list ap;
 
 #ifndef _FINALROM
-	va_start(ap, fmt);
-	__osSyncVPrintf( fmt , ap);
-	va_end(ap);
+    va_start(ap, fmt);
+    __osSyncVPrintf(fmt, ap);
+    va_end(ap);
 #endif
 }
 
@@ -29,10 +29,10 @@ void rmonPrintf(const char *fmt, ...) {
     va_list ap;
 
 #ifndef _FINALROM
-	va_start(ap, fmt);
-if (__printfunc != NULL) {
-	ans = _Printf(__printfunc, NULL, fmt, ap);
-}
-	va_end(ap);
+    va_start(ap, fmt);
+    if (__printfunc != NULL) {
+        ans = _Printf(__printfunc, NULL, fmt, ap);
+    }
+    va_end(ap);
 #endif
 }

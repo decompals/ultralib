@@ -18,9 +18,8 @@ void __osPrintRegion(void *region) {
     rmonPrintf("\tMemory Header Layout:\n");
 
     for (i = 0; i < RP(bufferCount); i++) {
-        rmonPrintf("\tBuf[%d]:\tAddress: 0x%x  Value: 0x%x\n", i, 
-                RP(startBufferAddress) + i * RP(bufferSize),
-                *(u16*)(RP(startBufferAddress) + i * RP(bufferSize)));
+        rmonPrintf("\tBuf[%d]:\tAddress: 0x%x  Value: 0x%x\n", i, RP(startBufferAddress) + i * RP(bufferSize),
+                   *(u16 *)(RP(startBufferAddress) + i * RP(bufferSize)));
     }
 }
 

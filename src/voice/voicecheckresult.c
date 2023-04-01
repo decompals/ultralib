@@ -2,7 +2,7 @@
 #include "io/controller.h"
 #include "PR/os_voice.h"
 
-s32 __osVoiceCheckResult(OSVoiceHandle* hd, u8* stat) {
+s32 __osVoiceCheckResult(OSVoiceHandle *hd, u8 *stat) {
     s32 ret;
     u8 buf[2];
 

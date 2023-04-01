@@ -6,10 +6,10 @@ s32 osRecvMesg(OSMesgQueue *mq, OSMesg *msg, s32 flags) {
     register u32 saveMask;
 
 #ifdef _DEBUG
-	if ((flags != OS_MESG_NOBLOCK) && (flags != OS_MESG_BLOCK)) {
-		__osError(ERR_OSRECVMESG, 1, flags);
-		return -1;
-	}
+    if ((flags != OS_MESG_NOBLOCK) && (flags != OS_MESG_BLOCK)) {
+        __osError(ERR_OSRECVMESG, 1, flags);
+        return -1;
+    }
 #endif
 
     saveMask = __osDisableInt();
@@ -19,8 +19,8 @@ s32 osRecvMesg(OSMesgQueue *mq, OSMesg *msg, s32 flags) {
             __osRestoreInt(saveMask);
             return -1;
         } else {
-        __osRunningThread->state = OS_STATE_WAITING;
-        __osEnqueueAndYield(&mq->mtqueue);
+            __osRunningThread->state = OS_STATE_WAITING;
+            __osEnqueueAndYield(&mq->mtqueue);
         }
     }
 
@@ -34,7 +34,7 @@ s32 osRecvMesg(OSMesgQueue *mq, OSMesg *msg, s32 flags) {
     if (mq->fullqueue->next != NULL) {
         osStartThread(__osPopThread(&mq->fullqueue));
     }
-    
+
     __osRestoreInt(saveMask);
     return 0;
 }

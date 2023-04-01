@@ -5,10 +5,10 @@
 void osCreateMesgQueue(OSMesgQueue *mq, OSMesg *msg, s32 msgCount) {
 
 #ifdef _DEBUG
-	if (msgCount <= 0) {
-		__osError(ERR_OSCREATEMESGQUEUE, 1, msgCount);
-		return 0;
-	}
+    if (msgCount <= 0) {
+        __osError(ERR_OSCREATEMESGQUEUE, 1, msgCount);
+        return 0;
+    }
 #endif
 
     mq->mtqueue = &__osThreadTail.next;

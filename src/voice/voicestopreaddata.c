@@ -3,7 +3,7 @@
 #include "PR/os_voice.h"
 #include "voiceinternal.h"
 
-s32 osVoiceStopReadData(OSVoiceHandle* hd) {
+s32 osVoiceStopReadData(OSVoiceHandle *hd) {
     s32 ret;
     s32 i;
     u8 stat;
@@ -11,16 +11,16 @@ s32 osVoiceStopReadData(OSVoiceHandle* hd) {
 
     ret = __osVoiceGetStatus(hd->__mq, hd->__channel, &stat);
     if (ret != 0) {
-      return ret;
+        return ret;
     } else if (stat & 2) {
-      return CONT_ERR_VOICE_NO_RESPONSE;
+        return CONT_ERR_VOICE_NO_RESPONSE;
     }
 
     if (hd->__mode == 0) {
         return CONT_ERR_INVALID;
     }
 
-    *(u32*)temp = 0x700;
+    *(u32 *)temp = 0x700;
     ret = __osVoiceContWrite4(hd->__mq, hd->__channel, 0, temp);
 
     if (ret == 0) {
@@ -40,7 +40,7 @@ s32 osVoiceStopReadData(OSVoiceHandle* hd) {
             i++;
         } while ((ret == CONT_ERR_VOICE_NO_RESPONSE) && (i < 20));
     }
-    if ( i >= 20 ) {
+    if (i >= 20) {
         ret == CONT_ERR_VOICE_NO_RESPONSE;
     }
 

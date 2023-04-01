@@ -5,7 +5,7 @@
 OSYieldResult osSpTaskYielded(OSTask *tp) {
     u32 status;
     OSYieldResult result;
-    
+
     status = __osSpGetStatus();
     result = (status & SP_STATUS_YIELDED) ? OS_TASK_YIELDED : 0;
 
@@ -13,6 +13,6 @@ OSYieldResult osSpTaskYielded(OSTask *tp) {
         tp->t.flags |= result;
         tp->t.flags &= ~(OS_TASK_DP_WAIT);
     }
-    
+
     return result;
 }

@@ -12,7 +12,7 @@ s32 osContStartQuery(OSMesgQueue *mq) {
         ret = __osSiRawStartDma(OS_WRITE, __osContPifRam.ramarray);
         osRecvMesg(mq, NULL, OS_MESG_BLOCK);
     }
-    
+
     ret = __osSiRawStartDma(OS_READ, __osContPifRam.ramarray);
     __osContLastCmd = CONT_CMD_REQUEST_STATUS;
     __osSiRelAccess();

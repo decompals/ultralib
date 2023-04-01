@@ -7,15 +7,17 @@ OSTimer __osGbpakTimer;
 OSMesg __osGbpakTimerMsg;
 OSMesgQueue __osGbpakTimerQ ALIGNED(8);
 
-s32 osGbpakInit(OSMesgQueue* mq, OSPfs* pfs, int channel) {
+s32 osGbpakInit(OSMesgQueue *mq, OSPfs *pfs, int channel) {
     int i;
     s32 ret;
     u8 temp[BLOCKSIZE];
 
     pfs->status = 0;
-    
+
     // Turn off the transfer pak
-    for ( i = 0; i < BLOCKSIZE; temp[i++] = GB_POWER_OFF);
+    for (i = 0; i < BLOCKSIZE; temp[i++] = GB_POWER_OFF) {
+        ;
+    }
 
     ret = __osContRamWrite(mq, channel, CONT_BLOCK_GB_POWER, temp, FALSE);
     if (ret == PFS_ERR_NEW_PACK) {
@@ -42,7 +44,9 @@ s32 osGbpakInit(OSMesgQueue* mq, OSPfs* pfs, int channel) {
     }
 
     // Turn on the transfer pak
-    for ( i = 0; i < BLOCKSIZE; temp[i++] = GB_POWER_ON);
+    for (i = 0; i < BLOCKSIZE; temp[i++] = GB_POWER_ON) {
+        ;
+    }
 
     ret = __osContRamWrite(mq, channel, CONT_BLOCK_GB_POWER, temp, FALSE);
 

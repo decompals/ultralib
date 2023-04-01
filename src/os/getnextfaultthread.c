@@ -21,4 +21,3 @@ OSThread *__osGetNextFaultedThread(OSThread *lastFault) {
     __osRestoreInt(saveMask);
     return fault;
 }
-

@@ -10,10 +10,10 @@ OSTime osGetTime() {
     register u32 saveMask;
 
 #ifdef _DEBUG
-	if (!__osViDevMgr.active) {
-	    __osError(ERR_OSGETTIME, 0);
+    if (!__osViDevMgr.active) {
+        __osError(ERR_OSGETTIME, 0);
         return 0;
-	}
+    }
 #endif
 
     saveMask = __osDisableInt();

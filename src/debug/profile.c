@@ -28,21 +28,21 @@ OSMesg __osProfAckMesg;
 
 u32 __osProfNumSections;
 
-void __osProfileIO(void* arg) {
-   s32 totalBytes;
-   u32 bytesThisBlock;
-   u32 ct;
-   u8* sendPtr;
-   OSProf* t;
+void __osProfileIO(void *arg) {
+    s32 totalBytes;
+    u32 bytesThisBlock;
+    u32 ct;
+    u8 *sendPtr;
+    OSProf *t;
 
-   while (TRUE) {
-        osRecvMesg(&__osProfFlushMQ, NULL , OS_MESG_BLOCK);
+    while (TRUE) {
+        osRecvMesg(&__osProfFlushMQ, NULL, OS_MESG_BLOCK);
         osProfSendWord(__osProfNumSections);
         osProfSendWord(__osProfTimerPeriod);
         osProfSendWord(__osProfileOverflowBin);
 
         t = __osProfileList;
-        while(t < __osProfileListEnd) {
+        while (t < __osProfileListEnd) {
             osProfSendWord(t->text_start);
             osProfSendWord(t->histo_size);
             osRecvMesg(&__osProfAckMQ, NULL, OS_MESG_BLOCK);
@@ -63,15 +63,15 @@ void __osProfileIO(void* arg) {
             }
             t++;
         }
-   }
+    }
 }
 
 void osProfSendWord(u32 word) {
-   u32 ct;
-   u8* sendPtr;
+    u32 ct;
+    u8 *sendPtr;
 
-   ct = 0;
-   sendPtr = &word;
+    ct = 0;
+    sendPtr = &word;
 
     while (ct < sizeof(word)) {
         ct += __osRdbSend(sendPtr + ct, sizeof(word) - ct, RDB_TYPE_GtoH_PROF_DATA);
@@ -82,9 +82,9 @@ void osProfileFlush(void) {
     osSendMesg(&__osProfFlushMQ, NULL, OS_MESG_BLOCK);
 }
 
-void osProfileInit(OSProf* profp, u32 profcnt) {
+void osProfileInit(OSProf *profp, u32 profcnt) {
     u32 i;
-    OSProf* t;
+    OSProf *t;
 
 #ifndef NDEBUG
     if (__osProfileActive) {
@@ -116,10 +116,9 @@ void osProfileInit(OSProf* profp, u32 profcnt) {
         }
 #endif
 
-        for(i = 0; i < t->histo_size; i++) {
+        for (i = 0; i < t->histo_size; i++) {
             t->histo_base[i] = 0;
         }
-
     }
 
     __osProfileActive = FALSE;
@@ -136,7 +135,6 @@ void osProfileInit(OSProf* profp, u32 profcnt) {
         osStartThread(&__osProfileIOThread);
         __osProfileIOActive = TRUE;
     }
-
 }
 
 void osProfileStart(u32 microseconds) {
@@ -146,7 +144,7 @@ void osProfileStart(u32 microseconds) {
         return;
     }
 
-    if(__osProfileActive) {
+    if (__osProfileActive) {
         __osError(ERR_OSPROFILESTART_FLAG, 0);
         return;
     }
@@ -156,7 +154,6 @@ void osProfileStart(u32 microseconds) {
     osSetTimer(&__osProfTimer, 0, OS_USEC_TO_CYCLES(microseconds), &__osProfTimerQ, NULL);
     __osProfTimerPeriod = microseconds;
     __osProfileActive = TRUE;
-
 }
 
 void osProfileStop(void) {
@@ -175,7 +172,6 @@ void osProfileStop(void) {
     }
 
     __osProfileActive = FALSE;
-
 }
 
 #endif

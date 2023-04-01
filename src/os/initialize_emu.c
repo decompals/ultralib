@@ -4,15 +4,14 @@
 #include "PR/rdb.h"
 #include "osint.h"
 
-typedef struct
-{
-   /* 0x0 */ unsigned int inst1;
-   /* 0x4 */ unsigned int inst2;
-   /* 0x8 */ unsigned int inst3;
-   /* 0xC */ unsigned int inst4;
+typedef struct {
+    /* 0x0 */ unsigned int inst1;
+    /* 0x4 */ unsigned int inst2;
+    /* 0x8 */ unsigned int inst3;
+    /* 0xC */ unsigned int inst4;
 } __osExceptionVector;
 
-static void* proutSyncPrintf(void* str, const char* buf, size_t n) {
+static void *proutSyncPrintf(void *str, const char *buf, size_t n) {
     size_t sent = 0;
 
     while (sent < n) {

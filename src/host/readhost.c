@@ -12,7 +12,7 @@ static int readHostInitialized = FALSE;
 static OSMesgQueue readHostMesgQueue ALIGNED(8);
 static OSMesg readHostMesgBuf[1];
 
-void osReadHost(void* dramAddr, u32 nbytes) {
+void osReadHost(void *dramAddr, u32 nbytes) {
     char tstr[4];
     u32 sent = 0;
 

@@ -11,16 +11,16 @@ s32 osVoiceSetWord(OSVoiceHandle *hd, u8 *word) {
 
     ret = __osVoiceGetStatus(hd->__mq, hd->__channel, &stat);
     if (ret != 0) {
-      return ret;
+        return ret;
     } else if (stat & 2) {
-      return CONT_ERR_VOICE_NO_RESPONSE;
+        return CONT_ERR_VOICE_NO_RESPONSE;
     }
 
     for (k = 0; word[k] != 0; k += 2) {
         ;
     }
 
-#ifndef	NDEBUG
+#ifndef NDEBUG
     if (k >= 34) {
         return CONT_ERR_VOICE_WORD;
     }
