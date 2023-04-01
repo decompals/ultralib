@@ -50,7 +50,7 @@ void __osProfileIO(void* arg) {
             totalBytes = t->histo_size * 2;
             sendPtr = t->histo_base;
             while (totalBytes > 0) {
-                bytesThisBlock = (totalBytes < 0x800U) ? totalBytes : 0x800;
+                bytesThisBlock = (totalBytes < 0x800U) ? totalBytes : 0x800U;
 
                 ct = 0;
                 while (ct < bytesThisBlock) {
@@ -117,7 +117,7 @@ void osProfileInit(OSProf* profp, u32 profcnt) {
 #endif
 
         for(i = 0; i < t->histo_size; i++) {
-            *(t->histo_base + i) = 0;
+            t->histo_base[i] = 0;
         }
 
     }
@@ -153,7 +153,7 @@ void osProfileStart(u32 microseconds) {
 #endif
 
     osCreateMesgQueue(&__osProfTimerQ, &__osProfTimerMsg, 1);
-    osSetTimer(&__osProfTimer, 0, OS_USEC_TO_CYCLES(microseconds), &__osProfTimerQ, 0);
+    osSetTimer(&__osProfTimer, 0, OS_USEC_TO_CYCLES(microseconds), &__osProfTimerQ, NULL);
     __osProfTimerPeriod = microseconds;
     __osProfileActive = TRUE;
 
