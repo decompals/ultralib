@@ -34,6 +34,7 @@ void osLogEvent(OSLog* log, s16 code, s16 numArgs, ...) {
 
     va_start(argPtr, numArgs);
     __osLogWrite(log, code, numArgs, argPtr);
+    va_end(argPtr);
 }
 
 void osFlushLog(OSLog* log) {

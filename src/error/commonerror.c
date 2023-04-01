@@ -178,6 +178,8 @@ void __commonErrorHandler(s16 code, s16 numArgs, ...) {
     osSyncPrintf("0x%08X (%04d):", osGetCount(), code);
     __osSyncVPrintf(fmt, argPtr);
     osSyncPrintf("\n");
+
+    va_end(argPtr);
 }
 
 #endif
