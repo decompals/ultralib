@@ -2,6 +2,7 @@
 #include "PR/os_internal.h"
 #include "PR/R4300.h"
 #include "PR/rcp.h"
+#include "piint.h"
 
 OSPiHandle __CartRomHandle ALIGNED(8);
 OSPiHandle *osCartRomInit(void)
@@ -30,10 +31,7 @@ OSPiHandle *osCartRomInit(void)
 
 	bzero(&__CartRomHandle.transferInfo, sizeof(__OSTranxInfo));
 
-	stat = IO_READ(PI_STATUS_REG);
-	while (stat & (PI_STATUS_IO_BUSY | PI_STATUS_DMA_BUSY)) {
-	    stat = IO_READ(PI_STATUS_REG);
-	} 
+    WAIT_ON_IOBUSY(stat);
 
     latency = IO_READ(PI_BSD_DOM1_LAT_REG);
     pageSize = IO_READ(PI_BSD_DOM1_PGS_REG);
