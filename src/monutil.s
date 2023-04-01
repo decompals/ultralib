@@ -1,9 +1,9 @@
 #ifndef _FINALROM
-#include <asm.h>
-#include <sgidefs.h>
-#include <regdef.h>
-#include <sgidefs.h>
-#include <PR/R4300.h>
+#include "asm.h"
+#include "sgidefs.h"
+#include "regdef.h"
+#include "sgidefs.h"
+#include "PR/R4300.h"
 
 
 

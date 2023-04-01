@@ -1,5 +1,5 @@
-#include <PR/os.h>
-#include <PR/rcp.h>
+#include "PR/os.h"
+#include "PR/rcp.h"
 #include "../io/viint.h"
 
 OSViMode osViModeTable[56] = {

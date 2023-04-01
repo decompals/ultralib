@@ -2,7 +2,7 @@
 #include "PR/os_internal.h"
 #include "PR/ultraerror.h"
 #include "piint.h"
-#include <rdb.h>
+#include "PR/rdb.h"
 
 static OSThread piThread ALIGNED(8);
 static char piThreadStack[OS_PIM_STACKSIZE] ALIGNED(16);

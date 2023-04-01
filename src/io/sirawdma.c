@@ -1,5 +1,5 @@
 #include "PR/os_internal.h"
-#include <assert.h>
+#include "assert.h"
 #include "siint.h"
 
 

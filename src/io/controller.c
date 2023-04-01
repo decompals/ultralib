@@ -60,13 +60,14 @@ void __osContGetInitData(u8* pattern, OSContStatus* data) {
     for (i = 0; i < __osMaxControllers; i++, ptr += sizeof(requestHeader), data++) {
         requestHeader = *(__OSContRequesFormat*)ptr;
         data->errno = CHNL_ERR(requestHeader);
-        if (data->errno != 0) {
-        } else {
-            data->type = requestHeader.typel << 8 | requestHeader.typeh;
-            data->status = requestHeader.status;
 
-            bits |= 1 << i;
+        if (data->errno != 0) {
+            continue;
         }
+
+        data->type = requestHeader.typel << 8 | requestHeader.typeh;
+        data->status = requestHeader.status;
+        bits |= 1 << i;
     }
     *pattern = bits;
 }

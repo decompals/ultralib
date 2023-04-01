@@ -1,8 +1,8 @@
 #ifndef _FINALROM
 
 #include "../os/osint.h"
-#include <PR/rmon.h>
-#include <PR/region.h>
+#include "PR/rmon.h"
+#include "PR/region.h"
 
 void __osPrintRegion(void* region) {
     register OSRegion* rp = region;

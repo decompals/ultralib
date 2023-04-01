@@ -1,5 +1,5 @@
-#include <PR/os_internal.h>
-#include <PR/ultraerror.h>
+#include "PR/os_internal.h"
+#include "PR/ultraerror.h"
 #include "viint.h"
 
 void* osViGetCurrentFramebuffer(void) {

@@ -1,5 +1,5 @@
-#include <PR/os_internal.h>
-#include <PR/rcp.h>
+#include "PR/os_internal.h"
+#include "PR/rcp.h"
 #include "viint.h"
 
 // TODO: this comes from a header

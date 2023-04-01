@@ -1,7 +1,7 @@
-#include <macros.h>
-#include <PR/os_internal.h>
-#include <PR/ultraerror.h>
-#include <PR/rcp.h>
+#include "macros.h"
+#include "PR/os_internal.h"
+#include "PR/ultraerror.h"
+#include "PR/rcp.h"
 #include "viint.h"
 #include "../os/osint.h"
 
