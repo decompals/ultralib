@@ -1,5 +1,5 @@
 #ifndef _FINALROM
-#include "rdb.h"
+#include "PR/rdb.h"
 #include "PR/os_internal.h"
 
 rdbPacket* __osRdb_IP6_Data;
