@@ -1,7 +1,7 @@
 #include "PR/os_internal.h"
 #include "osint.h"
 
-s32 osRecvMesg(OSMesgQueue *mq, OSMesg *msg, s32 flags) {
+s32 osRecvMesg(OSMesgQueue* mq, OSMesg* msg, s32 flags) {
     register u32 saveMask;
     saveMask = __osDisableInt();
 
@@ -25,7 +25,7 @@ s32 osRecvMesg(OSMesgQueue *mq, OSMesg *msg, s32 flags) {
     if (mq->fullqueue->next != NULL) {
         osStartThread(__osPopThread(&mq->fullqueue));
     }
-    
+
     __osRestoreInt(saveMask);
     return 0;
 }

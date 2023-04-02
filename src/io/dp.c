@@ -10,6 +10,6 @@ int __osDpDeviceBusy(void) {
     if (stat & DPC_STATUS_DMA_BUSY) {
         return TRUE;
     }
-    
+
     return FALSE;
 }

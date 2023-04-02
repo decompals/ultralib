@@ -9,9 +9,9 @@ static int writeHostInitialized = FALSE;
 static OSMesgQueue writeHostMesgQueue;
 static OSMesg writeHostMesgBuf[1];
 
-#define MIN(a,b) (((a)<(b)) ? (a) : (b))
+#define MIN(a, b) (((a) < (b)) ? (a) : (b))
 
-void osWriteHost(void * dramAddr, u32 nbytes) {
+void osWriteHost(void* dramAddr, u32 nbytes) {
     u8* tPtr = dramAddr;
     u32 sent;
     u8 dCount[3];

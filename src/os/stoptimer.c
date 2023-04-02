@@ -1,9 +1,9 @@
 #include "PR/os_internal.h"
 #include "osint.h"
 
-int osStopTimer(OSTimer *t) {
+int osStopTimer(OSTimer* t) {
     register u32 savedMask;
-    OSTimer *timep;
+    OSTimer* timep;
 
     if (t->next == NULL) {
         return -1;

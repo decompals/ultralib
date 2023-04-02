@@ -30,7 +30,6 @@ void osReadHost(void* dramAddr, u32 nbytes) {
     }
 
     osRecvMesg(&readHostMesgQueue, NULL, OS_MESG_BLOCK);
-    return;
 }
 
 #endif

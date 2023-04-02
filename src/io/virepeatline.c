@@ -12,6 +12,6 @@ void osViRepeatLine(u8 active) {
     } else {
         __osViNext->state &= ~VI_STATE_REPEATLINE;
     }
-    
+
     __osRestoreInt(saveMask);
 }

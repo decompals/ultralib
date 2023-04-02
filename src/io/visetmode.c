@@ -4,7 +4,7 @@
 // TODO: this comes from a header
 #ident "$Revision: 1.17 $"
 
-void osViSetMode(OSViMode *modep) {
+void osViSetMode(OSViMode* modep) {
     register u32 saveMask = __osDisableInt();
 
     __osViNext->modep = modep;

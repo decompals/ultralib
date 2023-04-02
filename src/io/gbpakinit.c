@@ -13,7 +13,7 @@ s32 osGbpakInit(OSMesgQueue* mq, OSPfs* pfs, int channel) {
     u8 temp[BLOCKSIZE];
 
     pfs->status = 0;
-    
+
     // Turn off the transfer pak
     for (i = 0; i < BLOCKSIZE; i++) {
         temp[i] = GB_POWER_OFF;

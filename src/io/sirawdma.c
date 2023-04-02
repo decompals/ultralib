@@ -4,7 +4,7 @@
 // TODO: this comes from a header
 #ident "$Revision: 1.17 $"
 
-s32 __osSiRawStartDma(s32 direction, void *dramAddr) {
+s32 __osSiRawStartDma(s32 direction, void* dramAddr) {
     if (IO_READ(SI_STATUS_REG) & (SI_STATUS_DMA_BUSY | SI_STATUS_RD_BUSY)) {
         return -1;
     }

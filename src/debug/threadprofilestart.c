@@ -2,7 +2,7 @@
 
 void osThreadProfileStart(void) {
     register u32 saveMask;
-    
+
     if (!__osThprofFlag) {
         __osError(136, 0);
         return;

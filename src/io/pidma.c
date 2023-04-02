@@ -1,7 +1,7 @@
 #include "PR/os_internal.h"
 #include "piint.h"
 
-s32 osPiStartDma(OSIoMesg *mb, s32 priority, s32 direction, u32 devAddr, void *dramAddr, u32 size, OSMesgQueue *mq) {
+s32 osPiStartDma(OSIoMesg* mb, s32 priority, s32 direction, u32 devAddr, void* dramAddr, u32 size, OSMesgQueue* mq) {
     register s32 ret;
     if (!__osPiDevMgr.active) {
         return -1;
@@ -19,12 +19,12 @@ s32 osPiStartDma(OSIoMesg *mb, s32 priority, s32 direction, u32 devAddr, void *d
     mb->devAddr = devAddr;
     mb->size = size;
     mb->piHandle = NULL;
-    
+
     if (priority == OS_MESG_PRI_HIGH) {
         ret = osJamMesg(osPiGetCmdQueue(), (OSMesg)mb, OS_MESG_NOBLOCK);
     } else {
         ret = osSendMesg(osPiGetCmdQueue(), (OSMesg)mb, OS_MESG_NOBLOCK);
     }
-    
+
     return ret;
 }

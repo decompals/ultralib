@@ -1,6 +1,6 @@
 #include "PR/os_internal.h"
 
-int __osAtomicDec(unsigned int *p) {
+int __osAtomicDec(unsigned int* p) {
     register u32 saveMask = __osDisableInt();
     int mask;
 
