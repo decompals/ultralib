@@ -53,7 +53,8 @@ s32 __osVoiceContRead2(OSMesgQueue* mq, int channel, u16 address, u8* buffer) {
         ret = CHNL_ERR(*READ2FORMAT(ptr));
 
         if (ret == 0) {
-            if (__osVoiceContDataCrc(&READ2FORMAT(ptr)->data, ARRLEN(READ2FORMAT(ptr)->data)) != READ2FORMAT(ptr)->datacrc) {
+            if (__osVoiceContDataCrc(&READ2FORMAT(ptr)->data, ARRLEN(READ2FORMAT(ptr)->data)) !=
+                READ2FORMAT(ptr)->datacrc) {
                 ret = __osVoiceGetStatus(mq, channel, &status);
                 if (ret != 0) {
                     break;

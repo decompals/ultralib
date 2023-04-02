@@ -7,7 +7,7 @@ s32 osVoiceInit(OSMesgQueue* mq, OSVoiceHandle* handle, int channel) {
     s32 i;
     u8 stat = 0;
     u8 buf[4];
-    static u8 cmd[] = {0x1E, 0x6E, 0x08, 0x56, 0x03};
+    static u8 cmd[] = { 0x1E, 0x6E, 0x08, 0x56, 0x03 };
 
     handle->__channel = channel;
     handle->__mq = mq;
@@ -30,7 +30,7 @@ s32 osVoiceInit(OSMesgQueue* mq, OSVoiceHandle* handle, int channel) {
 
     *(u32*)buf = 0x100;
     ERRCK(__osVoiceContWrite4(mq, channel, 0, buf));
-    
+
     ret = __osVoiceCheckResult(handle, &stat);
     if (ret & 0xFF00) {
         ret = CONT_ERR_INVALID;

@@ -2,17 +2,17 @@
 #include "PR/os_internal.h"
 #include "piint.h"
 
-OSDevMgr __osPiDevMgr = {0};
-OSPiHandle *__osPiTable = NULL;
+OSDevMgr __osPiDevMgr = { 0 };
+OSPiHandle* __osPiTable = NULL;
 OSPiHandle __Dom1SpeedParam ALIGNED(8);
 OSPiHandle __Dom2SpeedParam ALIGNED(8);
-OSPiHandle *__osCurrentHandle[2] ALIGNED(8) = {&__Dom1SpeedParam, &__Dom2SpeedParam};
+OSPiHandle* __osCurrentHandle[2] ALIGNED(8) = { &__Dom1SpeedParam, &__Dom2SpeedParam };
 static OSThread piThread;
 static char piThreadStack[OS_PIM_STACKSIZE];
 static OSMesgQueue piEventQueue;
 static OSMesg piEventBuf[1];
 
-void osCreatePiManager(OSPri pri, OSMesgQueue *cmdQ, OSMesg *cmdBuf, s32 cmdMsgCnt) {
+void osCreatePiManager(OSPri pri, OSMesgQueue* cmdQ, OSMesg* cmdBuf, s32 cmdMsgCnt) {
     u32 savedMask;
     OSPri oldPri;
     OSPri myPri;
@@ -20,11 +20,11 @@ void osCreatePiManager(OSPri pri, OSMesgQueue *cmdQ, OSMesg *cmdBuf, s32 cmdMsgC
     if (!__osPiDevMgr.active) {
         osCreateMesgQueue(cmdQ, cmdBuf, cmdMsgCnt);
         osCreateMesgQueue(&piEventQueue, (OSMesg*)piEventBuf, 1);
-        
+
         if (!__osPiAccessQueueEnabled) {
             __osPiCreateAccessQueue();
         }
-        
+
         osSetEventMesg(OS_EVENT_PI, &piEventQueue, (OSMesg)0x22222222);
         oldPri = -1;
         myPri = osGetThreadPri(NULL);

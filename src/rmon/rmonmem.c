@@ -110,7 +110,8 @@ int __rmonWriteMem(KKHeader* req) {
         return TV_ERROR_INVALID_CAPABILITY;
     }
 
-    if ((request->writeHeader.addr >= SP_DMEM_START && (request->writeHeader.addr + request->writeHeader.nbytes) < 0x05000000)) {
+    if ((request->writeHeader.addr >= SP_DMEM_START &&
+         (request->writeHeader.addr + request->writeHeader.nbytes) < 0x05000000)) {
         int align;
         u32 word;
 

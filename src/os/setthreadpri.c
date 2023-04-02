@@ -1,16 +1,16 @@
 #include "PR/os_internal.h"
 #include "osint.h"
 
-void osSetThreadPri(OSThread *t, OSPri pri) {
+void osSetThreadPri(OSThread* t, OSPri pri) {
     register u32 saveMask = __osDisableInt();
-    
+
     if (t == NULL) {
         t = __osRunningThread;
     }
 
     if (t->priority != pri) {
         t->priority = pri;
-        
+
         if (t != __osRunningThread && t->state != OS_STATE_STOPPED) {
             __osDequeueThread(t->queue, t);
             __osEnqueueThread(t->queue, t);

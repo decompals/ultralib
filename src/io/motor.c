@@ -48,8 +48,8 @@ s32 __osMotorAccess(OSPfs* pfs, s32 flag) {
     return ret;
 }
 
-static void _MakeMotorData(int channel, OSPifRam *mdata) {
-    u8 *ptr = (u8 *)mdata->ramarray;
+static void _MakeMotorData(int channel, OSPifRam* mdata) {
+    u8* ptr = (u8*)mdata->ramarray;
     __OSContRamReadFormat ramreadformat;
     int i;
 
@@ -59,7 +59,7 @@ static void _MakeMotorData(int channel, OSPifRam *mdata) {
     ramreadformat.cmd = CONT_CMD_WRITE_PAK;
     ramreadformat.addrh = CONT_BLOCK_RUMBLE >> 3;
     ramreadformat.addrl = (u8)(__osContAddressCrc(CONT_BLOCK_RUMBLE) | (CONT_BLOCK_RUMBLE << 5));
-    
+
     if (channel != 0) {
         for (i = 0; i < channel; i++) {
             *ptr++ = CONT_CMD_REQUEST_STATUS;
@@ -71,8 +71,7 @@ static void _MakeMotorData(int channel, OSPifRam *mdata) {
     ptr[0] = CONT_CMD_END;
 }
 
-s32 osMotorInit(OSMesgQueue *mq, OSPfs *pfs, int channel)
-{
+s32 osMotorInit(OSMesgQueue* mq, OSPfs* pfs, int channel) {
     s32 ret;
     u8 temp[32];
 
@@ -82,7 +81,7 @@ s32 osMotorInit(OSMesgQueue *mq, OSPfs *pfs, int channel)
     pfs->status = 0;
 
     ret = __osPfsSelectBank(pfs, 0xFE);
-    
+
     if (ret == PFS_ERR_NEW_PACK) {
         ret = __osPfsSelectBank(pfs, 0x80);
     }
@@ -109,7 +108,7 @@ s32 osMotorInit(OSMesgQueue *mq, OSPfs *pfs, int channel)
     if (ret == PFS_ERR_NEW_PACK) {
         ret = PFS_ERR_CONTRFAIL;
     }
-    
+
     if (ret != 0) {
         return ret;
     }
@@ -118,11 +117,11 @@ s32 osMotorInit(OSMesgQueue *mq, OSPfs *pfs, int channel)
     if (ret == PFS_ERR_NEW_PACK) {
         ret = PFS_ERR_CONTRFAIL;
     }
-    
+
     if (ret != 0) {
         return ret;
     }
-    
+
     if (temp[31] != 0x80) {
         return PFS_ERR_DEVICE;
     }

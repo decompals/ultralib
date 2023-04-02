@@ -3,8 +3,8 @@
 #include <PR/rcp.h>
 #include "viint.h"
 #include "../os/osint.h"
- 
-OSDevMgr __osViDevMgr = {0};
+
+OSDevMgr __osViDevMgr = { 0 };
 u32 __additional_scanline = 0;
 static OSThread viThread;
 static unsigned char viThreadStack[OS_VIM_STACKSIZE] ALIGNED(16);
@@ -13,9 +13,8 @@ static OSMesg viEventBuf[5] ALIGNED(8);
 static OSIoMesg viRetraceMsg ALIGNED(8);
 static OSIoMesg viCounterMsg ALIGNED(8);
 
-static void viMgrMain(void *arg);
-void osCreateViManager(OSPri pri)
-{
+static void viMgrMain(void* arg);
+void osCreateViManager(OSPri pri) {
     u32 savedMask;
     OSPri myPri;
     OSPri oldPri;
@@ -59,10 +58,10 @@ void osCreateViManager(OSPri pri)
     }
 }
 
-static void viMgrMain(void *arg) {
-    __OSViContext *vc;
-    OSDevMgr *dm;
-    OSIoMesg *mb;
+static void viMgrMain(void* arg) {
+    __OSViContext* vc;
+    OSDevMgr* dm;
+    OSIoMesg* mb;
     static u16 retrace;
     s32 first;
     u32 count;
@@ -71,9 +70,10 @@ static void viMgrMain(void *arg) {
     first = 0;
     vc = __osViGetCurrentContext();
     retrace = vc->retraceCount;
-    if (retrace == 0)
+    if (retrace == 0) {
         retrace = 1;
-    dm = (OSDevMgr *)arg;
+}
+    dm = (OSDevMgr*)arg;
 
     while (TRUE) {
         osRecvMesg(dm->evtQueue, (OSMesg)&mb, OS_MESG_BLOCK);
@@ -84,13 +84,14 @@ static void viMgrMain(void *arg) {
 
                 if (retrace == 0) {
                     vc = __osViGetCurrentContext();
-                    if (vc->msgq != NULL)
+                    if (vc->msgq != NULL) {
                         osSendMesg(vc->msgq, vc->msg, OS_MESG_NOBLOCK);
+}
                     retrace = vc->retraceCount;
                 }
 
                 __osViIntrCount++;
-                
+
                 if (first) {
                     count = osGetCount();
                     __osCurrentTime = count;

@@ -25,4 +25,3 @@ s32 osVoiceClearDictionary(OSVoiceHandle* hd, u8 words) {
 
     return ret;
 }
-

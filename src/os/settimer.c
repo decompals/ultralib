@@ -1,7 +1,7 @@
 #include "PR/os_internal.h"
 #include "osint.h"
 
-int osSetTimer(OSTimer *t, OSTime countdown, OSTime interval, OSMesgQueue *mq, OSMesg msg) {
+int osSetTimer(OSTimer* t, OSTime countdown, OSTime interval, OSMesgQueue* mq, OSMesg msg) {
     register u32 saveMask;
     OSTime time;
     OSTimer* next;
@@ -19,7 +19,7 @@ int osSetTimer(OSTimer *t, OSTime countdown, OSTime interval, OSMesgQueue *mq, O
 
     t->mq = mq;
     t->msg = msg;
-    
+
     saveMask = __osDisableInt();
     if (__osTimerList->next != __osTimerList) {
         next = __osTimerList->next;
