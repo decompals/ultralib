@@ -1,23 +1,6 @@
-# ultralib
+# libultra_modern
 
-Reverse engineering of libultra
-
-## Compatibility
-
-Currently this repo supports building the following versions:
-
-| IDO / GCC  | `libultra.a` / `libgultra.a` | `libultra_d.a` / `libgultra_d.a` | `libultra_rom.a` / `libgultra_rom.a` |
-| -          | :-: | :-: | :-: |
-| 2.0E       | :x: / N/A | :x: / N/A | :x: / N/A |
-| 2.0F       | :x: / N/A | :x: / N/A | :x: / N/A |
-| 2.0G       | :x: / N/A | :x: / N/A | :x: / N/A |
-| 2.0H       | :x: / :x: | :x: / :x: | :x: / :x: |
-| 2.0I       | :x: / :x: | :x: / :x: | :x: / :x: |
-| 2.0I_patch | :x: / :x: | :x: / :x: | :x: / :x: |
-| 2.0J       | :x: / :x: | :x: / :x: | :x: / :x: |
-| 2.0K       | :x: / :x: | :x: / :x: | :x: / :x: |
-| 2.0L       | :x: / :heavy_check_mark: | :x: / :heavy_check_mark: | :x: / :heavy_check_mark: |
-| ique_v1.5  | :x: | :x: | :x: |
+This repo contains a decompilation of libultra version 2.0L (GCC). It is intended to facilitate updating of libultra and allow the Modern SDK to be a complete open book for people to edit as they see fit.
 
 ## Preparation
 
@@ -25,12 +8,14 @@ After cloning the repo, put a copy of the target archive on the root of this dir
 
 ## Build dependencies
 
-The build process requires the following packages:
+The Modern SDK is required. Install it [here](https://crashoveride95.github.io/n64hbrew/modernsdk/index.html)
+
+The build process additionally requires the following packages:
 
 - build-essential
 - python3
 
-Under Debian / Ubunutu you can install them with the following commands:
+Under Debian / Ubuntu you can install them with the following commands:
 
 ```bash
 sudo apt update
