@@ -4,7 +4,9 @@
 #include "siint.h"
 
 OSPifRam __osEepPifRam ALIGNED(16);
+#if BUILD_VERSION >= VERSION_L
 s32 __osEepromRead16K;
+#endif
 static void __osPackEepReadData(u8 address);
 
 s32 osEepromRead(OSMesgQueue* mq, u8 address, u8* buffer) {
@@ -31,9 +33,12 @@ s32 osEepromRead(OSMesgQueue* mq, u8 address, u8* buffer) {
                 if (address >= EEP16K_MAXBLOCKS) {
                     // not technically possible
                     ret = CONT_RANGE_ERROR;
-                } else {
+                }
+#if BUILD_VERSION >= VERSION_L
+                else {
                     __osEepromRead16K = 1;
                 }
+#endif
                 break;
             default:
                 ret = CONT_NO_RESPONSE_ERROR;
