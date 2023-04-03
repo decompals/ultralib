@@ -22,8 +22,7 @@ s32 __osIdCheckSum(u16* ptr, u16* csum, u16* icsum) {
     u16 data = 0;
     u32 j;
 
-    *icsum = 0;
-    *csum = *icsum;
+    *csum = *icsum = 0;
 
     for (j = 0; j < ((sizeof(__OSPackId) - sizeof(u32)) / sizeof(u8)); j += 2) {
         data = *(u16*)((u8*)ptr + j);
@@ -87,11 +86,7 @@ s32 __osRepairPackId(OSPfs* pfs, __OSPackId* badid, __OSPackId* newid) {
 
     SET_ACTIVEBANK_TO_ZERO;
 
-    if (j > 0) {
-        mask = 1;
-    } else {
-        mask = 0;
-    }
+    mask = (j > 0) ? 1 : 0;
 
     newid->deviceid = (badid->deviceid & (u16)~1) | mask;
     newid->banks = j;
@@ -151,7 +146,6 @@ s32 __osCheckPackId(OSPfs* pfs, __OSPackId* temp) {
 }
 
 s32 __osGetId(OSPfs* pfs) {
-    int k;
     u16 sum;
     u16 isum;
     u8 temp[BLOCKSIZE];
@@ -217,9 +211,8 @@ s32 __osCheckId(OSPfs* pfs) {
     if (ret != 0) {
         if (ret != PFS_ERR_NEW_PACK) {
             return ret;
-        } else {
-            ERRCK(__osContRamRead(pfs->queue, pfs->channel, PFS_ID_0AREA, (u8*)temp));
         }
+        ERRCK(__osContRamRead(pfs->queue, pfs->channel, PFS_ID_0AREA, (u8*)temp));
     }
 
     if (bcmp(pfs->id, temp, BLOCKSIZE) != 0) {
@@ -243,11 +236,7 @@ s32 __osPfsRWInode(OSPfs* pfs, __OSInode* inode, u8 flag, u8 bank) {
 
     SET_ACTIVEBANK_TO_ZERO;
 
-    if (bank > 0) {
-        offset = 1;
-    } else {
-        offset = pfs->inode_start_page;
-    }
+    offset = (bank > 0) ? 1 : pfs->inode_start_page;
 
     if (flag == PFS_WRITE) {
         inode->inode_page[0].inode_t.page =
@@ -297,3 +286,25 @@ s32 __osPfsRWInode(OSPfs* pfs, __OSInode* inode, u8 flag, u8 bank) {
 
     return 0;
 }
+
+#ifdef _DEBUG
+s32 __osDumpId(OSPfs* pfs) {
+    u8 id[BLOCKSIZE];
+    __OSPackId* temp;
+    s32 ret;
+
+    ERRCK(__osContRamRead(pfs->queue, pfs->channel, PFS_ID_0AREA, id));
+
+    temp = (__OSPackId*)id;
+    rmonPrintf("repaired %x\n", temp->repaired);
+    rmonPrintf("random %x\n", temp->random);
+    rmonPrintf("serial_mid %llu\n", temp->serial_mid);
+    rmonPrintf("serial_low %llu\n", temp->serial_low);
+    rmonPrintf("deviceid %x\n", temp->deviceid);
+    rmonPrintf("banks %x\n", temp->banks);
+    rmonPrintf("version %x\n", temp->version);
+    rmonPrintf("checksum %x\n", temp->checksum);
+    rmonPrintf("inverted_checksum %x\n", temp->inverted_checksum);
+    return 0;
+}
+#endif

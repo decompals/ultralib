@@ -5,5 +5,5 @@ void osExit() {
 
     for (;;) {
         ;
-}
+    }
 }

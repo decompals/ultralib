@@ -1,21 +1,27 @@
+#include "macros.h"
 #include "PR/os_internal.h"
 #include "osint.h"
 
-OSTimer* __osTimerList = &__osBaseTimer;
-OSTimer __osBaseTimer;
 OSTime __osCurrentTime;
 u32 __osBaseCounter;
 u32 __osViIntrCount;
 u32 __osTimerCounter;
+OSTimer __osBaseTimer;
+OSTimer* __osTimerList = &__osBaseTimer;
+
+#ifndef _FINALROM
+OSMesgQueue __osProfTimerQ ALIGNED(8);
+OSProf* __osProfileList;
+OSProf* __osProfileListEnd;
+u32 __osProfileOverflowBin;
+#endif
 
 void __osTimerServicesInit(void) {
     __osCurrentTime = 0;
     __osBaseCounter = 0;
     __osViIntrCount = 0;
-    __osTimerList->prev = __osTimerList;
-    __osTimerList->next = __osTimerList->prev;
-    __osTimerList->value = 0;
-    __osTimerList->interval = __osTimerList->value;
+    __osTimerList->next = __osTimerList->prev = __osTimerList;
+    __osTimerList->interval = __osTimerList->value = 0;
     __osTimerList->mq = NULL;
     __osTimerList->msg = 0;
 }
@@ -25,38 +31,72 @@ void __osTimerInterrupt(void) {
     u32 count;
     u32 elapsed_cycles;
 
-    if (__osTimerList->next != __osTimerList) {
-        while (TRUE) {
-            t = __osTimerList->next;
-            if (t == __osTimerList) {
-                __osSetCompare(0);
-                __osTimerCounter = 0;
-                break;
-            }
+#ifndef _FINALROM
+    u32 pc;
+    s32 offset;
+    OSProf* prof = __osProfileList;
+#endif
 
-            count = osGetCount();
-            elapsed_cycles = count - __osTimerCounter;
-            __osTimerCounter = count;
+    if (__osTimerList->next == __osTimerList) {
+        return;
+    }
+    for (;;) {
+        t = __osTimerList->next;
 
-            if (elapsed_cycles < t->value) {
-                t->value -= elapsed_cycles;
-                __osSetTimerIntr(t->value);
-                break;
+        if (t == __osTimerList) {
+            __osSetCompare(0);
+            __osTimerCounter = 0;
+            break;
+        }
+
+        count = osGetCount();
+        elapsed_cycles = count - __osTimerCounter;
+        __osTimerCounter = count;
+
+        if (elapsed_cycles < t->value) {
+            t->value -= elapsed_cycles;
+            __osSetTimerIntr(t->value);
+            break;
+        }
+
+        t->prev->next = t->next;
+        t->next->prev = t->prev;
+        t->next = NULL;
+        t->prev = NULL;
+
+        if (t->mq != NULL) {
+#ifdef _FINALROM
+            osSendMesg(t->mq, t->msg, OS_MESG_NOBLOCK);
+        }
+#else
+            if (t->mq != &__osProfTimerQ) {
+                osSendMesg(t->mq, t->msg, OS_MESG_NOBLOCK);
             } else {
-                t->prev->next = t->next;
-                t->next->prev = t->prev;
-                t->next = NULL;
-                t->prev = NULL;
+                pc = __osRunQueue->context.pc;
+                prof = __osProfileList;
 
-                if (t->mq != NULL) {
-                    osSendMesg(t->mq, t->msg, OS_MESG_NOBLOCK);
+                while (prof < __osProfileListEnd) {
+                    offset = pc - (u32)prof->text_start;
+
+                    if (offset >= 0) {
+                        if ((s32)prof->text_end - (s32)pc > 0) {
+                            prof->histo_base[offset >> 2]++;
+                            goto __ProfDone;
+                        }
+                    }
+                    prof++;
                 }
 
-                if (t->interval != 0) {
-                    t->value = t->interval;
-                    __osInsertTimer(t);
-                }
+                __osProfileOverflowBin++;
             }
+        }
+#endif
+
+    __ProfDone:
+
+        if (t->interval != 0) {
+            t->value = t->interval;
+            __osInsertTimer(t);
         }
     }
 }

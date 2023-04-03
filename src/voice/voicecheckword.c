@@ -67,9 +67,9 @@ s32 osVoiceCheckWord(u8* word) {
 
         if (ret != 0) {
             return ret;
+        } else {
+            old = sjis;
         }
-
-        old = sjis;
     }
 
     if ((sjis == 'っ') || (sjis == 'ッ')) {

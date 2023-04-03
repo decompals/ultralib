@@ -9,7 +9,7 @@ static volatile unsigned int* ptstat = (unsigned*)0xbff08004;
 static volatile unsigned int* ptport = (unsigned*)0xbff08000;
 static volatile unsigned int* n64piok = (unsigned*)PHYS_TO_K1(PI_STATUS_REG);
 
-static OSMesgQueue waitPtQueue;
+static OSMesgQueue waitPtQueue ALIGNED(8);
 static OSMesg waitPtQueueBuf;
 static u32 isWaitPtQueueCreated = FALSE;
 

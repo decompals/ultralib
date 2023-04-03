@@ -20,27 +20,24 @@ s32 osEepromRead(OSMesgQueue* mq, u8 address, u8* buffer) {
     ret = __osEepStatus(mq, &sdata);
     type = sdata.type & (CONT_EEPROM | CONT_EEP16K);
 
-    if (ret != 0) {
-        __osSiRelAccess();
-        return ret;
-    }
-
-    switch (type) {
-        case CONT_EEPROM:
-            if (address >= EEPROM_MAXBLOCKS) {
-                ret = CONT_RANGE_ERROR;
-            }
-            break;
-        case CONT_EEPROM | CONT_EEP16K:
-            __osEepromRead16K = 1;
-            if (address >= EEP16K_MAXBLOCKS) {
-                // not technically possible
-                ret = CONT_RANGE_ERROR;
-            }
-            break;
-        default:
-            ret = CONT_NO_RESPONSE_ERROR;
-            break;
+    if (ret == 0) {
+        switch (type) {
+            case CONT_EEPROM:
+                if (address >= EEPROM_MAXBLOCKS) {
+                    ret = CONT_RANGE_ERROR;
+                }
+                break;
+            case CONT_EEPROM | CONT_EEP16K:
+                if (address >= EEP16K_MAXBLOCKS) {
+                    // not technically possible
+                    ret = CONT_RANGE_ERROR;
+                } else {
+                    __osEepromRead16K = 1;
+                }
+                break;
+            default:
+                ret = CONT_NO_RESPONSE_ERROR;
+        }
     }
 
     if (ret != 0) {
@@ -72,7 +69,6 @@ s32 osEepromRead(OSMesgQueue* mq, u8 address, u8* buffer) {
             *buffer++ = eepromformat.data[i];
         }
     }
-
     __osSiRelAccess();
     return ret;
 }

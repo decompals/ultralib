@@ -3,12 +3,16 @@
 #include "piint.h"
 
 void __osDevMgrMain(void* args) {
-    OSIoMesg* mb = NULL;
+    OSIoMesg* mb;
     OSMesg em;
     OSMesg dummy;
-    s32 ret = 0;
-    OSDevMgr* dm = (OSDevMgr*)args;
+    s32 ret;
+    OSDevMgr* dm;
     s32 messageSend = 0;
+
+    dm = (OSDevMgr*)args;
+    mb = NULL;
+    ret = 0;
 
     while (TRUE) {
         osRecvMesg(dm->cmdQueue, (OSMesg)&mb, OS_MESG_BLOCK);

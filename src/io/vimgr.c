@@ -1,6 +1,7 @@
-#include <macros.h>
-#include <PR/os_internal.h>
-#include <PR/rcp.h>
+#include "macros.h"
+#include "PR/os_internal.h"
+#include "PR/ultraerror.h"
+#include "PR/rcp.h"
 #include "viint.h"
 #include "../os/osint.h"
 
@@ -8,7 +9,7 @@ OSDevMgr __osViDevMgr = { 0 };
 u32 __additional_scanline = 0;
 static OSThread viThread;
 static unsigned char viThreadStack[OS_VIM_STACKSIZE] ALIGNED(16);
-static OSMesgQueue viEventQueue;
+static OSMesgQueue viEventQueue ALIGNED(8);
 static OSMesg viEventBuf[5] ALIGNED(8);
 static OSIoMesg viRetraceMsg ALIGNED(8);
 static OSIoMesg viCounterMsg ALIGNED(8);
@@ -16,45 +17,53 @@ static OSIoMesg viCounterMsg ALIGNED(8);
 static void viMgrMain(void* arg);
 void osCreateViManager(OSPri pri) {
     u32 savedMask;
-    OSPri myPri;
     OSPri oldPri;
+    OSPri myPri;
 
-    if (!__osViDevMgr.active) {
-        __osTimerServicesInit();
-        __additional_scanline = 0;
-        osCreateMesgQueue(&viEventQueue, viEventBuf, ARRLEN(viEventBuf));
-        viRetraceMsg.hdr.type = OS_MESG_TYPE_VRETRACE;
-        viRetraceMsg.hdr.pri = OS_MESG_PRI_NORMAL;
-        viRetraceMsg.hdr.retQueue = NULL;
-        viCounterMsg.hdr.type = OS_MESG_TYPE_COUNTER;
-        viCounterMsg.hdr.pri = OS_MESG_PRI_NORMAL;
-        viCounterMsg.hdr.retQueue = NULL;
-        osSetEventMesg(OS_EVENT_VI, &viEventQueue, &viRetraceMsg);
-        osSetEventMesg(OS_EVENT_COUNTER, &viEventQueue, &viCounterMsg);
-        oldPri = -1;
-        myPri = osGetThreadPri(NULL);
+#ifdef _DEBUG
+    if ((pri < OS_PRIORITY_IDLE) || (pri > OS_PRIORITY_MAX)) {
+        __osError(ERR_OSCREATEVIMANAGER, 1, pri);
+        return 0;
+    }
+#endif
 
-        if (myPri < pri) {
-            oldPri = myPri;
-            osSetThreadPri(NULL, pri);
-        }
+    if (__osViDevMgr.active) {
+        return 0;
+    }
+    __osTimerServicesInit();
+    __additional_scanline = 0;
+    osCreateMesgQueue(&viEventQueue, viEventBuf, ARRLEN(viEventBuf));
+    viRetraceMsg.hdr.type = OS_MESG_TYPE_VRETRACE;
+    viRetraceMsg.hdr.pri = OS_MESG_PRI_NORMAL;
+    viRetraceMsg.hdr.retQueue = NULL;
+    viCounterMsg.hdr.type = OS_MESG_TYPE_COUNTER;
+    viCounterMsg.hdr.pri = OS_MESG_PRI_NORMAL;
+    viCounterMsg.hdr.retQueue = NULL;
+    osSetEventMesg(OS_EVENT_VI, &viEventQueue, &viRetraceMsg);
+    osSetEventMesg(OS_EVENT_COUNTER, &viEventQueue, &viCounterMsg);
+    oldPri = -1;
+    myPri = osGetThreadPri(NULL);
 
-        savedMask = __osDisableInt();
-        __osViDevMgr.active = TRUE;
-        __osViDevMgr.thread = &viThread;
-        __osViDevMgr.cmdQueue = &viEventQueue;
-        __osViDevMgr.evtQueue = &viEventQueue;
-        __osViDevMgr.acsQueue = NULL;
-        __osViDevMgr.dma = NULL;
-        __osViDevMgr.edma = NULL;
-        osCreateThread(&viThread, 0, viMgrMain, &__osViDevMgr, &viThreadStack[OS_VIM_STACKSIZE], pri);
-        __osViInit();
-        osStartThread(&viThread);
-        __osRestoreInt(savedMask);
+    if (myPri < pri) {
+        oldPri = myPri;
+        osSetThreadPri(NULL, pri);
+    }
 
-        if (oldPri != -1) {
-            osSetThreadPri(0, oldPri);
-        }
+    savedMask = __osDisableInt();
+    __osViDevMgr.active = TRUE;
+    __osViDevMgr.thread = &viThread;
+    __osViDevMgr.cmdQueue = &viEventQueue;
+    __osViDevMgr.evtQueue = &viEventQueue;
+    __osViDevMgr.acsQueue = NULL;
+    __osViDevMgr.dma = NULL;
+    __osViDevMgr.edma = NULL;
+    osCreateThread(&viThread, 0, viMgrMain, &__osViDevMgr, &viThreadStack[OS_VIM_STACKSIZE], pri);
+    __osViInit();
+    osStartThread(&viThread);
+    __osRestoreInt(savedMask);
+
+    if (oldPri != -1) {
+        osSetThreadPri(NULL, oldPri);
     }
 }
 
@@ -72,7 +81,7 @@ static void viMgrMain(void* arg) {
     retrace = vc->retraceCount;
     if (retrace == 0) {
         retrace = 1;
-}
+    }
     dm = (OSDevMgr*)arg;
 
     while (TRUE) {
@@ -86,7 +95,7 @@ static void viMgrMain(void* arg) {
                     vc = __osViGetCurrentContext();
                     if (vc->msgq != NULL) {
                         osSendMesg(vc->msgq, vc->msg, OS_MESG_NOBLOCK);
-}
+                    }
                     retrace = vc->retraceCount;
                 }
 
@@ -105,6 +114,8 @@ static void viMgrMain(void* arg) {
                 break;
             case OS_MESG_TYPE_COUNTER:
                 __osTimerInterrupt();
+                break;
+            default:
                 break;
         }
     }

@@ -1,8 +1,18 @@
 #include "PR/os_internal.h"
+#include "PR/ultraerror.h"
 #include "osint.h"
 
 void osSetThreadPri(OSThread* t, OSPri pri) {
-    register u32 saveMask = __osDisableInt();
+    register u32 saveMask;
+
+#ifdef _DEBUG
+    if ((pri < OS_PRIORITY_IDLE) || (pri > OS_PRIORITY_MAX)) {
+        __osError(ERR_OSSETTHREADPRI, 1, pri);
+        return 0;
+    }
+#endif
+
+    saveMask = __osDisableInt();
 
     if (t == NULL) {
         t = __osRunningThread;

@@ -32,7 +32,7 @@ s32 osGbpakReadId(OSPfs* pfs, OSGbpakId* id, u8* status) {
 
         ret = osGbpakGetStatus(pfs, status);
 
-        if (ret == 0xD) {
+        if (ret == PFS_ERR_NEW_GBCART) {
             ret = PFS_ERR_CONTRFAIL;
         }
 
@@ -45,8 +45,8 @@ s32 osGbpakReadId(OSPfs* pfs, OSGbpakId* id, u8* status) {
         }
 
         if (bcmp(nintendo, buf + 4, ARRLEN(nintendo))) {
-            for (i = 0; i < ARRLEN(temp); i++) {
-                temp[i] = 0;
+            for (i = 0; i < ARRLEN(temp); temp[i++] = 0) {
+                ;
             }
 
             ERRCK(osGbpakReadWrite(pfs, OS_WRITE, 0x6000U, temp, ARRLEN(temp)));

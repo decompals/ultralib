@@ -1,5 +1,5 @@
-#include <PR/os_internal.h>
-#include <PR/rcp.h>
+#include "PR/os_internal.h"
+#include "PR/rcp.h"
 #include "viint.h"
 
 // TODO: this comes from a header
@@ -9,8 +9,8 @@ void __osViSwapContext() {
     register OSViMode* vm;
     register __OSViContext* vc;
     u32 origin;
-    u32 vStart;
     u32 hStart;
+    u32 vStart;
     u32 nomValue;
     u32 field;
 

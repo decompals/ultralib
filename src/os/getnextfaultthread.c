@@ -5,11 +5,7 @@ OSThread* __osGetNextFaultedThread(OSThread* lastFault) {
     register int saveMask = __osDisableInt();
     register OSThread* fault;
 
-    if (lastFault == NULL) {
-        fault = __osActiveQueue;
-    } else {
-        fault = lastFault;
-    }
+    fault = lastFault == NULL ? __osActiveQueue : lastFault;
 
     while (fault->priority != -1) {
         if ((fault->flags & OS_FLAG_FAULT) != 0 && fault != lastFault) {

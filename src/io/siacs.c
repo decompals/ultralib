@@ -16,7 +16,7 @@ void __osSiGetAccess(void) {
     OSMesg dummyMesg;
     if (!__osSiAccessQueueEnabled) {
         __osSiCreateAccessQueue();
-}
+    }
     osRecvMesg(&__osSiAccessQueue, &dummyMesg, OS_MESG_BLOCK);
 }
 

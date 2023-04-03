@@ -7,19 +7,22 @@ OSThread* __osActiveQueue = (OSThread*)&__osThreadTail;
 OSThread* __osRunningThread = { 0 };
 OSThread* __osFaultedThread = { 0 };
 
-void __osDequeueThread(OSThread** queue, OSThread* t) {
-    register OSThread** pred;
+void __osDequeueThread(register OSThread** queue, register OSThread* t) {
+    register OSThread* pred;
     register OSThread* succ;
 
     pred = queue;
-    succ = *pred;
+    succ = pred->next;
 
     while (succ != NULL) {
         if (succ == t) {
-            *pred = t->next;
+            pred->next = t->next;
+#ifdef _DEBUG
+            t->next = NULL;
+#endif
             return;
         }
         pred = succ;
-        succ = *pred;
+        succ = pred->next;
     }
 }

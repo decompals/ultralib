@@ -23,16 +23,14 @@ s32 osPfsFileState(OSPfs* pfs, s32 file_no, OSPfsState* state) {
         return PFS_ERR_INVALID;
     }
 
-    next_page = dir.start_page;
     pages = 0;
+    next_page = dir.start_page;
     bank = 0xFF;
 
     while (TRUE) {
         if (next_page.ipage < pfs->inode_start_page) {
             break;
-        }
-
-        if (next_page.inode_t.bank != bank) {
+        } else if (next_page.inode_t.bank != bank) {
             bank = next_page.inode_t.bank;
             ERRCK(__osPfsRWInode(pfs, &inode, PFS_READ, bank));
         }
@@ -51,5 +49,6 @@ s32 osPfsFileState(OSPfs* pfs, s32 file_no, OSPfsState* state) {
     bcopy(&dir.game_name, state->game_name, PFS_FILE_NAME_LEN);
     bcopy(&dir.ext_name, state->ext_name, PFS_FILE_EXT_LEN);
 
-    return __osPfsGetStatus(pfs->queue, pfs->channel);
+    ret = __osPfsGetStatus(pfs->queue, pfs->channel);
+    return ret;
 }

@@ -16,7 +16,7 @@ void __osPiGetAccess(void) {
     OSMesg dummyMesg;
     if (!__osPiAccessQueueEnabled) {
         __osPiCreateAccessQueue();
-}
+    }
     osRecvMesg(&__osPiAccessQueue, &dummyMesg, OS_MESG_BLOCK);
 }
 
