@@ -3,7 +3,8 @@
 include util.mk
 
 # Preprocessor definitions
-DEFINES := 
+
+DEFINES :=
 
 SRC_DIRS :=
 
@@ -76,10 +77,13 @@ AR        := mips-n64-ar
 
 INCLUDE_DIRS += /usr/include/n64 /usr/include/n64/PR include $(BUILD_DIR) $(BUILD_DIR)/include src .
 
-C_DEFINES := $(foreach d,$(DEFINES),-D$(d))
-DEF_INC_CFLAGS := $(foreach i,$(INCLUDE_DIRS),-I$(i)) $(C_DEFINES)
 
-CFLAGS = -G 0 $(OPT_FLAGS) -mabi=32 -ffreestanding -mfix4300 $(DEF_INC_CFLAGS) -Wall -fwrapv
+GBIDEFINE := -DF3DEX_GBI_2
+
+C_DEFINES = $(foreach d,$(DEFINES),-D$(d)) $(GBIDEFINE)
+DEF_INC_CFLAGS = $(foreach i,$(INCLUDE_DIRS),-I$(i)) $(C_DEFINES)
+
+CFLAGS = -G 0 $(OPT_FLAGS) -mabi=32 -ffreestanding -mfix4300 -fno-stack-protector -mno-check-zero-division $(DEF_INC_CFLAGS) -Wall -fwrapv
 ASFLAGS     := -march=vr4300 -mabi=32 $(foreach i,$(INCLUDE_DIRS),-I$(i)) $(foreach d,$(DEFINES),--defsym $(d))
 
 # C preprocessor flags
@@ -117,8 +121,12 @@ ALL_DIRS := $(BUILD_DIR) $(addprefix $(BUILD_DIR)/,$(SRC_DIRS))
 # Make sure build directory exists before compiling anything
 DUMMY != mkdir -p $(ALL_DIRS)
 
-$(BUILD_DIR)/src/voice/%.o: DEFINES += LANG_JAPANESE
-#$(BUILD_DIR)/src/voice/%.o: CC := tools/compile_sjis.py -D__CC=$(CC) -D__BUILD_DIR=$(BUILD_DIR)
+$(BUILD_DIR)/src/voice/%.o: DEFINES += LANG_JAPANESE=1
+$(BUILD_DIR)/src/gu/parse_gbi.o: GBIDEFINE := 
+$(BUILD_DIR)/src/gu/us2dex_emu.o: GBIDEFINE = -DF3DEX_GBI
+$(BUILD_DIR)/src/sp/sprite.o: GBIDEFINE := 
+$(BUILD_DIR)/src/sp/spriteex.o: GBIDEFINE := 
+$(BUILD_DIR)/src/sp/spriteex2.o: GBIDEFINE := 
 
 #==============================================================================#
 # Compilation Recipes                                                          #
@@ -127,15 +135,15 @@ $(BUILD_DIR)/src/voice/%.o: DEFINES += LANG_JAPANESE
 # Compile C code
 $(BUILD_DIR)/src/voice/%.o: src/voice/%.c
 	$(call print,Compiling:,$<,$@)
-	$(V)tools/compile_sjis.py -D__CC=$(CC) -D__BUILD_DIR=$(BUILD_DIR) -c $(CFLAGS) -Isrc -Isrc/voice -MMD -MF $(BUILD_DIR)/src/voice/$*.d  -o $@ $<
+	$(V)tools/compile_sjis.py -D__CC=$(CC) -D__BUILD_DIR=$(BUILD_DIR) -c $(CFLAGS)  -D_LANGUAGE_C -Isrc -Isrc/voice -MMD -MF $(BUILD_DIR)/src/voice/$*.d  -o $@ $<
 #	$(V)$(CC) -c $(CFLAGS) -MMD -MF $(BUILD_DIR)/$*.d  -o $@ $<
 
 $(BUILD_DIR)/%.o: %.c
 	$(call print,Compiling:,$<,$@)
-	$(V)$(CC) -c $(CFLAGS) -MMD -MF $(BUILD_DIR)/$*.d  -o $@ $<
+	$(V)$(CC) -c $(CFLAGS) -D_LANGUAGE_C -MMD -MF $(BUILD_DIR)/$*.d  -o $@ $<
 $(BUILD_DIR)/%.o: $(BUILD_DIR)/%.c
 	$(call print,Compiling:,$<,$@)
-	$(V)$(CC) -c $(CFLAGS) -MMD -MF $(BUILD_DIR)/$*.d  -o $@ $<
+	$(V)$(CC) -c $(CFLAGS) -D_LANGUAGE_C -MMD -MF $(BUILD_DIR)/$*.d  -o $@ $<
 
 # Assemble assembly code
 $(BUILD_DIR)/%.o: %.s
@@ -147,7 +155,15 @@ $(LIB): $(O_FILES)
 	@$(PRINT) "$(GREEN)Linking $(VERSION):  $(BLUE)$@ $(NO_COL)\n"
 	$(V)$(AR) rcs -o $@ $(O_FILES)
 
-.PHONY: clean default
+all:
+	$(MAKE) VERSION=libultra
+	cp $(BUILD_DIR_BASE)/libultra/libultra.a $(BUILD_DIR_BASE)
+	$(MAKE) VERSION=libultra_d
+	cp $(BUILD_DIR_BASE)/libultra_d/libultra_d.a $(BUILD_DIR_BASE)
+	$(MAKE) VERSION=libultra_rom
+	cp $(BUILD_DIR_BASE)/libultra_rom/libultra_rom.a $(BUILD_DIR_BASE)
+
+.PHONY: clean default all
 # with no prerequisites, .SECONDARY causes no intermediate target to be removed
 .SECONDARY:
 
