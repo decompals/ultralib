@@ -1,3 +1,11 @@
+#define SET64 \
+.set gp=64; \
+.set fp=64;
+
+#define UNSET64 \
+.set gp=32; \
+.set fp=32;
+
 #include "PR/R4300.h"
 #include "sys/asm.h"
 #include "sys/regdef.h"
@@ -6,6 +14,9 @@
 #include "PR/rdb.h"
 #include "exceptasm.h"
 #include "threadasm.h"
+
+#undef gp
+#undef fp
 
 #define KMC_CODE_ENTRY  0xBFF00014
 #define KMC_WPORT       0xBFF08000
@@ -167,9 +178,11 @@ END(__ptException)
 LEAF(__osException) 
     la      k0, __osThreadSave
     /* save AT */
+    SET64
 .set noat
     sd      $1, THREAD_GP1(k0);
 .set at
+    UNSET64
     /* save sr */
 STAY2(mfc0  k1, C0_SR)
     sw      k1, THREAD_SR(k0)
@@ -177,9 +190,11 @@ STAY2(mfc0  k1, C0_SR)
     and     k1, k1, -4
 STAY2(mtc0  k1, C0_SR)
     /* save other regs */
+    SET64
     sd      $8, THREAD_GP8(k0)
     sd      $9, THREAD_GP9(k0)
     sd      $10, THREAD_GP10(k0)
+    UNSET64
     /* say fp has not been used */
     sw      zero, THREAD_FP(k0)
     /* this instruction is useless, leftover because of bad placement of an ifdef for the debug version */
@@ -383,6 +398,7 @@ savecontext:
 #ifndef _FINALROM
     sw      k0, __osPreviousThread
 #endif
+    SET64
     ld      t1, THREAD_GP1(t0)
     sd      t1, THREAD_GP1(k0)
     ld      t1, THREAD_SR(t0)
@@ -423,6 +439,7 @@ savecontext:
     sd      t0, THREAD_LO(k0)
     mfhi    t0
     sd      t0, THREAD_HI(k0)
+    UNSET64
 
     lw      k1, THREAD_SR(k0)
     andi    t1, k1, SR_IMASK
@@ -464,6 +481,7 @@ STAY2(mfc0  t0, C0_EPC)
     cfc1    t0, fcr31
     nop
     sw      t0, THREAD_FPCSR(k0)
+    SET64
     sdc1    $f0, THREAD_FP0(k0)
     sdc1    $f2, THREAD_FP2(k0)
     sdc1    $f4, THREAD_FP4(k0)
@@ -480,6 +498,7 @@ STAY2(mfc0  t0, C0_EPC)
     sdc1    $f26, THREAD_FP26(k0)
     sdc1    $f28, THREAD_FP28(k0)
     sdc1    $f30, THREAD_FP30(k0)
+    UNSET64
 1:
 STAY2(mfc0  t0, C0_CAUSE)
     sw      t0, THREAD_CAUSE(k0)
@@ -818,6 +837,7 @@ LEAF(__osEnqueueAndYield)
 STAY2(mfc0  t0, C0_SR)
     ori     t0, t0, SR_EXL
     sw      t0, THREAD_SR(a1)
+    SET64
     sd      s0, THREAD_GP16(a1)
     sd      s1, THREAD_GP17(a1)
     sd      s2, THREAD_GP18(a1)
@@ -826,21 +846,24 @@ STAY2(mfc0  t0, C0_SR)
     sd      s5, THREAD_GP21(a1)
     sd      s6, THREAD_GP22(a1)
     sd      s7, THREAD_GP23(a1)
-    sd      gp, THREAD_GP28(a1)
+    sd      $gp, THREAD_GP28(a1)
     sd      sp, THREAD_GP29(a1)
     sd      s8, THREAD_GP30(a1)
     sd      ra, THREAD_GP31(a1)
+    UNSET64
     sw      ra, THREAD_PC(a1)
     lw      k1, THREAD_FP(a1)
     beqz    k1, 1f
     cfc1    k1, fcr31
     sw      k1, THREAD_FPCSR(a1)
+    SET64
     sdc1    $f20, THREAD_FP20(a1)
     sdc1    $f22, THREAD_FP22(a1)
     sdc1    $f24, THREAD_FP24(a1)
     sdc1    $f26, THREAD_FP26(a1)
     sdc1    $f28, THREAD_FP28(a1)
     sdc1    $f30, THREAD_FP30(a1)
+    UNSET64
 1:
     lw      k1, THREAD_SR(a1)
     andi    t1, k1, SR_IMASK
@@ -933,6 +956,7 @@ __osDispatchThreadSave:
     and     k1, k1, ~SR_IMASK
     or      k1, k1, t1
 STAY2(mtc0  k1, C0_SR)
+    SET64
 .set noat
     ld      $1, THREAD_GP1(k0)
 .set at
@@ -968,6 +992,7 @@ STAY2(mtc0  k1, C0_SR)
     mtlo    k1
     ld      k1, THREAD_HI(k0)
     mthi    k1
+    UNSET64
     lw      k1, THREAD_PC(k0)
 STAY2(mtc0  k1, C0_EPC)
     lw      k1, THREAD_FP(k0)
@@ -975,6 +1000,7 @@ STAY2(mtc0  k1, C0_EPC)
 
     lw      k1, THREAD_FPCSR(k0)
 STAY2(ctc1  k1, fcr31)
+    SET64
     ldc1    $f0, THREAD_FP0(k0)
     ldc1    $f2, THREAD_FP2(k0)
     ldc1    $f4, THREAD_FP4(k0)
@@ -991,6 +1017,7 @@ STAY2(ctc1  k1, fcr31)
     ldc1    $f26, THREAD_FP26(k0)
     ldc1    $f28, THREAD_FP28(k0)
     ldc1    $f30, THREAD_FP30(k0)
+    UNSET64
     
 1:
     lw      k1, THREAD_RCP(k0)
