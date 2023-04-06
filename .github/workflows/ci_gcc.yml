@@ -25,6 +25,9 @@ jobs:
     - name: Get ready for SDK
       run: ./.github/scripts/sdkinst.sh
       shell: bash
+
+    - name: Update apt
+      run: sudo apt update
     
     - name: Install SDK packages
       uses: awalsh128/cache-apt-pkgs-action@latest
