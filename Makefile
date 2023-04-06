@@ -75,8 +75,9 @@ CPP       := cpp
 LD        := mips-n64-ld
 AR        := mips-n64-ar
 
-INCLUDE_DIRS += /usr/include/n64 /usr/include/n64/PR include $(BUILD_DIR) $(BUILD_DIR)/include src .
-
+# Do NOT depend on system-installed headers! If you need to make a header change,
+# test it in your source first!
+INCLUDE_DIRS += include include/PR $(BUILD_DIR) $(BUILD_DIR)/include src .
 
 GBIDEFINE := -DF3DEX_GBI_2
 
@@ -122,11 +123,11 @@ ALL_DIRS := $(BUILD_DIR) $(addprefix $(BUILD_DIR)/,$(SRC_DIRS))
 DUMMY != mkdir -p $(ALL_DIRS)
 
 $(BUILD_DIR)/src/voice/%.o: DEFINES += LANG_JAPANESE=1
-$(BUILD_DIR)/src/gu/parse_gbi.o: GBIDEFINE := 
+$(BUILD_DIR)/src/gu/parse_gbi.o: GBIDEFINE = 
 $(BUILD_DIR)/src/gu/us2dex_emu.o: GBIDEFINE = -DF3DEX_GBI
-$(BUILD_DIR)/src/sp/sprite.o: GBIDEFINE := 
-$(BUILD_DIR)/src/sp/spriteex.o: GBIDEFINE := 
-$(BUILD_DIR)/src/sp/spriteex2.o: GBIDEFINE := 
+$(BUILD_DIR)/src/sp/sprite.o: GBIDEFINE = 
+$(BUILD_DIR)/src/sp/spriteex.o: GBIDEFINE = 
+$(BUILD_DIR)/src/sp/spriteex2.o: GBIDEFINE = 
 
 #==============================================================================#
 # Compilation Recipes                                                          #
