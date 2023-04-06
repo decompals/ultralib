@@ -38,9 +38,32 @@ extern "C" {
 x:;							\
 	.frame	sp,0,ra
 
+#define	XLEAF(x)					\
+	.global x;
+
 #define	END(proc)					\
 	.end	proc
 
+#define	ABS(x, y)					\
+	.globl	x;					\
+	x	=	y
+	
+#define	EXPORT(x)					\
+	.globl	x;					\
+x:
+/*
+#define WEAK(x, y) \
+	.weak x; \
+	.set x,y;
+*/
+
+#define WEAK(x, y)
+
+#define STAY1(stmnt) .set noreorder; stmnt; .set reorder;
+#define STAY2(stmnt, arg1) .set noreorder; stmnt, arg1; .set reorder;
+#define STAY3(stmnt, arg1, arg2) .set noreorder; stmnt, arg1, arg2; .set reorder;
+#define NOP .set noreorder; nop; .set reorder;
+#define CACHE(op, reg) .set noreorder; cache op, reg; .set reorder;
 
 #ifdef __cplusplus
 }
