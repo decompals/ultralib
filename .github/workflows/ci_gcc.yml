@@ -27,7 +27,7 @@ jobs:
       shell: bash
 
     - name: Update apt
-      run: sudo apt update
+      run: sudo apt update -y
     
     - name: Install SDK packages
       uses: awalsh128/cache-apt-pkgs-action@latest
