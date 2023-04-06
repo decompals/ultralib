@@ -61,7 +61,7 @@ s32 osPfsChecker(OSPfs* pfs) {
                         }
                     }
 
-                    if (cc = corrupted(pfs, next_page, &cache) - cl) {
+                    if ((cc = corrupted(pfs, next_page, &cache) - cl) != 0) {
                         break;
                     }
 

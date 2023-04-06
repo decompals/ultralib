@@ -310,10 +310,10 @@ int __rmonSetSingleStep(int thread, u32* instptr) {
     if ((branchTarget & 3) != 0) {
         /* no branch target, set breakpoint at next pc */
         SetTempBreakpoint(instptr + 1, NULL);
-    } else if ((u32*)branchTarget == instptr) {
+    } else if (branchTarget == (u32)instptr) {
         /* branch target is this instruction, can't single step here */
         return FALSE;
-    } else if (IsJump(*instptr) || (u32*)branchTarget == instptr + 2) {
+    } else if (IsJump(*instptr) || branchTarget == (u32)(instptr + 2)) {
         /* unconditional branch, set at branch target */
         SetTempBreakpoint((u32*)branchTarget, NULL);
     } else {

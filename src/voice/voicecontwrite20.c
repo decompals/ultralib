@@ -3,6 +3,7 @@
 #include "PR/os_voice.h"
 #include "voiceinternal.h"
 #include "io/controller_voice.h"
+#include "io/siint.h"
 
 #define WRITE20FORMAT(p) ((__OSVoiceWrite20Format*)(ptr))
 
@@ -22,13 +23,11 @@ s32 __osVoiceContWrite20(OSMesgQueue* mq, int channel, u16 address, u8* buffer) 
 
         ptr = (u8*)&__osPfsPifRam;
 
-        if ((__osContLastCmd != CONT_CMD_WRITE20_VOICE) || (__osPfsLastChannel != channel)) {
+        if ((__osContLastCmd != CONT_CMD_WRITE20_VOICE) || ((u32)__osPfsLastChannel != channel)) {
             __osContLastCmd = CONT_CMD_WRITE20_VOICE;
             __osPfsLastChannel = channel;
 
-            for (i = 0; i < channel; i++) {
-                *ptr++ = 0;
-            }
+            for (i = 0; i < channel; i++) { *ptr++ = 0; }
 
             __osPfsPifRam.pifstatus = CONT_CMD_EXE;
 

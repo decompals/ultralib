@@ -1,5 +1,6 @@
 #include "stdarg.h"
 #include "PR/os.h"
+#include "xstdio.h"
 
 extern void* __printfunc;
 

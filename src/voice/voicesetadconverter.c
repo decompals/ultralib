@@ -3,6 +3,7 @@
 #include "PR/os_voice.h"
 #include "voiceinternal.h"
 #include "io/controller_voice.h"
+#include "io/siint.h"
 
 #define SWRITEFORMAT(p) ((__OSVoiceSWriteFormat*)(p))
 
@@ -23,9 +24,7 @@ s32 __osVoiceSetADConverter(OSMesgQueue* mq, s32 channel, u8 data) {
             __osContLastCmd = CONT_CMD_SWRITE_VOICE;
             __osPfsLastChannel = channel;
 
-            for (i = 0; i < channel; i++) {
-                *ptr++ = 0;
-            }
+            for (i = 0; i < channel; i++) { *ptr++ = 0; }
 
             __osPfsPifRam.pifstatus = CONT_CMD_EXE;
 

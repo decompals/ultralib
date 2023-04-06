@@ -1,7 +1,6 @@
 #include "PR/rdb.h"
 #include "PR/ultratypes.h"
 #include "PR/os.h"
-#include "stdarg.h"
 #include "PR/ultraerror.h"
 #include "PR/ultralog.h"
 #include "PR/sptask.h"
@@ -28,6 +27,8 @@ OSMesg __osProfAckMesg;
 
 u32 __osProfNumSections;
 
+void osProfSendWord(u32 word);
+
 void __osProfileIO(void* arg) {
     s32 totalBytes;
     u32 bytesThisBlock;
@@ -41,8 +42,7 @@ void __osProfileIO(void* arg) {
         osProfSendWord(__osProfTimerPeriod);
         osProfSendWord(__osProfileOverflowBin);
 
-        t = __osProfileList;
-        while (t < __osProfileListEnd) {
+        for (t = __osProfileList; t < __osProfileListEnd; t++) {
             osProfSendWord(t->text_start);
             osProfSendWord(t->histo_size);
             osRecvMesg(&__osProfAckMQ, NULL, OS_MESG_BLOCK);
@@ -61,17 +61,13 @@ void __osProfileIO(void* arg) {
                 totalBytes -= bytesThisBlock;
                 osRecvMesg(&__osProfAckMQ, NULL, OS_MESG_BLOCK);
             }
-            t++;
         }
     }
 }
 
 void osProfSendWord(u32 word) {
-    u32 ct;
-    u8* sendPtr;
-
-    ct = 0;
-    sendPtr = &word;
+    u32 ct = 0;
+    u8* sendPtr = &word;
 
     while (ct < sizeof(word)) {
         ct += __osRdbSend(sendPtr + ct, sizeof(word) - ct, RDB_TYPE_GtoH_PROF_DATA);

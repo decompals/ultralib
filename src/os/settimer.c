@@ -20,7 +20,7 @@ int osSetTimer(OSTimer* t, OSTime countdown, OSTime interval, OSMesgQueue* mq, O
     t->next = NULL;
     t->prev = NULL;
     t->interval = interval;
-    t->value = (countdown == 0) ? interval : countdown;
+    t->value = (countdown != 0) ? countdown : interval;
     t->mq = mq;
     t->msg = msg;
 

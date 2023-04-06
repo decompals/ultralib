@@ -368,11 +368,13 @@ rdbout:
 .set at
     lw      k1, THREAD_SR(k0)
 STAY2(mtc0  k1, C0_SR)
+.set noreorder
     nop
     nop
     nop
     nop
     eret
+.set reorder
 
 skip_kmc_mode:
 #endif
@@ -1005,11 +1007,13 @@ STAY2(ctc1  k1, fcr31)
     la      k0, PHYS_TO_K1(MI_INTR_MASK_REG)
     sw      k1, 0(k0)
 
+.set noreorder
     nop
     nop
     nop
     nop
     eret
+.set reorder
 END(__osDispatchThread)
 
 LEAF(__osCleanupThread)

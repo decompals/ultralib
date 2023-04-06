@@ -11,6 +11,8 @@ BUILD_AR := $(BUILD_DIR)/$(TARGET).a
 
 WORKING_DIR := $(shell pwd)
 
+ifeq ($(findstring libgultra,$(TARGET)),libgultra)
+COMPILER := gcc
 CPP := cpp -P
 AR := ar
 AS := tools/gcc/as
@@ -19,18 +21,56 @@ AR_OLD := tools/gcc/ar
 
 export COMPILER_PATH := $(WORKING_DIR)/tools/gcc
 
-CFLAGS := -w -nostdinc -c -G 0 -mgp32 -mfp32 -mips3 -D_LANGUAGE_C
-ASFLAGS := -w -nostdinc -c -G 0 -mgp32 -mfp32 -mips3 -DMIPSEB -D_LANGUAGE_ASSEMBLY -D_MIPS_SIM=1 -D_ULTRA64 -x assembler-with-cpp
+CFLAGS := -w -nostdinc -c -G 0 -mgp32 -mfp32 -D_LANGUAGE_C
+ASFLAGS := -w -nostdinc -c -G 0 -mgp32 -mfp32 -DMIPSEB -D_LANGUAGE_ASSEMBLY -D_MIPS_SIM=1 -D_ULTRA64 -x assembler-with-cpp
 GBIDEFINE := -DF3DEX_GBI_2
 CPPFLAGS = -D_MIPS_SZLONG=32 -D__USE_ISOC99 $(GBIDEFINE)
 INCLUDES = -I . -I $(WORKING_DIR)/include -I $(WORKING_DIR)/include/gcc -I $(WORKING_DIR)/include/PR
+MIPS_VERSION := -mips3
+ASOPTFLAGS :=
+
+ifeq ($(findstring _rom,$(TARGET)),_rom)
+CPPFLAGS += -D_FINALROM
+endif
+
+else ifeq ($(findstring libultra,$(TARGET)),libultra)
+COMPILER := ido
+CPP := cpp -P
+AR := ar
+AS := tools/ido/cc
+CC := tools/ido/cc
+AR_OLD := tools/ar.py
+ASOPTFLAGS := -O0
+
+export COMPILER_PATH := $(WORKING_DIR)/tools/ido
+
+CFLAGS := -c -Wab,-r4300_mul -non_shared -G 0 -nostdinc -Xcpluscomm -fullwarn -D_LANGUAGE_C -woff 516,649,838,712
+ASFLAGS := -c -Wab,-r4300_mul -non_shared -G 0 -nostdinc -o32 -woff 516,649,838,712
+GBIDEFINE := -DF3DEX_GBI_2
+CPPFLAGS = -D_MIPS_SZLONG=32 $(GBIDEFINE)
+INCLUDES = -I $(WORKING_DIR)/include -I $(WORKING_DIR)/include/ido -I $(WORKING_DIR)/include/PR
+MIPS_VERSION := -mips2
+
+endif
 
 ifeq ($(findstring _d,$(TARGET)),_d)
 CPPFLAGS += -D_DEBUG
+
+ifeq ($(COMPILER), gcc)
 OPTFLAGS := -O0
+else ifeq ($(COMPILER), ido)
+OPTFLAGS := -O1 -g2
+endif
+
 else
 CPPFLAGS += -DNDEBUG
+
+ifeq ($(COMPILER), gcc)
 OPTFLAGS := -O3
+else ifeq ($(COMPILER), ido)
+OPTFLAGS := -O2
+endif
+
 endif
 
 ifeq ($(findstring _rom,$(TARGET)),_rom)
@@ -109,6 +149,8 @@ ifneq ($(NON_MATCHING),1)
 	@touch $@
 endif
 
+ifeq ($(COMPILER), gcc)
+
 ifeq ($(findstring _d,$(TARGET)),_d)
 $(BUILD_DIR)/src/rmon/%.marker: OPTFLAGS := -O0
 endif
@@ -119,11 +161,11 @@ $(BUILD_DIR)/src/os/initialize_isv.marker: OPTFLAGS := -O2
 $(BUILD_DIR)/src/os/initialize_isv.marker: STRIP = && tools/gcc/strip-2.7 -N initialize_isv.c $(WORKING_DIR)/$(@:.marker=.o) $(WORKING_DIR)/$(@:.marker=.o)
 $(BUILD_DIR)/src/os/assert.marker: OPTFLAGS := -O0
 $(BUILD_DIR)/src/os/seterrorhandler.marker: OPTFLAGS := -O0
-$(BUILD_DIR)/src/gu/parse_gbi.marker: GBIDEFINE := 
+$(BUILD_DIR)/src/gu/parse_gbi.marker: GBIDEFINE :=
 $(BUILD_DIR)/src/gu/us2dex_emu.marker: GBIDEFINE := -DF3DEX_GBI
-$(BUILD_DIR)/src/sp/sprite.marker: GBIDEFINE := 
-$(BUILD_DIR)/src/sp/spriteex.marker: GBIDEFINE := 
-$(BUILD_DIR)/src/sp/spriteex2.marker: GBIDEFINE := 
+$(BUILD_DIR)/src/sp/sprite.marker: GBIDEFINE :=
+$(BUILD_DIR)/src/sp/spriteex.marker: GBIDEFINE :=
+$(BUILD_DIR)/src/sp/spriteex2.marker: GBIDEFINE :=
 $(BUILD_DIR)/src/mgu/%.marker: export VR4300MUL := OFF
 $(BUILD_DIR)/src/mgu/rotate.marker: export VR4300MUL := ON
 $(BUILD_DIR)/src/debug/%.marker: ASFLAGS += -P
@@ -141,8 +183,43 @@ MDEBUG_FILES := $(BUILD_DIR)/src/monutil.marker
 $(BUILD_DIR)/src/monutil.marker: CC := tools/ido/cc
 $(BUILD_DIR)/src/monutil.marker: ASFLAGS := -non_shared -mips2 -fullwarn -verbose -Xcpluscomm -G 0 -woff 516,649,838,712 -Wab,-r4300_mul -nostdinc -o32 -c
 
+else ifeq ($(COMPILER), ido)
+
+ifneq ($(findstring _d,$(TARGET)),_d)
+$(BUILD_DIR)/src/debug/%.marker: OPTFLAGS := -O1
+$(BUILD_DIR)/src/host/%.marker: OPTFLAGS := -O1
+$(BUILD_DIR)/src/os/%.marker: OPTFLAGS := -O1
+$(BUILD_DIR)/src/rmon/%.marker: OPTFLAGS := -O1
+$(BUILD_DIR)/src/libc/ll.marker: OPTFLAGS := -O1
+$(BUILD_DIR)/src/libc/llbit.marker: OPTFLAGS := -O1
+$(BUILD_DIR)/src/libc/llcvt.marker: OPTFLAGS := -O1
+$(BUILD_DIR)/src/log/%.marker: OPTFLAGS := -O1
+
+$(BUILD_DIR)/src/libc/%.marker: ASOPTFLAGS := -O2
+$(BUILD_DIR)/src/log/%.marker: ASOPTFLAGS := -O1
+$(BUILD_DIR)/src/gu/%.marker: ASOPTFLAGS := -O2
+$(BUILD_DIR)/src/mgu/%.marker: ASOPTFLAGS := -O2
+$(BUILD_DIR)/src/os/%.marker: ASOPTFLAGS := -O1
+$(BUILD_DIR)/src/rmon/%.marker: ASOPTFLAGS := -O1
+endif
+
+$(BUILD_DIR)/src/os/initialize_isv.marker: OPTFLAGS := -O2
+$(BUILD_DIR)/src/gu/parse_gbi.marker: GBIDEFINE :=
+$(BUILD_DIR)/src/gu/us2dex_emu.marker: GBIDEFINE := -DF3DEX_GBI
+$(BUILD_DIR)/src/sp/sprite.marker: GBIDEFINE :=
+$(BUILD_DIR)/src/sp/spriteex.marker: GBIDEFINE :=
+$(BUILD_DIR)/src/sp/spriteex2.marker: GBIDEFINE :=
+$(BUILD_DIR)/src/libc/ll.marker: MIPS_VERSION := -mips3 -32
+$(BUILD_DIR)/src/libc/llbit.marker: MIPS_VERSION := -mips3 -32
+$(BUILD_DIR)/src/libc/llcvt.marker: MIPS_VERSION := -mips3 -32
+$(BUILD_DIR)/src/os/exceptasm.marker: MIPS_VERSION := -mips3 -32
+$(BUILD_DIR)/src/voice/%.marker: OPTFLAGS += -DLANG_JAPANESE -I$(WORKING_DIR)/src -I$(WORKING_DIR)/src/voice
+$(BUILD_DIR)/src/voice/%.marker: CC := tools/compile_sjis.py -D__CC=$(WORKING_DIR)/$(CC) -D__BUILD_DIR=$(BUILD_DIR)
+
+endif
+
 $(BUILD_DIR)/%.marker: %.c
-	cd $(<D) && $(WORKING_DIR)/$(CC) $(CFLAGS) $(CPPFLAGS) $(OPTFLAGS) $(<F) $(INCLUDES) -o $(WORKING_DIR)/$(@:.marker=.o)
+	cd $(<D) && $(WORKING_DIR)/$(CC) $(CFLAGS) $(MIPS_VERSION) $(CPPFLAGS) $(OPTFLAGS) $(<F) $(INCLUDES) -o $(WORKING_DIR)/$(@:.marker=.o)
 ifneq ($(NON_MATCHING),1)
 # check if this file is in the archive; patch corrupted bytes and change file timestamps to match original if so
 		$(if $(findstring $(BASE_DIR)/$(@F:.marker=.o), $(BASE_OBJS)), \
@@ -156,7 +233,7 @@ ifneq ($(NON_MATCHING),1)
 endif
 
 $(BUILD_DIR)/%.marker: %.s
-	cd $(<D) && $(WORKING_DIR)/$(CC) $(ASFLAGS) $(CPPFLAGS) $(<F) $(INCLUDES) -o $(WORKING_DIR)/$(@:.marker=.o)
+	cd $(<D) && $(WORKING_DIR)/$(CC) $(ASFLAGS) $(MIPS_VERSION) $(CPPFLAGS) $(ASOPTFLAGS) $(<F) $(INCLUDES) -o $(WORKING_DIR)/$(@:.marker=.o)
 ifneq ($(NON_MATCHING),1)
 # check if this file is in the archive; patch corrupted bytes and change file timestamps to match original if so
 	@$(if $(findstring $(BASE_DIR)/$(@F:.marker=.o), $(BASE_OBJS)), \

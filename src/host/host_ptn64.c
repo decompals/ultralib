@@ -1,6 +1,7 @@
 #include "PR/os_internal.h"
 #include "PR/rcp.h"
 #include "../io/piint.h"
+#include "memory.h"
 
 #include "macros.h"
 
@@ -103,8 +104,7 @@ void osReadHost_pt(void* dramAddr, u32 nbytes) {
 
     while (ct != 0) {
         if (ct > 0x100) {
-            ct1 = 0x100;
-            ct1_bak = 0x100;
+            ct1_bak = ct1 = 0x100;
             ct -= 0x100;
         } else {
             ct1_bak = ct1 = ct;
@@ -179,8 +179,7 @@ void osWriteHost_pt(void* dramAddr, u32 nbytes) {
 
     while (ct != 0) {
         if (ct > 0x100) {
-            ct1 = 0x100;
-            ct1_bak = 0x100;
+            ct1_bak = ct1 = 0x100;
             ct -= 0x100;
         } else {
             ct1_bak = ct1 = ct;

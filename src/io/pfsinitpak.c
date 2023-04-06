@@ -1,5 +1,6 @@
 #include "PR/os_internal.h"
 #include "controller.h"
+#include "siint.h"
 
 static s32 __osPfsCheckRamArea(OSPfs* pfs);
 

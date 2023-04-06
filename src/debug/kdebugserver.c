@@ -34,7 +34,7 @@ static void send_packet(u8* s, u32 n) {
     for (i = 0; i < n; i++) {
         packet.buf[i] = s[i];
     }
-    *(volatile rdbPacket*)RDB_BASE_REG = packet;
+    *(vu32*)RDB_BASE_REG = *(u32*)&packet;
 }
 
 static void clear_IP6(void) {

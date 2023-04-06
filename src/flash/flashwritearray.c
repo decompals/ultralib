@@ -6,7 +6,7 @@ s32 osFlashWriteArray(u32 page_num) {
     OSMesgQueue timerMesgQueue;
     OSMesg dummy;
 
-    if (__osFlashVersion == NEW_FLASH) {
+    if ((u32)__osFlashVersion == NEW_FLASH) {
         osEPiWriteIo(&__osFlashHandler, __osFlashHandler.baseAddress | FLASH_CMD_REG, FLASH_CMD_PAGE_PROGRAM);
     }
 

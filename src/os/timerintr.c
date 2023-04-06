@@ -73,9 +73,7 @@ void __osTimerInterrupt(void) {
                 osSendMesg(t->mq, t->msg, OS_MESG_NOBLOCK);
             } else {
                 pc = __osRunQueue->context.pc;
-                prof = __osProfileList;
-
-                while (prof < __osProfileListEnd) {
+                for (prof = __osProfileList; prof < __osProfileListEnd; prof++) {
                     offset = pc - (u32)prof->text_start;
 
                     if (offset >= 0) {
@@ -84,7 +82,6 @@ void __osTimerInterrupt(void) {
                             goto __ProfDone;
                         }
                     }
-                    prof++;
                 }
 
                 __osProfileOverflowBin++;
@@ -119,16 +116,13 @@ void __osSetTimerIntr(OSTime tim) {
 OSTime __osInsertTimer(OSTimer* t) {
     OSTimer* timep;
     OSTime tim;
-    u32 savedMask;
-    savedMask = __osDisableInt();
+    u32 savedMask = __osDisableInt();
 
     timep = __osTimerList->next;
     tim = t->value;
-
-    while (timep != __osTimerList && tim > timep->value) {
-        tim -= timep->value;
-        timep = timep->next;
-    }
+    for (; timep != __osTimerList && tim > timep->value; timep = timep->next) {
+            tim -= timep->value;
+         }
 
     t->value = tim;
 

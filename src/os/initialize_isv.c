@@ -104,7 +104,6 @@ int __checkHardware_isv(void) {
     u32 i = 0;
     u32 data; // BUG: data is used uninitialized
     u32 save[4];
-    u32 addr;
     OSPiHandle* hnd = osCartRomInit();
 
     gISVDbgPrnAdrs = NULL;
@@ -121,7 +120,7 @@ int __checkHardware_isv(void) {
     data = IS64_MAGIC;
     osEPiWriteIo(hnd, 0xB0000100, IS64_MAGIC);
 
-    for (i = 0; i <= 0x1FFFF; i++) {
+    for (i = 0; i < 0x20000; i++) {
         osEPiReadIo(hnd, 0xB000010C, &data);
         if (data == IS64_MAGIC) {
             data = 0;

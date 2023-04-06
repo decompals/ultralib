@@ -16,12 +16,12 @@ void osViSetSpecialFeatures(u32 func) {
 #ifdef _DEBUG
     if (!__osViDevMgr.active) {
         __osError(ERR_OSVISETSPECIAL_VIMGR, 0);
-        return 0;
+        return;
     }
 
     if ((func < OS_VI_GAMMA_ON) || (func > OS_VI_SPECIAL_MAX)) {
         __osError(ERR_OSVISETSPECIAL_VALUE, 1, func);
-        return 0;
+        return;
     }
 #endif
 
