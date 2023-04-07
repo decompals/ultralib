@@ -1,7 +1,7 @@
 NON_MATCHING ?= 0
 
 # One of libgultra_rom, libgultra_d, libgultra
-TARGET ?= libgultra_rom
+TARGET ?= libultra_d
 
 BASE_DIR := base_$(TARGET)
 BASE_AR := $(TARGET).a
@@ -132,6 +132,11 @@ setup:
 	$(MAKE) -C tools
 	cd $(BASE_DIR) && $(AR) xo ../$(BASE_AR)
 	chmod -R +rw $(BASE_DIR)
+# strip off mdebug
+ifeq ($(COMPILER),ido)
+	tools/remove_mdebug.sh $(BASE_DIR)
+endif
+
 
 # KMC gcc has a custom flag, N64ALIGN, which forces 8 byte alignment on arrays. This can be used to match, but
 # an explicit aligned(8) attribute can be used instead. We opted for the latter for better compatibilty with
@@ -221,8 +226,17 @@ endif
 $(BUILD_DIR)/%.marker: %.c
 	cd $(<D) && $(WORKING_DIR)/$(CC) $(CFLAGS) $(MIPS_VERSION) $(CPPFLAGS) $(OPTFLAGS) $(<F) $(INCLUDES) -o $(WORKING_DIR)/$(@:.marker=.o)
 ifneq ($(NON_MATCHING),1)
+ifeq ($(COMPILER), ido)
+	mips-linux-gnu-objcopy --remove-section .mdebug $(@:.marker=.o)
+	$(if $(findstring $(BASE_DIR)/$(@F:.marker=.o), $(BASE_OBJS)), \
+	 $(COMPARE_OBJ) && \
+	 touch -r $(BASE_DIR)/$(@F:.marker=.o) $(@:.marker=.o), \
+	 echo "Object file $(<F:.marker=.o) is not in the current archive" \
+	)
+	@touch $@
+else
 # check if this file is in the archive; patch corrupted bytes and change file timestamps to match original if so
-		$(if $(findstring $(BASE_DIR)/$(@F:.marker=.o), $(BASE_OBJS)), \
+	@$(if $(findstring $(BASE_DIR)/$(@F:.marker=.o), $(BASE_OBJS)), \
 	 python3 tools/fix_objfile.py $(@:.marker=.o) $(BASE_DIR)/$(@F:.marker=.o) $(STRIP) && \
 	 $(COMPARE_OBJ) && \
 	 touch -r $(BASE_DIR)/$(@F:.marker=.o) $(@:.marker=.o), \
@@ -231,10 +245,20 @@ ifneq ($(NON_MATCHING),1)
 # create or update the marker file
 	@touch $@
 endif
+endif
 
 $(BUILD_DIR)/%.marker: %.s
 	cd $(<D) && $(WORKING_DIR)/$(CC) $(ASFLAGS) $(MIPS_VERSION) $(CPPFLAGS) $(ASOPTFLAGS) $(<F) $(INCLUDES) -o $(WORKING_DIR)/$(@:.marker=.o)
 ifneq ($(NON_MATCHING),1)
+ifeq ($(COMPILER), ido)
+	mips-linux-gnu-objcopy --remove-section .mdebug $(@:.marker=.o)
+	$(if $(findstring $(BASE_DIR)/$(@F:.marker=.o), $(BASE_OBJS)), \
+	 $(COMPARE_OBJ) && \
+	 touch -r $(BASE_DIR)/$(@F:.marker=.o) $(@:.marker=.o), \
+	 echo "Object file $(<F:.marker=.o) is not in the current archive" \
+	)
+	@touch $@
+else
 # check if this file is in the archive; patch corrupted bytes and change file timestamps to match original if so
 	@$(if $(findstring $(BASE_DIR)/$(@F:.marker=.o), $(BASE_OBJS)), \
 	 python3 tools/fix_objfile.py $(@:.marker=.o) $(BASE_DIR)/$(@F:.marker=.o) && \
@@ -244,6 +268,7 @@ ifneq ($(NON_MATCHING),1)
 	)
 # create or update the marker file
 	@touch $@
+endif
 endif
 
 # Rule for building files that require specific file paths in the mdebug section

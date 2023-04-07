@@ -1,4 +1,5 @@
-#include "PR/os_internal.h"
+#include "ultra64.h"
+#include "PR/os_internal_flash.h"
 
 s32 osFlashCheckEraseEnd(void) {
     u8 status;
