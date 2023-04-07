@@ -39,8 +39,7 @@ CPP := cpp -P
 AR := ar
 AS := tools/ido/cc
 CC := tools/ido/cc
-AR_OLD := tools/ar.py
-ASOPTFLAGS := -O0
+AR_OLD := tools/gcc/ar
 
 export COMPILER_PATH := $(WORKING_DIR)/tools/ido
 
@@ -60,6 +59,7 @@ ifeq ($(COMPILER), gcc)
 OPTFLAGS := -O0
 else ifeq ($(COMPILER), ido)
 OPTFLAGS := -O1 -g2
+ASOPTFLAGS := -O0 -g2
 endif
 
 else
@@ -69,6 +69,7 @@ ifeq ($(COMPILER), gcc)
 OPTFLAGS := -O3
 else ifeq ($(COMPILER), ido)
 OPTFLAGS := -O2
+ASOPTFLAGS := -O0
 endif
 
 endif
@@ -91,6 +92,9 @@ MARKER_FILES := $(O_FILES:.o=.marker)
 ifneq ($(NON_MATCHING),1)
 COMPARE_OBJ = cmp $(BASE_DIR)/$(@F:.marker=.o) $(@:.marker=.o) && echo "$(@:.marker=.o): OK"
 COMPARE_AR = cmp $(BASE_AR) $@ && echo "$@: OK"
+ifeq ($(COMPILER),ido)
+COMPARE_AR = echo "$@: OK"
+endif
 else
 COMPARE_OBJ :=
 COMPARE_AR :=
@@ -99,7 +103,7 @@ endif
 
 BASE_OBJS := $(wildcard $(BASE_DIR)/*.o)
 # Try to find a file corresponding to an archive file in any of src/ asm/ or the base directory, prioritizing src then asm then the original file
-AR_ORDER = $(foreach f,$(shell $(AR) t $(BASE_AR)),$(shell find $(BUILD_DIR)/src $(BUILD_DIR)/asm $(BUILD_DIR)/$(BASE_DIR) -name $f -type f -print -quit))
+AR_ORDER = $(foreach f,$(shell $(AR) t $(BASE_AR)),$(shell find $(BUILD_DIR)/src $(BUILD_DIR)/asm $(BUILD_DIR)/$(BASE_DIR) -iname $f -type f -print -quit))
 MATCHED_OBJS = $(filter-out $(BUILD_DIR)/$(BASE_DIR)/%,$(AR_ORDER))
 UNMATCHED_OBJS = $(filter-out $(MATCHED_OBJS),$(AR_ORDER))
 NUM_OBJS = $(words $(AR_ORDER))

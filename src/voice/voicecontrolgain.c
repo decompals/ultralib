@@ -1,6 +1,7 @@
 #include "PR/os_internal.h"
 #include "io/controller.h"
 #include "PR/os_voice.h"
+#include "voiceinternal.h"
 
 s32 osVoiceControlGain(OSVoiceHandle* hd, s32 analog, s32 digital) {
     s32 ret;

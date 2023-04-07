@@ -6,18 +6,12 @@
 #include "PR/sptask.h"
 #include "../os/osint.h"
 #include "macros.h"
+#include "osint_debug.h"
 
 #ifndef _FINALROM
 
-static u32 __osProfileActive = FALSE;
-static u32 __osProfileIOActive = FALSE;
-
-static OSThread __osProfileIOThread;
-unsigned char __osProfileIOStack[2400] ALIGNED(16);
-
 OSTimer __osProfTimer;
 OSMesg __osProfTimerMsg;
-u32 __osProfTimerPeriod;
 
 OSMesgQueue __osProfFlushMQ ALIGNED(8);
 OSMesg __osProfFlushMesg;
@@ -25,7 +19,16 @@ OSMesg __osProfFlushMesg;
 OSMesgQueue __osProfAckMQ ALIGNED(8);
 OSMesg __osProfAckMesg;
 
+u32 __osProfTimerPeriod;
+
 u32 __osProfNumSections;
+
+static u32 __osProfileActive = FALSE;
+static u32 __osProfileIOActive = FALSE;
+
+unsigned char __osProfileIOStack[2400] ALIGNED(16);
+
+static OSThread __osProfileIOThread;
 
 void osProfSendWord(u32 word);
 

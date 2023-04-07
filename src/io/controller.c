@@ -3,8 +3,6 @@
 #include "controller.h"
 #include "siint.h"
 
-s32 __osContinitialized = 0;
-
 OSPifRam __osContPifRam ALIGNED(16);
 u8 __osContLastCmd;
 u8 __osMaxControllers;
@@ -12,6 +10,8 @@ u8 __osMaxControllers;
 OSTimer __osEepromTimer;
 OSMesgQueue __osEepromTimerQ ALIGNED(8);
 OSMesg __osEepromTimerMsg;
+
+s32 __osContinitialized = 0;
 
 s32 osContInit(OSMesgQueue* mq, u8* bitpattern, OSContStatus* data) {
     OSMesg dummy;

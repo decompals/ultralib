@@ -1,6 +1,8 @@
 #include "PR/rcp.h"
 #include "PR/ultraerror.h"
 #include "../os/osint.h"
+//not sure if this should be here
+extern s32 osViClock;
 
 // TODO: this comes from a header
 #ident "$Revision: 1.17 $"

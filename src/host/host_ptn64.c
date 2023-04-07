@@ -1,6 +1,5 @@
 #include "PR/os_internal.h"
 #include "PR/rcp.h"
-#include "../io/piint.h"
 #include "memory.h"
 
 #include "macros.h"
@@ -13,6 +12,9 @@ static volatile unsigned int* n64piok = (unsigned*)PHYS_TO_K1(PI_STATUS_REG);
 static OSMesgQueue waitPtQueue ALIGNED(8);
 static OSMesg waitPtQueueBuf;
 static u32 isWaitPtQueueCreated = FALSE;
+
+void __osPiRelAccess(void);
+void __osPiGetAccess(void);
 
 static void createWaitPtQueue(void) {
     osCreateMesgQueue(&waitPtQueue, &waitPtQueueBuf, 1);
