@@ -77,7 +77,7 @@ AR        := mips-n64-ar
 
 # Do NOT depend on system-installed headers! If you need to make a header change,
 # test it in your source first!
-INCLUDE_DIRS += include include/PR $(BUILD_DIR) $(BUILD_DIR)/include src .
+INCLUDE_DIRS += include include/PR include/internal $(BUILD_DIR) $(BUILD_DIR)/include src .
 
 GBIDEFINE := -DF3DEX_GBI_2
 
@@ -122,21 +122,21 @@ ALL_DIRS := $(BUILD_DIR) $(addprefix $(BUILD_DIR)/,$(SRC_DIRS))
 # Make sure build directory exists before compiling anything
 DUMMY != mkdir -p $(ALL_DIRS)
 
-$(BUILD_DIR)/src/voice/%.o: DEFINES += LANG_JAPANESE=1
-$(BUILD_DIR)/src/gu/parse_gbi.o: GBIDEFINE = 
-$(BUILD_DIR)/src/gu/us2dex_emu.o: GBIDEFINE = -DF3DEX_GBI
-$(BUILD_DIR)/src/sp/sprite.o: GBIDEFINE = 
-$(BUILD_DIR)/src/sp/spriteex.o: GBIDEFINE = 
-$(BUILD_DIR)/src/sp/spriteex2.o: GBIDEFINE = 
+$(BUILD_DIR)/src/nintendo/voice/%.o: DEFINES += LANG_JAPANESE=1
+$(BUILD_DIR)/src/monegi/gu/parse_gbi.o: GBIDEFINE = 
+$(BUILD_DIR)/src/monegi/gu/us2dex_emu.o: GBIDEFINE = -DF3DEX_GBI
+$(BUILD_DIR)/src/monegi/sprite/sprite.o: GBIDEFINE = 
+$(BUILD_DIR)/src/monegi/sprite/spriteex.o: GBIDEFINE = 
+$(BUILD_DIR)/src/monegi/sprite/spriteex2.o: GBIDEFINE = 
 
 #==============================================================================#
 # Compilation Recipes                                                          #
 #==============================================================================#
 
 # Compile C code
-$(BUILD_DIR)/src/voice/%.o: src/voice/%.c
+$(BUILD_DIR)/src/nintendo/voice/%.o: src/nintendo/voice/%.c
 	$(call print,Compiling:,$<,$@)
-	$(V)tools/compile_sjis.py -D__CC=$(CC) -D__BUILD_DIR=$(BUILD_DIR) -c $(CFLAGS)  -D_LANGUAGE_C -Isrc -Isrc/voice -MMD -MF $(BUILD_DIR)/src/voice/$*.d  -o $@ $<
+	$(V)tools/compile_sjis.py -D__CC=$(CC) -D__BUILD_DIR=$(BUILD_DIR) -c $(CFLAGS)  -D_LANGUAGE_C -Isrc -Isrc/nintendo/voice -MMD -MF $(BUILD_DIR)/src/nintendo/voice/$*.d  -o $@ $<
 #	$(V)$(CC) -c $(CFLAGS) -MMD -MF $(BUILD_DIR)/$*.d  -o $@ $<
 
 $(BUILD_DIR)/%.o: %.c
