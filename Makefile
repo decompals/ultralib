@@ -1,7 +1,7 @@
 NON_MATCHING ?= 0
 
 # One of libgultra_rom, libgultra_d, libgultra
-TARGET ?= libultra_d
+TARGET ?= libultra_rom
 
 BASE_DIR := base_$(TARGET)
 BASE_AR := $(TARGET).a
@@ -29,6 +29,9 @@ INCLUDES = -I . -I $(WORKING_DIR)/include -I $(WORKING_DIR)/include/gcc -I $(WOR
 MIPS_VERSION := -mips3
 ASOPTFLAGS :=
 
+# fix object files by patching corrupted bytes and change file timestamps to match original
+FIX_OBJFILE = python3 tools/fix_objfile.py $(@:.marker=.o) $(BASE_DIR)/$(@F:.marker=.o) $(STRIP)
+
 ifeq ($(findstring _rom,$(TARGET)),_rom)
 CPPFLAGS += -D_FINALROM
 endif
@@ -50,6 +53,9 @@ CPPFLAGS = -D_MIPS_SZLONG=32 $(GBIDEFINE)
 INCLUDES = -I $(WORKING_DIR)/include -I $(WORKING_DIR)/include/ido -I $(WORKING_DIR)/include/PR
 MIPS_VERSION := -mips2
 
+# fix object files by stripping off mdebug section
+FIX_OBJFILE = mips-linux-gnu-objcopy --remove-section .mdebug $(@:.marker=.o)
+
 endif
 
 ifeq ($(findstring _d,$(TARGET)),_d)
@@ -69,7 +75,7 @@ ifeq ($(COMPILER), gcc)
 OPTFLAGS := -O3
 else ifeq ($(COMPILER), ido)
 OPTFLAGS := -O2
-ASOPTFLAGS := -O0
+ASOPTFLAGS := -O1
 endif
 
 endif
@@ -205,11 +211,7 @@ $(BUILD_DIR)/src/libc/llcvt.marker: OPTFLAGS := -O1
 $(BUILD_DIR)/src/log/%.marker: OPTFLAGS := -O1
 
 $(BUILD_DIR)/src/libc/%.marker: ASOPTFLAGS := -O2
-$(BUILD_DIR)/src/log/%.marker: ASOPTFLAGS := -O1
-$(BUILD_DIR)/src/gu/%.marker: ASOPTFLAGS := -O2
 $(BUILD_DIR)/src/mgu/%.marker: ASOPTFLAGS := -O2
-$(BUILD_DIR)/src/os/%.marker: ASOPTFLAGS := -O1
-$(BUILD_DIR)/src/rmon/%.marker: ASOPTFLAGS := -O1
 endif
 
 $(BUILD_DIR)/src/os/initialize_isv.marker: OPTFLAGS := -O2
@@ -230,49 +232,29 @@ endif
 $(BUILD_DIR)/%.marker: %.c
 	cd $(<D) && $(WORKING_DIR)/$(CC) $(CFLAGS) $(MIPS_VERSION) $(CPPFLAGS) $(OPTFLAGS) $(<F) $(INCLUDES) -o $(WORKING_DIR)/$(@:.marker=.o)
 ifneq ($(NON_MATCHING),1)
-ifeq ($(COMPILER), ido)
-	mips-linux-gnu-objcopy --remove-section .mdebug $(@:.marker=.o)
-	$(if $(findstring $(BASE_DIR)/$(@F:.marker=.o), $(BASE_OBJS)), \
-	 $(COMPARE_OBJ) && \
-	 touch -r $(BASE_DIR)/$(@F:.marker=.o) $(@:.marker=.o), \
-	 echo "Object file $(<F:.marker=.o) is not in the current archive" \
-	)
-	@touch $@
-else
-# check if this file is in the archive; patch corrupted bytes and change file timestamps to match original if so
+# check if this file is in the archive; fix it up if so
 	@$(if $(findstring $(BASE_DIR)/$(@F:.marker=.o), $(BASE_OBJS)), \
-	 python3 tools/fix_objfile.py $(@:.marker=.o) $(BASE_DIR)/$(@F:.marker=.o) $(STRIP) && \
+	 $(FIX_OBJFILE) && \
 	 $(COMPARE_OBJ) && \
 	 touch -r $(BASE_DIR)/$(@F:.marker=.o) $(@:.marker=.o), \
 	 echo "Object file $(<F:.marker=.o) is not in the current archive" \
 	)
 # create or update the marker file
 	@touch $@
-endif
 endif
 
 $(BUILD_DIR)/%.marker: %.s
 	cd $(<D) && $(WORKING_DIR)/$(CC) $(ASFLAGS) $(MIPS_VERSION) $(CPPFLAGS) $(ASOPTFLAGS) $(<F) $(INCLUDES) -o $(WORKING_DIR)/$(@:.marker=.o)
 ifneq ($(NON_MATCHING),1)
-ifeq ($(COMPILER), ido)
-	mips-linux-gnu-objcopy --remove-section .mdebug $(@:.marker=.o)
-	$(if $(findstring $(BASE_DIR)/$(@F:.marker=.o), $(BASE_OBJS)), \
-	 $(COMPARE_OBJ) && \
-	 touch -r $(BASE_DIR)/$(@F:.marker=.o) $(@:.marker=.o), \
-	 echo "Object file $(<F:.marker=.o) is not in the current archive" \
-	)
-	@touch $@
-else
-# check if this file is in the archive; patch corrupted bytes and change file timestamps to match original if so
+# check if this file is in the archive; fix it up if so
 	@$(if $(findstring $(BASE_DIR)/$(@F:.marker=.o), $(BASE_OBJS)), \
-	 python3 tools/fix_objfile.py $(@:.marker=.o) $(BASE_DIR)/$(@F:.marker=.o) && \
+	 $(FIX_OBJFILE) && \
 	 $(COMPARE_OBJ) && \
 	 touch -r $(BASE_DIR)/$(@F:.marker=.o) $(@:.marker=.o), \
 	 echo "Object file $(<F:.marker=.o) is not in the current archive" \
 	)
 # create or update the marker file
 	@touch $@
-endif
 endif
 
 # Rule for building files that require specific file paths in the mdebug section
