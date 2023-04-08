@@ -3,8 +3,16 @@
 #include "sys/regdef.h"
 
 .text
-WLEAF(bzero, _bzero)
-WXLEAF(blkclr, _blkclr)
+#ifdef __sgi
+WEAK(bzero, _bzero)
+WEAK(blkclr, _blkclr)
+LEAF(_bzero)
+XLEAF(_blkclr)
+_blkclr:
+#else
+LEAF(bzero)
+XLEAF(blkclr)
+#endif
     negu v1, a0
     blt a1, 12, bytezero
 
@@ -54,4 +62,8 @@ bytezero:
 zerodone:
     jr ra
 
-WEND(bzero, _bzero)
+#ifdef __sgi
+END(_bzero)
+#else
+END(bzero)
+#endif

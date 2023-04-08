@@ -3,7 +3,12 @@
 #include "sys/regdef.h"
 
 .text
-WLEAF(bcmp, _bcmp)
+#ifdef __sgi
+WEAK(bcmp, _bcmp)
+LEAF(_bcmp)
+#else
+LEAF(bcmp)
+#endif
     xor v0, a0, a1
     blt a2, 16, bytecmp
 
@@ -87,5 +92,9 @@ cmpdone:
 cmpne:
     li v0, 1
     jr ra
-    
-WEND(bcmp, _bcmp)
+
+#ifdef __sgi
+END(_bcmp)
+#else
+END(bcmp)
+#endif

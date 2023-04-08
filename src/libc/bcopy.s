@@ -3,7 +3,12 @@
 #include "sys/regdef.h"
 
 .text
-WLEAF(bcopy, _bcopy)
+#ifdef __sgi
+WEAK(bcopy, _bcopy)
+LEAF(_bcopy)
+#else
+LEAF(bcopy)
+#endif
     move a3, a1
     beqz a2, ret
     beq a0, a1, ret
@@ -211,5 +216,9 @@ backwards_4:
     addiu a1, a1, -4
     addiu a2, a2, -4
     b backwards_4
-    
-WEND(bcopy, _bcopy)
+
+#ifdef __sgi
+END(_bcopy)
+#else
+END(bcopy)
+#endif
