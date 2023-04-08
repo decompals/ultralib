@@ -3,8 +3,7 @@
 #include "sys/regdef.h"
 
 .text
-WEAK(_bcopy, bcopy)
-LEAF(bcopy)
+WLEAF(bcopy, _bcopy)
     move a3, a1
     beqz a2, ret
     beq a0, a1, ret
@@ -213,6 +212,4 @@ backwards_4:
     addiu a2, a2, -4
     b backwards_4
     
-END(bcopy)
-/*
-*/
+WEND(bcopy, _bcopy)

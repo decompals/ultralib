@@ -39,7 +39,8 @@ x:;							\
 	.frame	sp,0,ra
 
 #define	XLEAF(x)					\
-	.globl x;
+	.globl x; \
+	.aent  x,0;
 
 #define	END(proc)					\
 	.end	proc
@@ -51,13 +52,31 @@ x:;							\
 #define	EXPORT(x)					\
 	.globl	x;					\
 x:
-/*
-#define WEAK(x, y) \
-	.weak x; \
-	.set x,y;
-*/
 
-#define WEAK(x, y)
+#ifdef __sgi
+#define WLEAF(x, y) \
+	.weakext x,y; \
+	LEAF(y)
+
+#define WXLEAF(x, y) \
+	.weakext x,y; \
+	XLEAF(y) \
+y:
+
+#define WEND(x, y) \
+	END(y)
+
+#else
+#define WLEAF(x, y) \
+	LEAF(x)
+
+#define WXLEAF(x, y) \
+	XLEAF(x)
+
+#define WEND(x, y) \
+	END(x)
+
+#endif
 
 #define STAY1(stmnt) .set noreorder; stmnt; .set reorder;
 #define STAY2(stmnt, arg1) .set noreorder; stmnt, arg1; .set reorder;

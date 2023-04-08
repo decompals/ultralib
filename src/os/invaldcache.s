@@ -3,23 +3,21 @@
 #include "sys/regdef.h"
 
 .text
-.set noreorder
 LEAF(osInvalDCache)
     blez a1, 3f
-    nop
     li t3, DCACHE_SIZE
     bgeu a1, t3, 4f
-     nop
+    # nop
 
     move t0, a0
     addu t1, a0, a1
     bgeu t0, t1, 3f
-     nop
+    # nop
 
     addiu t1, t1, -DCACHE_LINESIZE
     andi t2, t0, DCACHE_LINEMASK
     beqz t2, 1f
-    nop
+    # nop
 
     subu t0, t0, t2
     CACHE((C_HWBINV|CACH_PD), (t0))

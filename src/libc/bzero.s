@@ -3,10 +3,8 @@
 #include "sys/regdef.h"
 
 .text
-WEAK(_bzero, bzero)
-WEAK(_blkclr, blkclr)
-LEAF(bzero)
-XLEAF(blkclr)
+WLEAF(bzero, _bzero)
+WXLEAF(blkclr, _blkclr)
     negu v1, a0
     blt a1, 12, bytezero
 
@@ -55,4 +53,5 @@ bytezero:
     bne a0, a1, 1b
 zerodone:
     jr ra
-END(bzero)
+
+WEND(bzero, _bzero)

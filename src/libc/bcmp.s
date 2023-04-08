@@ -3,8 +3,7 @@
 #include "sys/regdef.h"
 
 .text
-WEAK(_bcmp, bcmp)
-LEAF(bcmp)
+WLEAF(bcmp, _bcmp)
     xor v0, a0, a1
     blt a2, 16, bytecmp
 
@@ -89,4 +88,4 @@ cmpne:
     li v0, 1
     jr ra
     
-END(bcmp)
+WEND(bcmp, _bcmp)
