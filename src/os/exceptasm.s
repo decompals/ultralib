@@ -385,6 +385,8 @@ savecontext:
 #ifndef _FINALROM
     sw      k0, __osPreviousThread
 #endif
+3:
+.set noreorder
     ld      t1, THREAD_GP1(t0)
     sd      t1, THREAD_GP1(k0)
     ld      t1, THREAD_SR(t0)
@@ -395,6 +397,7 @@ savecontext:
     sd      t1, THREAD_GP9(k0)
     ld      t1, THREAD_GP10(t0)
     sd      t1, THREAD_GP10(k0)
+.set reorder
     sd      $2, THREAD_GP2(k0)
     sd      $3, THREAD_GP3(k0)
     sd      $4, THREAD_GP4(k0)
@@ -463,9 +466,11 @@ STAY2(mfc0  t0, C0_EPC)
     sw      t0, THREAD_PC(k0)
     lw      t0, THREAD_FP(k0)
     beqz    t0, 1f
+.set noreorder
     cfc1    t0, fcr31
     nop
     sw      t0, THREAD_FPCSR(k0)
+.set reorder
     sdc1    $f0, THREAD_FP0(k0)
     sdc1    $f2, THREAD_FP2(k0)
     sdc1    $f4, THREAD_FP4(k0)
@@ -486,8 +491,10 @@ STAY2(mfc0  t0, C0_EPC)
 STAY2(mfc0  t0, C0_CAUSE)
     sw      t0, THREAD_CAUSE(k0)
 
+.set noreorder
     li      t1, OS_STATE_RUNNABLE
     sh      t1, THREAD_STATE(k0)
+.set reorder
 
 #ifndef _FINALROM
     lw      a0, __os_Kdebug_Pkt
@@ -883,13 +890,13 @@ LEAF(__osEnqueueThread)
     lw      t8, 0(a0)
     lw      ta3, THREAD_PRI(a1)
     lw      ta2, THREAD_PRI(t8)
-    blt     ta2, ta3, 1f
-2:
+    blt     ta2, ta3, 2f
+1:
     move    t9, t8
     lw      t8, THREAD_NEXT(t8)
     lw      ta2, THREAD_PRI(t8)
-    bge     ta2, ta3, 2b
-1:
+    bge     ta2, ta3, 1b
+2:
     lw      t8, THREAD_NEXT(t9)
     sw      t8, THREAD_NEXT(a1)
     sw      a1, THREAD_NEXT(t9)
@@ -995,6 +1002,7 @@ STAY2(ctc1  k1, fcr31)
     ldc1    $f30, THREAD_FP30(k0)
     
 1:
+.set noreorder
     lw      k1, THREAD_RCP(k0)
     la      k0, __OSGlobalIntMask
     lw      k0, 0(k0)
@@ -1007,7 +1015,6 @@ STAY2(ctc1  k1, fcr31)
     la      k0, PHYS_TO_K1(MI_INTR_MASK_REG)
     sw      k1, 0(k0)
 
-.set noreorder
     nop
     nop
     nop
@@ -1018,6 +1025,5 @@ END(__osDispatchThread)
 
 LEAF(__osCleanupThread)
     move    a0, zero
-    nop
     jal     osDestroyThread
 END(__osCleanupThread)
