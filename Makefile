@@ -99,6 +99,7 @@ ifneq ($(NON_MATCHING),1)
 COMPARE_OBJ = cmp $(BASE_DIR)/$(@F:.marker=.o) $(@:.marker=.o) && echo "$(@:.marker=.o): OK"
 COMPARE_AR = cmp $(BASE_AR) $@ && echo "$@: OK"
 ifeq ($(COMPILER),ido)
+# Since we don't match .mdebug, we can't match the archive
 COMPARE_AR = echo "$@: OK"
 endif
 else
