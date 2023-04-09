@@ -104,12 +104,13 @@ class Archive:
         armap_string_data = bytearray()
         for i,file in enumerate(self.files):
             elf = ElfFile(file.data)
-            for sym in elf.symtab.symbol_entries:
-                if sym.st_shndx != SHN_UND and sym.bind == SB_GLOBAL:
-                    num_entries += 1
-                    armap_size += 4 + len(sym.name) + 1
-                    armap_string_data.extend(sym.name.encode("latin1") + b'\0')
-                    armap_entries_files.append(i)
+            if elf.symtab is not None:
+                for sym in elf.symtab.symbol_entries:
+                    if sym.st_shndx != SHN_UND and sym.bind == SB_GLOBAL:
+                        num_entries += 1
+                        armap_size += 4 + len(sym.name) + 1
+                        armap_string_data.extend(sym.name.encode("latin1") + b'\0')
+                        armap_entries_files.append(i)
 
         armap_data.extend(struct.pack(">I", num_entries))
         armap_data.extend([0] * 4 * num_entries) # defer writing file positions until files are emplaced later
@@ -125,8 +126,6 @@ class Archive:
         armap_offsets_start = len(b) + 4
         add_bin(b, armap_data)
         add_pad(b)
-
-        print(armap_offsets_start)
 
         # LONG STRINGS
 

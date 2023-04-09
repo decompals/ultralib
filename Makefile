@@ -1,6 +1,8 @@
 NON_MATCHING ?= 0
 
-# One of libgultra_rom, libgultra_d, libgultra
+# One of:
+# libgultra_rom, libgultra_d, libgultra
+# libultra_rom, libultra_d, libultra
 TARGET ?= libultra_rom
 
 BASE_DIR := base_$(TARGET)
@@ -18,6 +20,7 @@ AR := ar
 AS := tools/gcc/as
 CC := tools/gcc/gcc
 AR_OLD := tools/gcc/ar
+PATCH_AR_FLAGS := 0 0 37777700
 
 export COMPILER_PATH := $(WORKING_DIR)/tools/gcc
 
@@ -29,9 +32,6 @@ INCLUDES = -I . -I $(WORKING_DIR)/include -I $(WORKING_DIR)/include/gcc -I $(WOR
 MIPS_VERSION := -mips3
 ASOPTFLAGS :=
 
-# fix object files by patching corrupted bytes and change file timestamps to match original
-FIX_OBJFILE = python3 tools/fix_objfile.py $(@:.marker=.o) $(BASE_DIR)/$(@F:.marker=.o) $(STRIP)
-
 ifeq ($(findstring _rom,$(TARGET)),_rom)
 CPPFLAGS += -D_FINALROM
 endif
@@ -42,7 +42,8 @@ CPP := cpp -P
 AR := ar
 AS := tools/ido/cc
 CC := tools/ido/cc
-AR_OLD := tools/gcc/ar
+AR_OLD := tools/ar.py
+PATCH_AR_FLAGS := 40001 110 100644
 
 export COMPILER_PATH := $(WORKING_DIR)/tools/ido
 
@@ -52,9 +53,6 @@ GBIDEFINE := -DF3DEX_GBI_2
 CPPFLAGS = -D_MIPS_SZLONG=32 $(GBIDEFINE)
 INCLUDES = -I $(WORKING_DIR)/include -I $(WORKING_DIR)/include/ido -I $(WORKING_DIR)/include/PR
 MIPS_VERSION := -mips2
-
-# fix object files by stripping off mdebug section
-FIX_OBJFILE = mips-linux-gnu-objcopy --remove-section .mdebug $(@:.marker=.o)
 
 endif
 
@@ -127,7 +125,7 @@ $(BUILD_AR): $(MARKER_FILES)
 ifneq ($(NON_MATCHING),1)
 # patch archive creation time and individual files' ownership & permissions
 	dd bs=1 skip=24 seek=24 count=12 conv=notrunc if=$(BASE_AR) of=$@ status=none
-	python3 tools/patch_ar_meta.py $@
+	python3 tools/patch_ar_meta.py $@ $(BASE_AR) $(PATCH_AR_FLAGS)
 	@$(COMPARE_AR)
 	@echo "Matched: $(NUM_OBJS_MATCHED)/$(NUM_OBJS)"
 endif
@@ -171,17 +169,12 @@ ifeq ($(findstring _d,$(TARGET)),_d)
 $(BUILD_DIR)/src/rmon/%.marker: OPTFLAGS := -O0
 endif
 
-STRIP = 
+STRIP =
 
 $(BUILD_DIR)/src/os/initialize_isv.marker: OPTFLAGS := -O2
 $(BUILD_DIR)/src/os/initialize_isv.marker: STRIP = && tools/gcc/strip-2.7 -N initialize_isv.c $(WORKING_DIR)/$(@:.marker=.o) $(WORKING_DIR)/$(@:.marker=.o)
 $(BUILD_DIR)/src/os/assert.marker: OPTFLAGS := -O0
 $(BUILD_DIR)/src/os/seterrorhandler.marker: OPTFLAGS := -O0
-$(BUILD_DIR)/src/gu/parse_gbi.marker: GBIDEFINE :=
-$(BUILD_DIR)/src/gu/us2dex_emu.marker: GBIDEFINE := -DF3DEX_GBI
-$(BUILD_DIR)/src/sp/sprite.marker: GBIDEFINE :=
-$(BUILD_DIR)/src/sp/spriteex.marker: GBIDEFINE :=
-$(BUILD_DIR)/src/sp/spriteex2.marker: GBIDEFINE :=
 $(BUILD_DIR)/src/mgu/%.marker: export VR4300MUL := OFF
 $(BUILD_DIR)/src/mgu/rotate.marker: export VR4300MUL := ON
 $(BUILD_DIR)/src/debug/%.marker: ASFLAGS += -P
@@ -191,8 +184,6 @@ $(BUILD_DIR)/src/os/%.marker: ASFLAGS += -P
 $(BUILD_DIR)/src/gu/%.marker: ASFLAGS += -P
 $(BUILD_DIR)/src/libc/%.marker: ASFLAGS += -P
 $(BUILD_DIR)/src/rmon/%.marker: ASFLAGS += -P
-$(BUILD_DIR)/src/voice/%.marker: OPTFLAGS += -DLANG_JAPANESE -I$(WORKING_DIR)/src -I$(WORKING_DIR)/src/voice
-$(BUILD_DIR)/src/voice/%.marker: CC := tools/compile_sjis.py -D__CC=$(WORKING_DIR)/$(CC) -D__BUILD_DIR=$(BUILD_DIR)
 $(BUILD_DIR)/src/host/host_ptn64.marker: CFLAGS += -fno-builtin # Probably a better way to solve this
 
 MDEBUG_FILES := $(BUILD_DIR)/src/monutil.marker
@@ -216,26 +207,30 @@ $(BUILD_DIR)/src/mgu/%.marker: ASOPTFLAGS := -O2
 endif
 
 $(BUILD_DIR)/src/os/initialize_isv.marker: OPTFLAGS := -O2
+$(BUILD_DIR)/src/libc/ll.marker: MIPS_VERSION := -mips3 -32
+$(BUILD_DIR)/src/libc/llbit.marker: MIPS_VERSION := -mips3 -32
+$(BUILD_DIR)/src/libc/llcvt.marker: MIPS_VERSION := -mips3 -32
+$(BUILD_DIR)/src/os/exceptasm.marker: MIPS_VERSION := -mips3 -32
+
+endif
+
 $(BUILD_DIR)/src/gu/parse_gbi.marker: GBIDEFINE :=
 $(BUILD_DIR)/src/gu/us2dex_emu.marker: GBIDEFINE := -DF3DEX_GBI
 $(BUILD_DIR)/src/sp/sprite.marker: GBIDEFINE :=
 $(BUILD_DIR)/src/sp/spriteex.marker: GBIDEFINE :=
 $(BUILD_DIR)/src/sp/spriteex2.marker: GBIDEFINE :=
-$(BUILD_DIR)/src/libc/ll.marker: MIPS_VERSION := -mips3 -32
-$(BUILD_DIR)/src/libc/llbit.marker: MIPS_VERSION := -mips3 -32
-$(BUILD_DIR)/src/libc/llcvt.marker: MIPS_VERSION := -mips3 -32
-$(BUILD_DIR)/src/os/exceptasm.marker: MIPS_VERSION := -mips3 -32
 $(BUILD_DIR)/src/voice/%.marker: OPTFLAGS += -DLANG_JAPANESE -I$(WORKING_DIR)/src -I$(WORKING_DIR)/src/voice
 $(BUILD_DIR)/src/voice/%.marker: CC := tools/compile_sjis.py -D__CC=$(WORKING_DIR)/$(CC) -D__BUILD_DIR=$(BUILD_DIR)
 
-endif
-
 $(BUILD_DIR)/%.marker: %.c
 	cd $(<D) && $(WORKING_DIR)/$(CC) $(CFLAGS) $(MIPS_VERSION) $(CPPFLAGS) $(OPTFLAGS) $(<F) $(INCLUDES) -o $(WORKING_DIR)/$(@:.marker=.o)
+ifeq ($(COMPILER),ido)
+	mips-linux-gnu-objcopy --remove-section .mdebug $(@:.marker=.o)
+endif
 ifneq ($(NON_MATCHING),1)
-# check if this file is in the archive; fix it up if so
+# check if this file is in the archive; patch corrupted bytes and change file timestamps to match original if so
 	@$(if $(findstring $(BASE_DIR)/$(@F:.marker=.o), $(BASE_OBJS)), \
-	 $(FIX_OBJFILE) && \
+	 python3 tools/fix_objfile.py $(@:.marker=.o) $(BASE_DIR)/$(@F:.marker=.o) $(STRIP) && \
 	 $(COMPARE_OBJ) && \
 	 touch -r $(BASE_DIR)/$(@F:.marker=.o) $(@:.marker=.o), \
 	 echo "Object file $(<F:.marker=.o) is not in the current archive" \
@@ -246,10 +241,13 @@ endif
 
 $(BUILD_DIR)/%.marker: %.s
 	cd $(<D) && $(WORKING_DIR)/$(CC) $(ASFLAGS) $(MIPS_VERSION) $(CPPFLAGS) $(ASOPTFLAGS) $(<F) $(INCLUDES) -o $(WORKING_DIR)/$(@:.marker=.o)
+ifeq ($(COMPILER),ido)
+	mips-linux-gnu-objcopy --remove-section .mdebug $(@:.marker=.o)
+endif
 ifneq ($(NON_MATCHING),1)
-# check if this file is in the archive; fix it up if so
+# check if this file is in the archive; patch corrupted bytes and change file timestamps to match original if so
 	@$(if $(findstring $(BASE_DIR)/$(@F:.marker=.o), $(BASE_OBJS)), \
-	 $(FIX_OBJFILE) && \
+	 python3 tools/fix_objfile.py $(@:.marker=.o) $(BASE_DIR)/$(@F:.marker=.o) $(STRIP) && \
 	 $(COMPARE_OBJ) && \
 	 touch -r $(BASE_DIR)/$(@F:.marker=.o) $(@:.marker=.o), \
 	 echo "Object file $(<F:.marker=.o) is not in the current archive" \
