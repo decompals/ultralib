@@ -13,67 +13,21 @@ BUILD_AR := $(BUILD_DIR)/$(TARGET).a
 
 WORKING_DIR := $(shell pwd)
 
+CPP := cpp -P
+AR := ar
+
 ifeq ($(findstring libgultra,$(TARGET)),libgultra)
-COMPILER := gcc
-CPP := cpp -P
-AR := ar
-AS := tools/gcc/as
-CC := tools/gcc/gcc
-AR_OLD := tools/gcc/ar
-PATCH_AR_FLAGS := 0 0 37777700
-STRIP =
-
-export COMPILER_PATH := $(WORKING_DIR)/tools/gcc
-
-CFLAGS := -w -nostdinc -c -G 0 -mgp32 -mfp32 -D_LANGUAGE_C
-ASFLAGS := -w -nostdinc -c -G 0 -mgp32 -mfp32 -DMIPSEB -D_LANGUAGE_ASSEMBLY -D_MIPS_SIM=1 -D_ULTRA64 -x assembler-with-cpp
-GBIDEFINE := -DF3DEX_GBI_2
-CPPFLAGS = -D_MIPS_SZLONG=32 -D__USE_ISOC99 $(GBIDEFINE)
-INCLUDES = -I . -I $(WORKING_DIR)/include -I $(WORKING_DIR)/include/gcc -I $(WORKING_DIR)/include/PR
-MIPS_VERSION := -mips3
-ASOPTFLAGS :=
-
+-include Makefile.gcc
 else ifeq ($(findstring libultra,$(TARGET)),libultra)
-COMPILER := ido
-CPP := cpp -P
-AR := ar
-AS := tools/ido/cc
-CC := tools/ido/cc
-AR_OLD := tools/ar.py
-PATCH_AR_FLAGS := 40001 110 100644
-STRIP =
-
-export COMPILER_PATH := $(WORKING_DIR)/tools/ido
-
-CFLAGS := -c -Wab,-r4300_mul -non_shared -G 0 -nostdinc -Xcpluscomm -fullwarn -D_LANGUAGE_C -woff 516,649,838,712
-ASFLAGS := -c -Wab,-r4300_mul -non_shared -G 0 -nostdinc -o32 -woff 516,649,838,712
-GBIDEFINE := -DF3DEX_GBI_2
-CPPFLAGS = -D_MIPS_SZLONG=32 $(GBIDEFINE)
-INCLUDES = -I $(WORKING_DIR)/include -I $(WORKING_DIR)/include/ido -I $(WORKING_DIR)/include/PR
-MIPS_VERSION := -mips2
-
+-include Makefile.ido
+else
+$(error Invalid Target)
 endif
 
 ifeq ($(findstring _d,$(TARGET)),_d)
 CPPFLAGS += -D_DEBUG
-
-ifeq ($(COMPILER), gcc)
-OPTFLAGS := -O0
-else ifeq ($(COMPILER), ido)
-OPTFLAGS := -O1 -g2
-ASOPTFLAGS := -O0 -g2
-endif
-
 else
 CPPFLAGS += -DNDEBUG
-
-ifeq ($(COMPILER), gcc)
-OPTFLAGS := -O3
-else ifeq ($(COMPILER), ido)
-OPTFLAGS := -O2
-ASOPTFLAGS := -O1
-endif
-
 endif
 
 ifeq ($(findstring _rom,$(TARGET)),_rom)
@@ -144,70 +98,13 @@ ifeq ($(COMPILER),ido)
 	tools/remove_mdebug.sh $(BASE_DIR)
 endif
 
-
-# KMC gcc has a custom flag, N64ALIGN, which forces 8 byte alignment on arrays. This can be used to match, but
-# an explicit aligned(8) attribute can be used instead. We opted for the latter for better compatibilty with
-# other versions of GCC that do not have this flag.
-# export N64ALIGN := ON
-export VR4300MUL := ON
-
 $(BUILD_DIR)/$(BASE_DIR)/%.marker: $(BASE_DIR)/%.o
 	cp $< $(@:.marker=.o)
 ifneq ($(NON_MATCHING),1)
-#	@$(COMPARE_OBJ)
 # change file timestamps to match original
 	@touch -r $(BASE_DIR)/$(@F:.marker=.o) $(@:.marker=.o)
 	@$(COMPARE_OBJ)
 	@touch $@
-endif
-
-ifeq ($(COMPILER), gcc)
-
-ifeq ($(findstring _d,$(TARGET)),_d)
-$(BUILD_DIR)/src/rmon/%.marker: OPTFLAGS := -O0
-endif
-
-$(BUILD_DIR)/src/os/initialize_isv.marker: OPTFLAGS := -O2
-$(BUILD_DIR)/src/os/initialize_isv.marker: STRIP = && tools/gcc/strip-2.7 -N initialize_isv.c $(WORKING_DIR)/$(@:.marker=.o) $(WORKING_DIR)/$(@:.marker=.o)
-$(BUILD_DIR)/src/os/assert.marker: OPTFLAGS := -O0
-$(BUILD_DIR)/src/os/seterrorhandler.marker: OPTFLAGS := -O0
-$(BUILD_DIR)/src/mgu/%.marker: export VR4300MUL := OFF
-$(BUILD_DIR)/src/mgu/rotate.marker: export VR4300MUL := ON
-$(BUILD_DIR)/src/debug/%.marker: ASFLAGS += -P
-$(BUILD_DIR)/src/error/%.marker: ASFLAGS += -P
-$(BUILD_DIR)/src/log/%.marker: ASFLAGS += -P
-$(BUILD_DIR)/src/os/%.marker: ASFLAGS += -P
-$(BUILD_DIR)/src/gu/%.marker: ASFLAGS += -P
-$(BUILD_DIR)/src/libc/%.marker: ASFLAGS += -P
-$(BUILD_DIR)/src/rmon/%.marker: ASFLAGS += -P
-$(BUILD_DIR)/src/host/host_ptn64.marker: CFLAGS += -fno-builtin # Probably a better way to solve this
-
-MDEBUG_FILES := $(BUILD_DIR)/src/monutil.marker
-$(BUILD_DIR)/src/monutil.marker: CC := tools/ido/cc
-$(BUILD_DIR)/src/monutil.marker: ASFLAGS := -non_shared -mips2 -fullwarn -verbose -Xcpluscomm -G 0 -woff 516,649,838,712 -Wab,-r4300_mul -nostdinc -o32 -c
-
-else ifeq ($(COMPILER), ido)
-
-ifneq ($(findstring _d,$(TARGET)),_d)
-$(BUILD_DIR)/src/debug/%.marker: OPTFLAGS := -O1
-$(BUILD_DIR)/src/host/%.marker: OPTFLAGS := -O1
-$(BUILD_DIR)/src/os/%.marker: OPTFLAGS := -O1
-$(BUILD_DIR)/src/rmon/%.marker: OPTFLAGS := -O1
-$(BUILD_DIR)/src/libc/ll.marker: OPTFLAGS := -O1
-$(BUILD_DIR)/src/libc/llbit.marker: OPTFLAGS := -O1
-$(BUILD_DIR)/src/libc/llcvt.marker: OPTFLAGS := -O1
-$(BUILD_DIR)/src/log/%.marker: OPTFLAGS := -O1
-
-$(BUILD_DIR)/src/libc/%.marker: ASOPTFLAGS := -O2
-$(BUILD_DIR)/src/mgu/%.marker: ASOPTFLAGS := -O2
-endif
-
-$(BUILD_DIR)/src/os/initialize_isv.marker: OPTFLAGS := -O2
-$(BUILD_DIR)/src/libc/ll.marker: MIPS_VERSION := -mips3 -32
-$(BUILD_DIR)/src/libc/llbit.marker: MIPS_VERSION := -mips3 -32
-$(BUILD_DIR)/src/libc/llcvt.marker: MIPS_VERSION := -mips3 -32
-$(BUILD_DIR)/src/os/exceptasm.marker: MIPS_VERSION := -mips3 -32
-
 endif
 
 $(BUILD_DIR)/src/gu/parse_gbi.marker: GBIDEFINE :=
@@ -229,7 +126,7 @@ ifneq ($(NON_MATCHING),1)
 	 python3 tools/fix_objfile.py $(@:.marker=.o) $(BASE_DIR)/$(@F:.marker=.o) $(STRIP) && \
 	 $(COMPARE_OBJ) && \
 	 touch -r $(BASE_DIR)/$(@F:.marker=.o) $(@:.marker=.o), \
-	 echo "Object file $(<F:.marker=.o) is not in the current archive" \
+	 echo "Object file $(@F:.marker=.o) is not in the current archive" \
 	)
 # create or update the marker file
 	@touch $@
@@ -246,7 +143,7 @@ ifneq ($(NON_MATCHING),1)
 	 python3 tools/fix_objfile.py $(@:.marker=.o) $(BASE_DIR)/$(@F:.marker=.o) $(STRIP) && \
 	 $(COMPARE_OBJ) && \
 	 touch -r $(BASE_DIR)/$(@F:.marker=.o) $(@:.marker=.o), \
-	 echo "Object file $(<F:.marker=.o) is not in the current archive" \
+	 echo "Object file $(@F:.marker=.o) is not in the current archive" \
 	)
 # create or update the marker file
 	@touch $@
@@ -264,7 +161,7 @@ ifneq ($(NON_MATCHING),1)
 	 python3 tools/fix_objfile.py $(@:.marker=.o) $(BASE_DIR)/$(@F:.marker=.o) && \
 	 $(COMPARE_OBJ) && \
 	 touch -r $(BASE_DIR)/$(@F:.marker=.o) $(@:.marker=.o), \
-	 echo "Object file $(<F:.marker=.o) is not in the current archive" \
+	 echo "Object file $(@F:.marker=.o) is not in the current archive" \
 	)
 # create or update the marker file
 	@touch $@
