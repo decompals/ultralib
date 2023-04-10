@@ -21,6 +21,7 @@ AS := tools/gcc/as
 CC := tools/gcc/gcc
 AR_OLD := tools/gcc/ar
 PATCH_AR_FLAGS := 0 0 37777700
+STRIP =
 
 export COMPILER_PATH := $(WORKING_DIR)/tools/gcc
 
@@ -32,10 +33,6 @@ INCLUDES = -I . -I $(WORKING_DIR)/include -I $(WORKING_DIR)/include/gcc -I $(WOR
 MIPS_VERSION := -mips3
 ASOPTFLAGS :=
 
-ifeq ($(findstring _rom,$(TARGET)),_rom)
-CPPFLAGS += -D_FINALROM
-endif
-
 else ifeq ($(findstring libultra,$(TARGET)),libultra)
 COMPILER := ido
 CPP := cpp -P
@@ -44,6 +41,7 @@ AS := tools/ido/cc
 CC := tools/ido/cc
 AR_OLD := tools/ar.py
 PATCH_AR_FLAGS := 40001 110 100644
+STRIP =
 
 export COMPILER_PATH := $(WORKING_DIR)/tools/ido
 
@@ -168,8 +166,6 @@ ifeq ($(COMPILER), gcc)
 ifeq ($(findstring _d,$(TARGET)),_d)
 $(BUILD_DIR)/src/rmon/%.marker: OPTFLAGS := -O0
 endif
-
-STRIP =
 
 $(BUILD_DIR)/src/os/initialize_isv.marker: OPTFLAGS := -O2
 $(BUILD_DIR)/src/os/initialize_isv.marker: STRIP = && tools/gcc/strip-2.7 -N initialize_isv.c $(WORKING_DIR)/$(@:.marker=.o) $(WORKING_DIR)/$(@:.marker=.o)

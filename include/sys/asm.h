@@ -39,7 +39,7 @@ x:;							\
 	.frame	sp,0,ra
 
 #define	XLEAF(x)					\
-	.globl x; \
+	.globl x;                       \
 	.aent  x,0;
 
 #define	END(proc)					\
@@ -53,8 +53,8 @@ x:;							\
 	.globl	x;					\
 x:
 
-#define WEAK(x, y) \
-	.weakext x,y; \
+#define WEAK(x, y) 				\
+	.weakext x,y; 				\
 
 #define STAY1(stmnt) .set noreorder; stmnt; .set reorder;
 #define STAY2(stmnt, arg1) .set noreorder; stmnt, arg1; .set reorder;
