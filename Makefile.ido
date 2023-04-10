@@ -10,7 +10,6 @@ export COMPILER_PATH := $(WORKING_DIR)/tools/ido
 
 CFLAGS := -c -Wab,-r4300_mul -non_shared -G 0 -nostdinc -Xcpluscomm -fullwarn -D_LANGUAGE_C -woff 516,649,838,712
 ASFLAGS := -c -Wab,-r4300_mul -non_shared -G 0 -nostdinc -o32 -woff 516,649,838,712
-GBIDEFINE := -DF3DEX_GBI_2
 CPPFLAGS = -D_MIPS_SZLONG=32 $(GBIDEFINE)
 INCLUDES = -I $(WORKING_DIR)/include -I $(WORKING_DIR)/include/ido -I $(WORKING_DIR)/include/PR
 MIPS_VERSION := -mips2
@@ -18,7 +17,6 @@ MIPS_VERSION := -mips2
 ifeq ($(findstring _d,$(TARGET)),_d)
 OPTFLAGS := -O1 -g2
 ASOPTFLAGS := -O0 -g2
-
 else
 OPTFLAGS := -O2
 ASOPTFLAGS := -O1

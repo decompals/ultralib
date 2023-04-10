@@ -6,8 +6,7 @@
 .text
 .set noreorder
 LEAF(osUnmapTLB)
-#ifdef __sgi
-#ifdef _DEBUG
+#if defined _DEBUG && defined __sgi
     bgez a0, 1f
     nop
     b 2f
@@ -26,7 +25,6 @@ LEAF(osUnmapTLB)
     j __osError
     nop
 3:
-#endif
 #endif
     mfc0 t0, C0_ENTRYHI
     mtc0 a0, C0_INX

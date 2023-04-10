@@ -7,6 +7,7 @@ LEAF(__osGetFpcCsr)
     STAY2(cfc1 v0, fcr31)
     jr ra
 END(__osGetFpcCsr)
+
 #ifndef __sgi
 .globl __osGetSR
 #endif

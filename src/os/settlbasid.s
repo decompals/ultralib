@@ -5,8 +5,7 @@
 
 .text
 LEAF(osSetTLBASID)
-#ifdef __sgi
-#ifdef _DEBUG
+#if defined _DEBUG && defined __sgi
 .set noreorder
     bgez a0, 1f
     nop
@@ -27,7 +26,6 @@ LEAF(osSetTLBASID)
     nop
 3:
 .set reorder
-#endif
 #endif
     STAY2(mtc0 a0, C0_ENTRYHI)
     jr ra

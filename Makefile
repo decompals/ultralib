@@ -107,6 +107,8 @@ ifneq ($(NON_MATCHING),1)
 	@touch $@
 endif
 
+GBIDEFINE := -DF3DEX_GBI_2
+
 $(BUILD_DIR)/src/gu/parse_gbi.marker: GBIDEFINE :=
 $(BUILD_DIR)/src/gu/us2dex_emu.marker: GBIDEFINE := -DF3DEX_GBI
 $(BUILD_DIR)/src/sp/sprite.marker: GBIDEFINE :=

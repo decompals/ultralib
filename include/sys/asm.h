@@ -39,8 +39,8 @@ x:;							\
 	.frame	sp,0,ra
 
 #define	XLEAF(x)					\
-	.globl x;                       \
-	.aent  x,0;
+	.globl	x;					\
+	.aent   x,0;
 
 #define	END(proc)					\
 	.end	proc

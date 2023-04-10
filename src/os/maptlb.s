@@ -12,8 +12,7 @@
 .text
 .set noreorder
 LEAF(osMapTLB)
-#ifdef __sgi
-#ifdef _DEBUG
+#if defined _DEBUG && defined __sgi
     bgez index, 1f
     nop
     b 2f
@@ -57,7 +56,6 @@ LEAF(osMapTLB)
     nop
 6:
 .set reorder
-#endif
 #endif
     STAY2(mfc0 t0, C0_ENTRYHI)
     STAY2(mtc0 index, C0_INX)
