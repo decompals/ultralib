@@ -11,11 +11,11 @@ s32 osPfsGetLabel(OSPfs* pfs, u8* label, int* len) {
     PFS_CHECK_ID;
 
     for (i = 0; i < ARRLEN(pfs->label); i++) {
-        if (*(pfs->label + i) == 0) {
+        if (*(u8*)(u32)(&pfs->label[i]) == 0) {
             break;
         }
 
-        *label++ = *(pfs->label + i);
+        *label++ = *(u8*)(u32)(&pfs->label[i]);
     }
 
     *len = i;

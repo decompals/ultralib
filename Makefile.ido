@@ -37,6 +37,7 @@ $(BUILD_DIR)/src/mgu/%.marker: ASOPTFLAGS := -O2
 endif
 
 $(BUILD_DIR)/src/os/initialize_isv.marker: OPTFLAGS := -O2
+$(BUILD_DIR)/src/log/delay.marker: MIPS_VERSION := -mips1
 $(BUILD_DIR)/src/libc/ll.marker: MIPS_VERSION := -mips3 -32
 $(BUILD_DIR)/src/libc/llbit.marker: MIPS_VERSION := -mips3 -32
 $(BUILD_DIR)/src/libc/llcvt.marker: MIPS_VERSION := -mips3 -32
