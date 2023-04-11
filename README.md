@@ -29,12 +29,19 @@ The build process requires the following packages:
 
 - build-essential
 - python3
+- mips-linux-gnu-objcopy (libultra* only)
 
 Under Debian / Ubunutu you can install them with the following commands:
 
 ```bash
 sudo apt update
 sudo apt install build-essential python3
+```
+
+If building any libultra you can install mips-linux-gnu-objcopy with:
+
+```bash
+sudo apt install binutils-mips-linux-gnu
 ```
 
 ## Building
