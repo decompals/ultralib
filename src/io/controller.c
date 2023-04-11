@@ -83,7 +83,7 @@ void __osPackRequestData(u8 cmd) {
     }
 
     __osContPifRam.pifstatus = CONT_CMD_EXE;
-    ptr = __osContPifRam.ramarray;
+    ptr = (u8*)__osContPifRam.ramarray;
     requestHeader.dummy = CONT_CMD_NOP;
     requestHeader.txsize = CONT_CMD_RESET_TX;
     requestHeader.rxsize = CONT_CMD_RESET_RX;

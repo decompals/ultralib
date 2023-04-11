@@ -112,7 +112,7 @@ void osReadHost_pt(void* dramAddr, u32 nbytes) {
             ct1_bak = ct1 = ct;
             ct = 0;
         }
-        bp = &buf;
+        bp = (u32*)&buf;
 
         while (ct1 != 0) {
             *(bp++) = getPT();
