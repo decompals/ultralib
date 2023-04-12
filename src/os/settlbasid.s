@@ -5,7 +5,7 @@
 
 .text
 LEAF(osSetTLBASID)
-#if defined _DEBUG && defined __sgi
+#if defined (_DEBUG) && defined (__sgi)
 .set noreorder
     bgez a0, 1f
     nop

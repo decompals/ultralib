@@ -6,7 +6,7 @@
 .text
 .set noreorder
 LEAF(osUnmapTLB)
-#if defined _DEBUG && defined __sgi
+#if defined (_DEBUG) && defined (__sgi)
     bgez a0, 1f
     nop
     b 2f

@@ -12,7 +12,7 @@
 .text
 .set noreorder
 LEAF(osMapTLB)
-#if defined _DEBUG && defined __sgi
+#if defined (_DEBUG) && defined (__sgi)
     bgez index, 1f
     nop
     b 2f
