@@ -64,10 +64,10 @@ LEAF(osMapTLB)
     lw t1, asid
     beq t1, -1, 7f
     li ta0, TLBLO_G
-.set reorder
     li t2, TLBLO_NONCOHRNT | TLBLO_D | TLBLO_V
-    or vaddr, vaddr, t1
     b 8f
+     or vaddr, vaddr, t1
+.set reorder
 
 7:
     li t2, TLBLO_NONCOHRNT | TLBLO_D | TLBLO_V | TLBLO_G

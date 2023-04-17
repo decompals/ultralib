@@ -119,7 +119,7 @@ $(BUILD_DIR)/src/voice/%.marker: OPTFLAGS += -DLANG_JAPANESE -I$(WORKING_DIR)/sr
 $(BUILD_DIR)/src/voice/%.marker: CC := tools/compile_sjis.py -D__CC=$(WORKING_DIR)/$(CC) -D__BUILD_DIR=$(BUILD_DIR)
 
 $(BUILD_DIR)/%.marker: %.c
-	cd $(<D) && $(WORKING_DIR)/$(CC) $(CFLAGS) $(MIPS_VERSION) $(CPPFLAGS) $(OPTFLAGS) $(<F) $(INCLUDES) -o $(WORKING_DIR)/$(@:.marker=.o)
+	cd $(<D) && $(WORKING_DIR)/$(CC) $(CFLAGS) $(MIPS_VERSION) $(CPPFLAGS) $(OPTFLAGS) $(<F) $(IINC) -o $(WORKING_DIR)/$(@:.marker=.o)
 ifeq ($(COMPILER),ido)
 	mips-linux-gnu-objcopy --remove-section .mdebug $(@:.marker=.o)
 endif
@@ -136,7 +136,7 @@ ifneq ($(NON_MATCHING),1)
 endif
 
 $(BUILD_DIR)/%.marker: %.s
-	cd $(<D) && $(WORKING_DIR)/$(CC) $(ASFLAGS) $(MIPS_VERSION) $(CPPFLAGS) $(ASOPTFLAGS) $(<F) $(INCLUDES) -o $(WORKING_DIR)/$(@:.marker=.o)
+	cd $(<D) && $(WORKING_DIR)/$(CC) $(ASFLAGS) $(MIPS_VERSION) $(CPPFLAGS) $(ASOPTFLAGS) $(<F) $(IINC) -o $(WORKING_DIR)/$(@:.marker=.o)
 ifeq ($(COMPILER),ido)
 	mips-linux-gnu-objcopy --remove-section .mdebug $(@:.marker=.o)
 endif

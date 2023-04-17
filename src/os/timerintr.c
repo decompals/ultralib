@@ -78,7 +78,7 @@ void __osTimerInterrupt(void) {
 
                     if (offset >= 0) {
                         if ((s32)prof->text_end - (s32)pc > 0) {
-                            prof->histo_base[offset >> 2]++;
+                            (*(u16*)(u32)((offset >> 2) + prof->histo_base))++;
                             goto __ProfDone;
                         }
                     }
@@ -121,8 +121,8 @@ OSTime __osInsertTimer(OSTimer* t) {
     timep = __osTimerList->next;
     tim = t->value;
     for (; timep != __osTimerList && tim > timep->value; timep = timep->next) {
-            tim -= timep->value;
-         }
+        tim -= timep->value;
+    }
 
     t->value = tim;
 

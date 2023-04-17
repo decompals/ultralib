@@ -19,8 +19,8 @@ u32 __OSGlobalIntMask = OS_IM_ALL;
 #ifdef _FINALROM
 u32 __osFinalrom;
 #else
-void* __printfunc = NULL;
 u32 __kmc_pt_mode;
+void* __printfunc = NULL;
 #endif
 
 void __createSpeedParam(void) {
