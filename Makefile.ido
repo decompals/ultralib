@@ -1,4 +1,3 @@
-
 COMPILER := ido
 AS := tools/ido/cc
 CC := tools/ido/cc
