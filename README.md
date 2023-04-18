@@ -16,7 +16,7 @@ Currently this repo supports building the following versions:
 | 2.0I_patch | :x: / :x: | :x: / :x: | :x: / :x: |
 | 2.0J       | :x: / :x: | :x: / :x: | :x: / :x: |
 | 2.0K       | :x: / :x: | :x: / :x: | :x: / :x: |
-| 2.0L       | :x: / :heavy_check_mark: | :x: / :heavy_check_mark: | :heavy_check_mark: / :heavy_check_mark: |
+| 2.0L       | :x: / :heavy_check_mark: | :heavy_check_mark: / :heavy_check_mark: | :heavy_check_mark: / :heavy_check_mark: |
 | ique_v1.5  | :x: | :x: | :x: |
 
 ## Preparation
@@ -29,7 +29,7 @@ The build process requires the following packages:
 
 - build-essential
 - python3
-- mips-linux-gnu-objcopy (libultra* only)
+- binutils-mips-linux-gnu (libultra* only)
 
 Under Debian / Ubunutu you can install them with the following commands:
 
@@ -38,7 +38,7 @@ sudo apt update
 sudo apt install build-essential python3
 ```
 
-If building any libultra you can install mips-linux-gnu-objcopy with:
+If building any libultra you can install binutils-mips-linux-gnu with:
 
 ```bash
 sudo apt install binutils-mips-linux-gnu
