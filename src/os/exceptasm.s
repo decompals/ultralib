@@ -384,8 +384,6 @@ savecontext:
 #ifndef _FINALROM
     sw      k0, __osPreviousThread
 #endif
-3:
-.set noreorder
     ld      t1, THREAD_GP1(t0)
     sd      t1, THREAD_GP1(k0)
     ld      t1, THREAD_SR(t0)
@@ -396,7 +394,7 @@ savecontext:
     sd      t1, THREAD_GP9(k0)
     ld      t1, THREAD_GP10(t0)
     sd      t1, THREAD_GP10(k0)
-.set reorder
+3:
     sd      $2, THREAD_GP2(k0)
     sd      $3, THREAD_GP3(k0)
     sd      $4, THREAD_GP4(k0)
@@ -465,11 +463,9 @@ STAY2(mfc0  t0, C0_EPC)
     sw      t0, THREAD_PC(k0)
     lw      t0, THREAD_FP(k0)
     beqz    t0, 1f
-.set noreorder
-    cfc1    t0, fcr31
-    nop
+STAY2(cfc1  t0, fcr31)
+    NOP
     sw      t0, THREAD_FPCSR(k0)
-.set reorder
     sdc1    $f0, THREAD_FP0(k0)
     sdc1    $f2, THREAD_FP2(k0)
     sdc1    $f4, THREAD_FP4(k0)
