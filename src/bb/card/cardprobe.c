@@ -29,7 +29,7 @@ s32 osBbCardProbe(u32 dev) {
             if ((IO_READ(PI_10000_REG(0)) >> 0x18) == 0xC0) {
                 rv = 0;
 
-#ifndef NDEBUG
+#ifdef _DEBUG
                 osSyncPrintf("probe succeeds\n");
 #endif
                 __osBbCardFlushEvent();
@@ -41,7 +41,7 @@ s32 osBbCardProbe(u32 dev) {
     }
     IO_WRITE(PI_48_REG, 0);
     __osBbCardChange = save;
-#ifndef NDEBUG
+#ifdef _DEBUG
     osSyncPrintf("probe fails\n");
 #endif
 
