@@ -5,10 +5,10 @@
 .text
 #ifdef __sgi
 WEAK(bcmp, _bcmp)
-LEAF(_bcmp)
 #else
-LEAF(bcmp)
+#define _bcmp bcmp
 #endif
+LEAF(_bcmp)
     xor v0, a0, a1
     blt a2, 16, bytecmp
 
@@ -93,8 +93,4 @@ cmpne:
     li v0, 1
     jr ra
 
-#ifdef __sgi
 END(_bcmp)
-#else
-END(bcmp)
-#endif

@@ -6,13 +6,12 @@
 #ifdef __sgi
 WEAK(bzero, _bzero)
 WEAK(blkclr, _blkclr)
+#else
+#define _bzero bzero
+#define _blkclr blkclr
+#endif
 LEAF(_bzero)
 XLEAF(_blkclr)
-_blkclr:
-#else
-LEAF(bzero)
-XLEAF(blkclr)
-#endif
     negu v1, a0
     blt a1, 12, bytezero
 
@@ -62,8 +61,4 @@ bytezero:
 zerodone:
     jr ra
 
-#ifdef __sgi
 END(_bzero)
-#else
-END(bzero)
-#endif

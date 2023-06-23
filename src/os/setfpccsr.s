@@ -7,8 +7,4 @@ LEAF(__osSetFpcCsr)
     STAY2(cfc1 v0, fcr31)
     STAY2(ctc1 a0, fcr31)
     jr ra
-END(__osSetFpcCsr)
-
-#ifndef __sgi
-.globl __osSetSR
-#endif
+END(__osSetSR)

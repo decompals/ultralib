@@ -35,12 +35,18 @@ extern "C" {
 #define	LEAF(x)						\
 	.globl	x;					\
 	.ent	x,0;					\
-x:;							\
+    x:							\
 	.frame	sp,0,ra
 
+#ifdef __sgi
 #define	XLEAF(x)					\
 	.globl	x;					\
-	.aent   x,0;
+	.aent   x,0;                \
+    x:
+#else
+#define	XLEAF(x)					\
+	.globl	x;
+#endif
 
 #define	END(proc)					\
 	.end	proc
@@ -51,10 +57,14 @@ x:;							\
 	
 #define	EXPORT(x)					\
 	.globl	x;					\
-x:
+    x:
 
+#ifdef __sgi
 #define WEAK(x, y) 				\
-	.weakext x,y; 				\
+	.weakext x,y;
+#else
+#define WEAK(x,y)
+#endif
 
 #define STAY1(stmnt) .set noreorder; stmnt; .set reorder;
 #define STAY2(stmnt, arg1) .set noreorder; stmnt, arg1; .set reorder;
