@@ -232,7 +232,7 @@ gtDumpTurbo(OSTask *tp,u8 flags)
 	
 	if (flags & GT_DUMPTURBO_HANGAFTER) {
 		for (i=0; i<1000;i++) 
-			rmonPrintf("=======================================\n");
+			PRINTF("=======================================\n");
 		while(1);
 	}
 		

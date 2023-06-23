@@ -1,7 +1,17 @@
 #ifndef __MACROS_H__
 #define __MACROS_H__
 
-#define ALIGNED(x) __attribute__((aligned(x)))
+#ifndef BBPLAYER
+# define ALIGNED(x) __attribute__((aligned(x)))
+# define BBALIGNED(x) ALIGNED(x)
+#else
+# define ALIGNED(x)
+# define BBALIGNED(x) __attribute__((aligned(x)))
+#endif
+
+#if defined(__GNUC__) && (__GNUC__ == 2) && (__GNUC_MINOR__ == 91)
+#define __EGCS__
+#endif
 
 #define ALIGN(x, n) (((x) + ((n) - 1)) & ~((n) -1))
 

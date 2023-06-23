@@ -11,4 +11,7 @@ LEAF(__osSetCompare)
     jr ra
 END(__osSetCompare)
 
+#else
+// needed to match elf header flags
+.set noreorder
 #endif

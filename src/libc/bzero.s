@@ -3,10 +3,17 @@
 #include "sys/regdef.h"
 
 .text
-WEAK(_bzero, bzero)
-WEAK(_blkclr, blkclr)
-LEAF(bzero)
-XLEAF(blkclr)
+
+#if defined(BBPLAYER) || defined(__sgi)
+WEAK(bzero, _bzero)
+WEAK(blkclr, _blkclr)
+#else
+#define _bzero bzero
+#define _blkclr blkclr
+#endif
+
+LEAF(_bzero)
+XLEAF(_blkclr)
     negu v1, a0
     blt a1, 12, bytezero
 
@@ -55,4 +62,5 @@ bytezero:
     bne a0, a1, 1b
 zerodone:
     jr ra
-END(bzero)
+
+.end _bzero

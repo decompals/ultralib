@@ -12,8 +12,10 @@ extern u32 __osBbEepromAddress;
 extern u32 __osBbEepromSize;
 
 static void __osPackEepReadData(u8 address);
-OSPifRam __osEepPifRam ALIGNED(16);
+OSPifRam __osEepPifRam BBALIGNED(16);
+#ifndef BBPLAYER
 s32 __osEepromRead16K;
+#endif
 
 s32 osEepromRead(OSMesgQueue *mq, u8 address, u8 *buffer) {
 #ifdef BBPLAYER

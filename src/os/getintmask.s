@@ -39,4 +39,5 @@ LEAF(osGetIntMask)
     sll t2, t1, 0x10
     or v0, v0, t2
     jr ra
+    nop
 END(osGetIntMask)

@@ -72,9 +72,8 @@ MARKER_FILES := $(O_FILES:.o=.marker)
 ifneq ($(NON_MATCHING),1)
 
 ifeq ($(findstring _iQue,$(TARGET)),_iQue)
-COMPARE_OBJ = $(OBJCOPY) -p -S $(BASE_DIR)/$(@F:.marker=.o) $(BASE_DIR)/$(@F:.marker=.cmp.o) && \
-              $(OBJCOPY) -p -S $(WORKING_DIR)/$(@:.marker=.o) $(WORKING_DIR)/$(@:.marker=.cmp.o) && \
-              dd if=$(BASE_DIR)/$(@F:.marker=.o) bs=1 count=4 skip=36 seek=36 conv=notrunc of=$(WORKING_DIR)/$(@:.marker=.cmp.o) 2>/dev/null && \
+COMPARE_OBJ = $(OBJCOPY) -p --strip-debug $(BASE_DIR)/$(@F:.marker=.o) $(BASE_DIR)/$(@F:.marker=.cmp.o) && \
+              $(OBJCOPY) -p --strip-debug $(WORKING_DIR)/$(@:.marker=.o) $(WORKING_DIR)/$(@:.marker=.cmp.o) && \
               cmp $(BASE_DIR)/$(@F:.marker=.cmp.o) $(WORKING_DIR)/$(@:.marker=.cmp.o) && echo "$(@:.marker=.o): OK"
 COMPARE_AR = echo "$@: Cannot compare archive currently"
 else

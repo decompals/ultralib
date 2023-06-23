@@ -15,7 +15,7 @@ void __osSiCreateAccessQueue(void);
 
 s32 __osContinitialized = 0;
 
-OSPifRam __osContPifRam ALIGNED(16);
+OSPifRam __osContPifRam BBALIGNED(16);
 u8 __osContLastCmd;
 u8 __osMaxControllers;
 

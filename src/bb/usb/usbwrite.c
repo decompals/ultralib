@@ -22,7 +22,7 @@ s32 osBbUsbDevWrite(OSBbUsbHandle h, u8* buf, s32 len, u64 off) {
     um.um_rq = &rq;
 
     osCreateMesgQueue(&rq, &rmsg, 1);
-    osInvalDCache(buf, len);
+    osWritebackDCache(buf, len);
 
     wtotal = 0;
     while (len > 0) {

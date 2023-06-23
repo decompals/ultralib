@@ -4,13 +4,13 @@
 
 .text
 
-#ifdef BBPLAYER
+#if defined(BBPLAYER) || defined(__sgi)
 WEAK(bcopy, _bcopy)
-LEAF(_bcopy)
 #else
-WEAK(_bcopy, bcopy)
-LEAF(bcopy)
+#define _bcopy bcopy
 #endif
+
+LEAF(_bcopy)
 
     addu a3, a1, zero
     beqz a2, ret
@@ -220,11 +220,4 @@ backwards_4:
     addiu a2, a2, -4
     b backwards_4
 
-#ifdef BBPLAYER
-END(_bcopy)
-#else
-END(bcopy)
-#endif
-
-/*
-*/
+.end _bcopy
