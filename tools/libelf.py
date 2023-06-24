@@ -265,10 +265,16 @@ SYM_NDX = {
 # =====================================================================================================
 
 # EM_MIPS
-R_MIPS_32   = 2 #  Write the 32 bit address of the symbol
-R_MIPS_26   = 4 # Write the 26 bit address of the symbol divided by four (for relocating branch instructions). Fail if address won't fit
-R_MIPS_HI16 = 5 # Write the high 16 bits of the address of the symbol
-R_MIPS_LO16 = 6 # Write the low 16 bits of the address of the symbol
+R_MIPS_32      = 2 #  Write the 32 bit address of the symbol
+R_MIPS_26      = 4 # Write the 26 bit address of the symbol divided by four (for relocating branch instructions). Fail if address won't fit
+R_MIPS_HI16    = 5 # Write the high 16 bits of the address of the symbol
+R_MIPS_LO16    = 6 # Write the low 16 bits of the address of the symbol
+R_MIPS_GPREL16 = 7
+R_MIPS_LITERAL = 8
+R_MIPS_GOT16   = 9
+R_MIPS_PC16    = 10
+R_MIPS_CALL16  = 11
+R_MIPS_GPREL32 = 12
 
 # EM_POWERPC
 R_PPC_NONE        = 0   # Do nothing. Skip this entry
@@ -291,10 +297,16 @@ R_DOLPHIN_MRKREF  = 204 # Unknown
 
 RELOC_TYPE = {
     EM_MIPS : {
-        R_MIPS_32   : 'R_MIPS_32',
-        R_MIPS_26   : 'R_MIPS_26',
-        R_MIPS_HI16 : 'R_MIPS_HI16',
-        R_MIPS_LO16 : 'R_MIPS_LO16'
+        R_MIPS_32      : 'R_MIPS_32',
+        R_MIPS_26      : 'R_MIPS_26',
+        R_MIPS_HI16    : 'R_MIPS_HI16',
+        R_MIPS_LO16    : 'R_MIPS_LO16',
+        R_MIPS_GPREL16 : 'R_MIPS_GPREL16',
+        R_MIPS_LITERAL : 'R_MIPS_LITERAL',
+        R_MIPS_GOT16   : 'R_MIPS_GOT16',
+        R_MIPS_PC16    : 'R_MIPS_PC16',
+        R_MIPS_CALL16  : 'R_MIPS_CALL16',
+        R_MIPS_GPREL32 : 'R_MIPS_GPREL32',
     },
     EM_POWERPC : {
         R_PPC_NONE        : 'R_PPC_NONE',
