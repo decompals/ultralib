@@ -31,7 +31,7 @@ s32 __osBbCardFlushEvent(void) {
 
     while (osRecvMesg(&cardEventQueue, (OSMesg*)&mb, OS_MESG_NOBLOCK) != -1) {
         rv = TRUE;
-#ifndef NDEBUG
+#ifdef _DEBUG
         osSyncPrintf("flush cardEventQueue: %d\n", mb->hdr.type);
 #endif
     }
@@ -47,7 +47,7 @@ s32 __osBbCardWaitEvent(void) {
         case FLASH_MSG:
             return 0;
         case MD_MSG:
-#ifndef NDEBUG
+#ifdef _DEBUG
             osSyncPrintf("md interrupt\n");
 #endif
             __osBbCardChange = TRUE;
