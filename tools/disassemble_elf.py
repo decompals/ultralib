@@ -240,6 +240,24 @@ class MipsDisasm:
                 if rel.rel_type == R_MIPS_26:
                     if insn.id == MIPS_INS_JAL:
                         op_str = rel.relocated_symbol.name
+                        if op_str == ".text":
+                            # static function call, lookup name
+
+                            # default name if not found
+                            op_str = f".text + 0x{insn.target:X}"
+
+                            # first try symtab
+                            for sym in self.elf_file.symtab.symbol_entries:
+                                if sym.parent_section.name == ".text" and sym.st_value == insn.target and sym.type == ST_FUNC:
+                                    op_str = sym.name
+                                    break
+                            else:
+                                # then try mdebug if present
+                                if cur_fdr is not None:
+                                    pdr = cur_fdr.pdr_foraddr(insn.target)
+                                    if pdr is not None:
+                                        op_str = cur_fdr.pdr_foraddr(insn.target).name
+
                     elif insn.id != MIPS_INS_J: # Branch labels for j instructions are also R_MIPS_26 relocations
                         assert False , f"Got unexpected R_MIPS_26 relocation {insn.id}"
                 elif rel.rel_type == R_MIPS_HI16:
