@@ -548,6 +548,9 @@ class EcoffSymr:
 
         offset = 0 if MDEBUG_VERSION == 1 else self.fdr.iauxBase
 
+        if self.index + ind - offset >= len(self.fdr.auxs):
+            return "", None # kludge for unmatched symbols
+
         aux = self.fdr.auxs[self.index + ind - offset]
         ind += 1
         type_str = ""
@@ -660,12 +663,18 @@ class EcoffPdr:
         self.symrs.append(symr)
         while not (symr.st == EcoffSt.END and symr.name == self.symrs[0].name):
             i += 1
+
+            if i == len(self.parent.symrs):
+                # kludge for unmatched symbols
+                self.size = 0
+                break
+
             symr = self.parent.symrs[i]
             self.symrs.append(symr)
-
-        assert symr.st == EcoffSt.END and symr.sc == EcoffSc.TEXT
-        self.size = symr.value # value field of an stEND and scTEXT symbol is the procedure size
-        assert self.size % 4 == 0
+        else:
+            assert symr.st == EcoffSt.END and symr.sc == EcoffSc.TEXT
+            self.size = symr.value # value field of an stEND and scTEXT symbol is the procedure size
+            assert self.size % 4 == 0
 
         # indexed by asm word offset from proc start
         self.lines = []

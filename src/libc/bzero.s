@@ -3,7 +3,8 @@
 #include "sys/regdef.h"
 
 .text
-#ifdef __sgi
+
+#if defined(BBPLAYER) || defined(__sgi)
 WEAK(bzero, _bzero)
 WEAK(blkclr, _blkclr)
 #else

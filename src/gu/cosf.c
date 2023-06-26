@@ -30,8 +30,13 @@
  * ====================================================================
  */
 
+#include "macros.h"
+#ifdef __EGCS__
+float cosf(float) __attribute__ ((weak, alias ("__cosf")));
+#else
 #pragma weak fcos = __cosf
 #pragma weak cosf = __cosf
+#endif
 #define	fcos __cosf
 
 /* coefficients for polynomial approximation of cos on +/- pi/2 */

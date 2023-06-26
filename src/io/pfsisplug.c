@@ -12,7 +12,7 @@ extern u32 __osBbIsBb;
 extern u32 __osBbHackFlags;
 extern u32 __osBbPakAddress[4];
 
-OSPifRam __osPfsPifRam ALIGNED(16);
+OSPifRam __osPfsPifRam BBALIGNED(16);
 
 s32 osPfsIsPlug(OSMesgQueue* mq, u8* pattern) {
     s32 ret = 0;
