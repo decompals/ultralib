@@ -33,7 +33,7 @@ extern "C" {
 #define _MIPS_SIM_ABI64     3   /* MIPS 64 calling convention */
 
 
-// libgultra doesn't match with the .type directive but iQue sdk asm.h uses it
+/* libgultra doesn't match with the .type directive but iQue sdk asm.h uses it */
 #ifdef BBPLAYER
 #define ASM_TYPE_FUNC(x)    .type   x, @function
 #else

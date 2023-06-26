@@ -1,6 +1,6 @@
 NON_MATCHING ?= 0
 
-TARGET := libgultra_rom
+TARGET := libultra_rom_iQue
 BASE_DIR := base_$(TARGET)
 BASE_AR := $(TARGET).a
 BUILD_DIR := build
