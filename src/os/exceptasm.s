@@ -1021,5 +1021,8 @@ END(__osDispatchThread)
 
 LEAF(__osCleanupThread)
     move    a0, zero
+#if !defined(BBPLAYER) && !defined(__sgi)
+    nop
+#endif
     jal     osDestroyThread
 END(__osCleanupThread)
