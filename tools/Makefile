@@ -18,7 +18,7 @@ distclean: clean
 # GCC
 
 $(AR): | $(GCC_DIR)
-	wget https://github.com/decompals/mips-binutils-2.6/releases/download/main/binutils-2.6-linux.tar.gz
+	wget https://github.com/decompals/mips-binutils-2.6/releases/download/v0.2/binutils-2.6-linux.tar.gz
 	tar xf binutils-2.6-linux.tar.gz -C $(GCC_DIR)
 	$(RM) binutils-2.6-linux.tar.gz
 
