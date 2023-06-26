@@ -27,12 +27,12 @@ else
 MIPS_VERSION := -mips3
 endif
 
-CFLAGS := -w -nostdinc -c -G 0 -D_LANGUAGE_C
+CFLAGS := -Wa,-irix-symtab -w -nostdinc -c -G 0 -D_LANGUAGE_C
 ifeq ($(findstring _iQue,$(TARGET)),_iQue)
 CFLAGS += -fno-PIC  -mno-abicalls -mcpu=4300 -D__sgi
 endif
 
-ASFLAGS := -non_shared -fno-PIC -w -nostdinc -mcpu=4300 -c -G 0 -DMIPSEB -D_LANGUAGE_ASSEMBLY -D_MIPS_SIM=1 -D_ULTRA64 -x assembler-with-cpp
+ASFLAGS := -Wa,-irix-symtab -non_shared -fno-PIC -w -nostdinc -mcpu=4300 -c -G 0 -DMIPSEB -D_LANGUAGE_ASSEMBLY -D_MIPS_SIM=1 -D_ULTRA64 -x assembler-with-cpp
 
 GBIDEFINE := -DF3DEX_GBI_2
 CPPFLAGS = -D_MIPS_SZLONG=32 -D__USE_ISOC99 -I $(WORKING_DIR)/include -I $(WORKING_DIR)/include/gcc -I $(WORKING_DIR)/include/PR $(GBIDEFINE)

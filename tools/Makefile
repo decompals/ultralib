@@ -33,12 +33,12 @@ $(GCC_DIR):
 # EGCS
 
 $(EGCS-AS): | $(EGCS_DIR)
-	wget https://github.com/decompals/mips-binutils-egcs-2.9.5/releases/download/0.1/mips-binutils-egcs-2.9.5-linux.tar.gz
+	wget https://github.com/decompals/mips-binutils-egcs-2.9.5/releases/download/0.4/mips-binutils-egcs-2.9.5-linux.tar.gz
 	tar xf mips-binutils-egcs-2.9.5-linux.tar.gz -C $(EGCS_DIR)
 	$(RM) mips-binutils-egcs-2.9.5-linux.tar.gz
 
 $(EGCS-1.1.2): | $(EGCS_DIR)
-	wget https://github.com/decompals/mips-gcc-egcs-2.91.66/releases/download/0.1/mips-gcc-egcs-2.91.66-linux.tar.gz
+	wget https://github.com/decompals/mips-gcc-egcs-2.91.66/releases/download/0.2/mips-gcc-egcs-2.91.66-linux.tar.gz
 	tar xf mips-gcc-egcs-2.91.66-linux.tar.gz -C $(EGCS_DIR)
 	$(RM) mips-gcc-egcs-2.91.66-linux.tar.gz
 

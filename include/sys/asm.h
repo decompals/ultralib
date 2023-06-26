@@ -36,14 +36,15 @@ extern "C" {
 #define LEAF(x)             \
     .globl  x              ;\
     .align  2              ;\
+    .type   x, @function   ;\
     .ent    x,0            ;\
     x:                     ;\
     .frame  sp,0,ra
-    //.type   x, @function   ;\
 
 #if defined(BBPLAYER) || defined(__sgi)
 #define XLEAF(x)    \
     .globl  x      ;\
+    .aent   x,0    ;\
     x:
 #else
 #define XLEAF(x)    \
@@ -55,7 +56,7 @@ extern "C" {
     .end    proc           ;\
     .size   proc, . - proc
 #else
-#define END(proc)           \
+#define END(proc)   \
     .end    proc
 #endif
 
@@ -67,9 +68,9 @@ extern "C" {
     .globl  x      ;\
     x:
 
-#ifdef BBPLAYER
-#define WEAK(x, y)  \
-    .weakext    x, y
+#if defined(BBPLAYER) || defined(__sgi)
+#define WEAK(x, y)      \
+    .weakext    x,  y
 #else
 #define WEAK(x, y)
 #endif
