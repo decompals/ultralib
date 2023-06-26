@@ -4,7 +4,7 @@
 
 .text
 
-#ifdef __sgi
+#if defined(BBPLAYER) || defined(__sgi)
 WEAK(bcopy, _bcopy)
 #else
 #define _bcopy bcopy

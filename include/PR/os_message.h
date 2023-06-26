@@ -74,10 +74,15 @@ typedef struct OSMesgQueue_s {
  */
 
 /* Events */
-#ifdef _FINALROM
-#define OS_NUM_EVENTS           15
+#ifdef BBPLAYER
+ /* TODO debug version */
+ #define OS_NUM_EVENTS          34
 #else
-#define OS_NUM_EVENTS           23
+# ifdef _FINALROM
+#  define OS_NUM_EVENTS         15
+# else
+#  define OS_NUM_EVENTS         23
+# endif
 #endif
 
 #define OS_EVENT_SW1              0     /* CPU SW1 interrupt */

@@ -8,9 +8,11 @@
 #ident "$Revision: 1.1 $"
 #endif
 
+#ifndef BBPLAYER
 OSTimer __osGbpakTimer;
 OSMesgQueue __osGbpakTimerQ ALIGNED(8);
 OSMesg __osGbpakTimerMsg;
+#endif
 
 s32 osGbpakInit(OSMesgQueue* mq, OSPfs* pfs, int channel) {
 #ifdef BBPLAYER

@@ -7,7 +7,7 @@ extern u32 __osBbRCountWraps;
 extern u32 __osBbLastVCount;
 extern u32 __osBbVCountWraps;
 
-void osGetCompare(u32 v) {
+void __osSetCompare(u32 v) {
     if (v != 0) {
         register u32 mask = __osDisableInt();
         u32 wraps = (v < __osBbLastVCount) ? __osBbVCountWraps + 1 : __osBbVCountWraps;

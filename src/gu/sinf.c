@@ -30,9 +30,15 @@
  * ====================================================================
  */
 
+#include "macros.h"
+#ifdef __EGCS__
+float sinf(float) __attribute__ ((weak, alias ("__sinf")));
+#else
 #pragma weak fsin = __sinf
 #pragma weak sinf = __sinf
+#endif
 #define	fsin __sinf
+
 
 /* coefficients for polynomial approximation of sin on +/- pi/2 */
 

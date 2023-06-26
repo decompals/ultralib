@@ -12,7 +12,7 @@ extern u32 __osBbIsBb;
 extern u32 __osBbHackFlags;
 extern u32 __osBbPakAddress[4];
 
-OSPifRam __osContPifRam ALIGNED(16);
+OSPifRam __osContPifRam BBALIGNED(16);
 u8 __osContLastCmd;
 u8 __osMaxControllers;
 

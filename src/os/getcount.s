@@ -11,4 +11,7 @@ LEAF(osGetCount)
     jr ra
 END(osGetCount)
 
+#else
+// needed to match elf header flags
+.set noreorder
 #endif

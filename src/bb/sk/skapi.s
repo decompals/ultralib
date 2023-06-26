@@ -21,6 +21,7 @@
     END(name)
 
 SK_FUNC(skGetId,                0)
+.type symbol, @function // ??? needed to match symbol table
 SK_FUNC(skLaunchSetup,          1)
 SK_FUNC(skLaunch,               2)
 SK_FUNC(skRecryptListValid,     3)

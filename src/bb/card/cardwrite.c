@@ -9,7 +9,9 @@ s32 __osBbCardStatus(u32 dev, u8* status, u32 buf);
 
 extern u8 __osBbCardMultiplane;
 
+#ifdef _DEBUG
 u8 __osBbCardNoEcc;
+#endif
 
 static void fill_page(unsigned int dev, unsigned int addr, int which_buf, int wait) {
     IO_WRITE(PI_70_REG, addr << 9);
