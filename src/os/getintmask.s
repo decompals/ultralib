@@ -18,7 +18,7 @@ LEAF(osGetIntMask)
     lw t1, PHYS_TO_K1(MI_INTR_MASK_REG)
     beqz t1, 1f
 
-    la t0, __OSGlobalIntMask #this is intentionally a macro in the branch delay slot
+    la t0, __OSGlobalIntMask # this is intentionally a macro in the branch delay slot
 
     lw t0, 0(t0)
     srl t0, t0, 0x10
