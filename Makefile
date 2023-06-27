@@ -4,6 +4,7 @@ NON_MATCHING ?= 0
 # libgultra_rom, libgultra_d, libgultra
 # libultra_rom, libultra_d, libultra
 TARGET ?= libgultra_rom
+CROSS ?= mips-linux-gnu-
 
 BASE_DIR := base_$(TARGET)
 BASE_AR := $(TARGET).a
@@ -49,8 +50,10 @@ ifneq ($(NON_MATCHING),1)
 COMPARE_OBJ = cmp $(BASE_DIR)/$(@F:.marker=.o) $(@:.marker=.o) && echo "$(@:.marker=.o): OK"
 COMPARE_AR = cmp $(BASE_AR) $@ && echo "$@: OK"
 ifeq ($(COMPILER),ido)
-# Since we don't match .mdebug, we can't match the archive
-COMPARE_AR = echo "$@: OK"
+COMPARE_OBJ = $(CROSS)objcopy -p --strip-debug $(BASE_DIR)/$(@F:.marker=.o) $(BASE_DIR)/.cmp/$(@F:.marker=.cmp.o) && \
+              $(CROSS)objcopy -p --strip-debug $(WORKING_DIR)/$(@:.marker=.o) $(WORKING_DIR)/$(@:.marker=.cmp.o) && \
+              cmp $(BASE_DIR)/.cmp/$(@F:.marker=.cmp.o) $(WORKING_DIR)/$(@:.marker=.cmp.o) && echo "$(@:.marker=.o): OK"
+COMPARE_AR = echo "$@: Cannot compare archive currently"
 endif
 else
 COMPARE_OBJ :=
@@ -95,7 +98,7 @@ setup:
 	chmod -R +rw $(BASE_DIR)
 # strip off mdebug
 ifeq ($(COMPILER),ido)
-	tools/remove_mdebug.sh $(BASE_DIR)
+	mkdir -p $(BASE_DIR)/.cmp
 endif
 
 $(BUILD_DIR)/$(BASE_DIR)/%.marker: $(BASE_DIR)/%.o
@@ -120,9 +123,6 @@ $(BUILD_DIR)/src/voice/%.marker: CC := tools/compile_sjis.py -D__CC=$(WORKING_DI
 
 $(BUILD_DIR)/%.marker: %.c
 	cd $(<D) && $(WORKING_DIR)/$(CC) $(CFLAGS) $(MIPS_VERSION) $(CPPFLAGS) $(OPTFLAGS) $(<F) $(IINC) -o $(WORKING_DIR)/$(@:.marker=.o)
-ifeq ($(COMPILER),ido)
-	mips-linux-gnu-objcopy --remove-section .mdebug $(@:.marker=.o)
-endif
 ifneq ($(NON_MATCHING),1)
 # check if this file is in the archive; patch corrupted bytes and change file timestamps to match original if so
 	@$(if $(findstring $(BASE_DIR)/$(@F:.marker=.o), $(BASE_OBJS)), \
@@ -137,9 +137,6 @@ endif
 
 $(BUILD_DIR)/%.marker: %.s
 	cd $(<D) && $(WORKING_DIR)/$(CC) $(ASFLAGS) $(MIPS_VERSION) $(CPPFLAGS) $(ASOPTFLAGS) $(<F) $(IINC) -o $(WORKING_DIR)/$(@:.marker=.o)
-ifeq ($(COMPILER),ido)
-	mips-linux-gnu-objcopy --remove-section .mdebug $(@:.marker=.o)
-endif
 ifneq ($(NON_MATCHING),1)
 # check if this file is in the archive; patch corrupted bytes and change file timestamps to match original if so
 	@$(if $(findstring $(BASE_DIR)/$(@F:.marker=.o), $(BASE_OBJS)), \
