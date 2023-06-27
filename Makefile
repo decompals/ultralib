@@ -96,7 +96,7 @@ setup:
 	$(MAKE) -C tools
 	cd $(BASE_DIR) && $(AR) xo ../$(BASE_AR)
 	chmod -R +rw $(BASE_DIR)
-# strip off mdebug
+# make directory to store stripped base files
 ifeq ($(COMPILER),ido)
 	mkdir -p $(BASE_DIR)/.cmp
 endif
