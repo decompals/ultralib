@@ -2,30 +2,6 @@
 #include "PR/ultraerror.h"
 #include "assert.h"
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // TODO: this comes from a header
 #ifndef BBPLAYER
 #ident "$Revision: 1.17 $"
@@ -43,6 +19,7 @@ s32 __osEPiRawReadIo(OSPiHandle* pihandle, u32 devAddr, u32* data) {
         return -1;
     }
 
+#line 42
     assert(data != NULL);
 #endif
 

@@ -17,8 +17,10 @@ int sprintf(char* dst, const char* fmt, ...) {
     if (ans >= 0) {
         dst[ans] = 0;
     }
+    va_end(ap);
     return ans;
 }
+
 static char* proutSprintf(char* dst, const char* src, size_t count) {
     return (char*)memcpy((u8*)dst, (u8*)src, count) + count;
 }

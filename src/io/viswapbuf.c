@@ -3,50 +3,6 @@
 #include "assert.h"
 #include "viint.h"
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // TODO: this comes from a header
 #ifndef BBPLAYER
 #ident "$Revision: 1.17 $"
@@ -63,6 +19,7 @@ void osViSwapBuffer(void* frameBufPtr) {
         return;
     }
 
+#line 62
     assert(frameBufPtr != NULL);
 
     if ((u32)frameBufPtr & 0x3f) {

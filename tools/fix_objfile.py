@@ -45,12 +45,13 @@ def main():
     parser = argparse.ArgumentParser(description="Disassemble relocatable ELF object.")
     parser.add_argument("compiled", help="path to the compiled ELF file")
     parser.add_argument("original", help="path to the original ELF file")
+    parser.add_argument("-v", help="mdebug version")
     parser.add_argument("--fix-section-flags", help="", action="store_true")
     args = parser.parse_args()
 
     elf = None
     with open(args.compiled, "rb") as elf_file:
-        elf = ElfFile(bytearray(elf_file.read()))
+        elf = ElfFile(bytearray(elf_file.read()), int(args.v))
 
     original = None
     with open(args.original, "rb") as original_file:

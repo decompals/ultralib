@@ -25,6 +25,7 @@
 #else
 #ident "$Revision: 1.1 $"
 #endif
+#line 23
 
 /*
  * private typedefs and defines
@@ -274,7 +275,6 @@ void __scHandleRSP(OSSched *sc)
     OSScTask *t, *sp = 0, *dp = 0;
     s32 state;
 
-    
     assert(sc->curRSPTask);
 
     t = sc->curRSPTask;

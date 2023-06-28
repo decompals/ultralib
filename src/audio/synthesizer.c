@@ -24,6 +24,7 @@
 #else
 #ident "$Revision: 1.1 $"
 #endif
+#line 23
 
 #ifdef AUD_PROFILE
 #include <os.h>

@@ -2,49 +2,6 @@
 #include "assert.h"
 #include "siint.h"
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // TODO: this comes from a header
 #ifndef BBPLAYER
 #ident "$Revision: 1.17 $"
@@ -54,6 +11,7 @@
 
 s32 __osSiRawReadIo(u32 devAddr, u32* data) {
 #ifdef _DEBUG
+#line 53
     assert((devAddr & 0x3) == 0);
     assert(data != NULL);
 #endif

@@ -1,17 +1,18 @@
 COMPILER := gcc
-AS := tools/gcc/as
+export COMPILER_PATH := $(WORKING_DIR)/tools/gcc
+
 CC := tools/gcc/gcc
 AR_OLD := tools/gcc/ar
 PATCH_AR_FLAGS := 0 0 37777700
+OBJCOPY :=
 STRIP =
 
-export COMPILER_PATH := $(WORKING_DIR)/tools/gcc
-
-CFLAGS := -w -nostdinc -c -G 0 -mgp32 -mfp32 -D_LANGUAGE_C
-ASFLAGS := -w -nostdinc -c -G 0 -mgp32 -mfp32 -DMIPSEB -D_LANGUAGE_ASSEMBLY -D_MIPS_SIM=1 -D_ULTRA64 -x assembler-with-cpp
+CFLAGS := -w -nostdinc -c -G 0 -D_LANGUAGE_C -Wa,-irix-symtab
+ASFLAGS := -w -nostdinc -c -G 0 -Wa,-irix-symtab -DMIPSEB -D_LANGUAGE_ASSEMBLY -D_MIPS_SIM=1 -D_ULTRA64 -x assembler-with-cpp
 CPPFLAGS = -D_MIPS_SZLONG=32 -D__USE_ISOC99 $(GBIDEFINE)
 IINC = -I . -I $(WORKING_DIR)/include -I $(WORKING_DIR)/include/gcc -I $(WORKING_DIR)/include/PR
 MIPS_VERSION := -mips3
+REG_SIZES := -mgp32 -mfp32
 ASOPTFLAGS :=
 
 ifeq ($(findstring _d,$(TARGET)),_d)
@@ -47,4 +48,7 @@ $(BUILD_DIR)/src/host/host_ptn64.marker: CFLAGS += -fno-builtin # Probably a bet
 
 MDEBUG_FILES := $(BUILD_DIR)/src/monutil.marker
 $(BUILD_DIR)/src/monutil.marker: CC := tools/ido/cc
-$(BUILD_DIR)/src/monutil.marker: ASFLAGS := -non_shared -mips2 -fullwarn -verbose -Xcpluscomm -G 0 -woff 516,649,838,712 -Wab,-r4300_mul -nostdinc -o32 -c
+$(BUILD_DIR)/src/monutil.marker: ASFLAGS := -non_shared -fullwarn -verbose -Xcpluscomm -G 0 -woff 516,649,838,712 -Wab,-r4300_mul -nostdinc -o32 -c
+$(BUILD_DIR)/src/monutil.marker: REG_SIZES :=
+$(BUILD_DIR)/src/monutil.marker: MIPS_VERSION := -mips2
+$(BUILD_DIR)/src/monutil.marker: OPTFLAGS := -O2

@@ -2,52 +2,6 @@
 #include "assert.h"
 #include "siint.h"
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // TODO: this comes from a header
 #ifndef BBPLAYER
 #ident "$Revision: 1.17 $"
@@ -59,6 +13,7 @@ extern u32 __osBbIsBb;
 
 s32 __osSiRawStartDma(s32 direction, void* dramAddr) {
 #ifdef _DEBUG
+#line 56
     assert(((u32)dramAddr & 0x3) == 0);
 #endif
     if (IO_READ(SI_STATUS_REG) & (SI_STATUS_DMA_BUSY | SI_STATUS_RD_BUSY)) {

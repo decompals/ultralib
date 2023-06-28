@@ -5,8 +5,11 @@
 
 import struct
 
-from mdebug import EcoffHDRR, EcoffFdr
+from mdebug import MdebugVersion, EcoffHDRR, EcoffFdr
 from STABS import STABSContext
+
+# 1 = IDO , 2 = EGCS
+MDEBUG_DEFAULT_VERSION = MdebugVersion.EGCS
 
 # =====================================================================================================
 # Utility
@@ -1012,10 +1015,11 @@ class MdebugSection(Section):
     """
     MIPS Debugging Section
     """
-    def __init__(self, header, elf_file, index):
+    def __init__(self, header, elf_file, index, mdebug_version=MDEBUG_DEFAULT_VERSION):
         super().__init__(header, elf_file, index)
         self.parent = self.elf_file
-        self.hdrr = EcoffHDRR(self.data)
+
+        self.hdrr = EcoffHDRR(self.data, mdebug_version)
         self.stabs_ctx = STABSContext()
 
         self.fdrs = []
@@ -1067,7 +1071,7 @@ class ReginfoSection(Section):
 # =====================================================================================================
 
 class ElfFile:
-    def __init__(self, data):
+    def __init__(self, data, mdebug_version=MDEBUG_DEFAULT_VERSION):
         def init_section(i):
             offset = self.elf_header.e_shoff + i * self.elf_header.e_shentsize
             section_type = struct.unpack(">I", data[offset + 4:][:4])[0]
@@ -1080,7 +1084,7 @@ class ElfFile:
             elif section_type == SHT_STRTAB:
                 return StrtabSection(header_data, self, i)
             elif section_type == SHT_MIPS_DEBUG:
-                return MdebugSection(header_data, self, i)
+                return MdebugSection(header_data, self, i, mdebug_version)
             elif section_type == SHT_MIPS_REGINFO:
                 return ReginfoSection(header_data, self, i)
             else:

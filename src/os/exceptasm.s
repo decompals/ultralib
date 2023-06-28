@@ -12,7 +12,6 @@
 #define KMC_STAT        0xBFF08004
 
 #ifdef BBPLAYER
-#include "PR/bcp.h"
 .set mips3
 #endif
 
@@ -476,8 +475,12 @@ STAY2(mfc0  t0, C0_EPC)
     sw      t0, THREAD_PC(k0)
     lw      t0, THREAD_FP(k0)
     beqz    t0, 1f
+#ifdef __sgi
 STAY2(cfc1  t0, fcr31)
-#ifdef BBPLAYER
+#else
+    cfc1    t0, fcr31
+#endif
+#if defined(BBPLAYER) || defined(__sgi)
     NOP
 #endif
     sw      t0, THREAD_FPCSR(k0)
@@ -600,7 +603,7 @@ cart:
     jal     send_mesg
 #else
 
-    lw      s1, PHYS_TO_K1(MI_38_REG)
+    lw      s1, PHYS_TO_K1(MI_BASE_REG + 0x38)
 
 flash:
     andi    t1, s1, 0x40
@@ -608,7 +611,7 @@ flash:
 
     andi    s1, s1, 0x3f80
     li      t1, 0
-    sw      t1, PHYS_TO_K1(PI_48_REG)
+    sw      t1, PHYS_TO_K1(PI_BASE_REG + 0x48)
     li      a0, MESG(OS_EVENT_FLASH)
     jal     send_mesg
 flashx:
@@ -619,7 +622,7 @@ md:
 
     andi    s1, s1, 0x1fc0
     li      t1, 0x2000
-    sw      t1, PHYS_TO_K1(MI_38_REG)
+    sw      t1, PHYS_TO_K1(MI_BASE_REG + 0x38)
     li      a0, MESG(OS_EVENT_MD)
     jal     send_mesg
 mdx:
@@ -630,7 +633,7 @@ aes:
 
     andi    s1, s1, 0x3f40
     li      t1, 0x4000
-    sw      t1, PHYS_TO_K1(MI_3C_REG)
+    sw      t1, PHYS_TO_K1(MI_BASE_REG + 0x3C)
     li      a0, MESG(OS_EVENT_AES)
     jal     send_mesg
 aesx:
@@ -641,7 +644,7 @@ ide:
 
     andi    s1, s1, 0x3ec0
     li      t1, 0x10000
-    sw      t1, PHYS_TO_K1(MI_3C_REG)
+    sw      t1, PHYS_TO_K1(MI_BASE_REG + 0x3C)
     li      a0, MESG(OS_EVENT_IDE)
     jal     send_mesg
 idex:
@@ -652,7 +655,7 @@ pi_err:
 
     andi    s1, s1, 0x3dc0
     li      t1, 0x40000
-    sw      t1, PHYS_TO_K1(MI_3C_REG)
+    sw      t1, PHYS_TO_K1(MI_BASE_REG + 0x3C)
     li      a0, MESG(OS_EVENT_PI_ERR)
     jal     send_mesg
 pi_errx:
@@ -663,7 +666,7 @@ usb0:
 
     andi    s1, s1, 0x3bc0
     li      t1, 0x100000
-    sw      t1, PHYS_TO_K1(MI_3C_REG)
+    sw      t1, PHYS_TO_K1(MI_BASE_REG + 0x3C)
     li      a0, MESG(OS_EVENT_USB0)
     jal     send_mesg
 usb0x:
@@ -674,7 +677,7 @@ usb1:
 
     andi    s1, s1, 0x37c0
     li      t1, 0x400000
-    sw      t1, PHYS_TO_K1(MI_3C_REG)
+    sw      t1, PHYS_TO_K1(MI_BASE_REG + 0x3C)
     li      a0, MESG(OS_EVENT_USB1)
     jal     send_mesg
 usb1x:
