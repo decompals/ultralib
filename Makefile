@@ -86,6 +86,14 @@ MARKER_FILES   := $(C_MARKER_FILES) $(S_MARKER_FILES) $(MDEBUG_FILES)
 
 ifneq ($(COMPARE),0)
 
+ifeq ($(COMPILER),ido)
+PATCH_64BIT = @:
+MDEBUG_VERSION := 1
+else
+PATCH_64BIT = python3 tools/patch_64bit_compile.py $(WORKING_DIR)/$(@:.marker=.o)
+MDEBUG_VERSION := 2
+endif
+
 ifneq ($(COMPILER),gcc)
 COMPARE_OBJ = $(OBJCOPY) -p --strip-debug $(WORKING_DIR)/$(@:.marker=.o) $(WORKING_DIR)/$(@:.marker=.cmp.o) && \
               cmp $(BASE_DIR)/.cmp/$(@F:.marker=.cmp.o) $(WORKING_DIR)/$(@:.marker=.cmp.o) && echo "$(@:.marker=.o): OK"
@@ -157,7 +165,7 @@ ifneq ($(COMPARE),0)
 	cd $(BASE_DIR) && $(AR) xo $(WORKING_DIR)/$(BASE_AR)
 	chmod -R +rw $(BASE_DIR)
 ifneq ($(COMPILER),gcc)
-	export CROSS=$(CROSS) && ./tools/strip_debug.sh $(BASE_DIR)
+	tools/strip_debug.sh $(OBJCOPY) $(BASE_DIR)
 endif
 endif
 
@@ -180,18 +188,25 @@ $(BUILD_DIR)/src/sp/spriteex2.marker: GBIDEFINE :=
 $(BUILD_DIR)/src/voice/%.marker: OPTFLAGS += -DLANG_JAPANESE -I$(WORKING_DIR)/src -I$(WORKING_DIR)/src/voice
 $(BUILD_DIR)/src/voice/%.marker: CC := tools/compile_sjis.py -D__CC=$(WORKING_DIR)/$(CC) -D__BUILD_DIR=$(BUILD_DIR)
 
+ifeq ($(COMPILER),ido)
+# don't compile these at all with ido since they use inline assembly
+$(BUILD_DIR)/src/reg/_%.marker: src/reg/_%.c
+	@:
+endif
+
 $(C_MARKER_FILES): $(BUILD_DIR)/%.marker: %.c
 	cd $(<D) && $(WORKING_DIR)/$(CC) $(CFLAGS) $(MIPS_VERSION) $(REG_SIZES) $(CPPFLAGS) $(OPTFLAGS) $(<F) $(IINC) -o $(WORKING_DIR)/$(@:.marker=.o)
 ifneq ($(COMPARE),0)
 # check if this file is in the archive; patch corrupted bytes and change file timestamps to match original if so
-	@$(if $(findstring $(BASE_DIR)/$(@F:.marker=.o), $(BASE_OBJS)), \
-	 python3 tools/fix_objfile.py $(@:.marker=.o) $(BASE_DIR)/$(@F:.marker=.o) $(STRIP) && \
+	$(if $(findstring $(BASE_DIR)/$(@F:.marker=.o), $(BASE_OBJS)), \
+	 python3 tools/fix_objfile.py -v $(MDEBUG_VERSION) $(@:.marker=.o) $(BASE_DIR)/$(@F:.marker=.o) $(STRIP) && \
 	 $(COMPARE_OBJ) && \
 	 touch -r $(BASE_DIR)/$(@F:.marker=.o) $(@:.marker=.o), \
 	 echo "Object file $(@F:.marker=.o) is not in the current archive" \
 	)
 endif
 ifneq ($(FIXUPS),0)
+	$(PATCH_64BIT)
 	tools/set_o32abi_bit.py $(WORKING_DIR)/$(@:.marker=.o)
 	$(CROSS)strip $(WORKING_DIR)/$(@:.marker=.o) -N asdasdasdasd
 	$(CROSS)objcopy --remove-section .mdebug $(WORKING_DIR)/$(@:.marker=.o)
@@ -202,16 +217,16 @@ endif
 $(S_MARKER_FILES): $(BUILD_DIR)/%.marker: %.s
 	cd $(<D) && $(WORKING_DIR)/$(CC) $(ASFLAGS) $(MIPS_VERSION) $(REG_SIZES) $(CPPFLAGS) $(ASOPTFLAGS) $(<F) $(IINC) -o $(WORKING_DIR)/$(@:.marker=.o)
 ifneq ($(COMPARE),0)
-	python3 tools/patch_64bit_compile.py $(WORKING_DIR)/$(@:.marker=.o)
 # check if this file is in the archive; patch corrupted bytes and change file timestamps to match original if so
-	@$(if $(findstring $(BASE_DIR)/$(@F:.marker=.o), $(BASE_OBJS)), \
-	 python3 tools/fix_objfile.py $(@:.marker=.o) $(BASE_DIR)/$(@F:.marker=.o) $(STRIP) && \
+	$(if $(findstring $(BASE_DIR)/$(@F:.marker=.o), $(BASE_OBJS)), \
+	 python3 tools/fix_objfile.py -v $(MDEBUG_VERSION) $(@:.marker=.o) $(BASE_DIR)/$(@F:.marker=.o) $(STRIP) && \
 	 $(COMPARE_OBJ) && \
 	 touch -r $(BASE_DIR)/$(@F:.marker=.o) $(@:.marker=.o), \
 	 echo "Object file $(@F:.marker=.o) is not in the current archive" \
 	)
 endif
 ifneq ($(FIXUPS),0)
+	$(PATCH_64BIT)
 	tools/set_o32abi_bit.py $(WORKING_DIR)/$(@:.marker=.o)
 	$(CROSS)strip $(WORKING_DIR)/$(@:.marker=.o) -N asdasdasdasd
 	$(CROSS)objcopy --remove-section .mdebug $(WORKING_DIR)/$(@:.marker=.o)
@@ -223,19 +238,18 @@ endif
 $(MDEBUG_FILES): $(BUILD_DIR)/src/%.marker: src/%.s
 	cp $(<:.marker=.s) $(dir $@)
 	mkdir -p $(@:.marker=)
-	export USR_INCLUDE=$(WORKING_DIR)/include && cd $(@:.marker=) && $(WORKING_DIR)/$(CC) $(ASFLAGS) $(MIPS_VERSION) $(REG_SIZES) $(CPPFLAGS) ../$(<F) -I/usr/include -o $(notdir $(<:.s=.o))
+	export USR_INCLUDE=$(WORKING_DIR)/include && cd $(@:.marker=) && $(WORKING_DIR)/$(CC) $(ASFLAGS) $(MIPS_VERSION) $(REG_SIZES) $(CPPFLAGS) $(OPTFLAGS) ../$(<F) -I/usr/include -o $(notdir $(<:.s=.o))
 	mv $(@:.marker=)/$(<F:.s=.o) $(@:.marker=)/..
 ifneq ($(COMPARE),0)
-	python3 tools/patch_64bit_compile.py $(WORKING_DIR)/$(@:.marker=.o)
 # check if this file is in the archive; patch corrupted bytes and change file timestamps to match original if so
 	$(if $(findstring $(BASE_DIR)/$(@F:.marker=.o), $(BASE_OBJS)), \
-	 python3 tools/fix_objfile.py $(@:.marker=.o) $(BASE_DIR)/$(@F:.marker=.o) && \
 	 $(COMPARE_OBJ) && \
 	 touch -r $(BASE_DIR)/$(@F:.marker=.o) $(@:.marker=.o), \
 	 echo "Object file $(@F:.marker=.o) is not in the current archive" \
 	)
 endif
 ifneq ($(FIXUPS),0)
+	$(PATCH_64BIT)
 	tools/set_o32abi_bit.py $(WORKING_DIR)/$(@:.marker=.o)
 	$(CROSS)strip $(WORKING_DIR)/$(@:.marker=.o) -N asdasdasdasd
 	$(CROSS)objcopy --remove-section .mdebug $(WORKING_DIR)/$(@:.marker=.o)

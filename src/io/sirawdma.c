@@ -2,48 +2,6 @@
 #include "assert.h"
 #include "siint.h"
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // Adjust line numbers to match assert
 #if BUILD_VERSION < VERSION_J
 #line 49
@@ -59,7 +17,10 @@
 extern u32 __osBbIsBb;
 
 s32 __osSiRawStartDma(s32 direction, void* dramAddr) {
+#ifdef _DEBUG
+#line 56
     assert(((u32)dramAddr & 0x3) == 0);
+#endif
 
 #if BUILD_VERSION >= VERSION_J
     if (IO_READ(SI_STATUS_REG) & (SI_STATUS_DMA_BUSY | SI_STATUS_RD_BUSY)) {

@@ -33,8 +33,8 @@ ABS(__osBbStateDirty, 0x800003b4)
 ABS(__osBbAuxDataLimit, 0x800003b8)
 
 /* padded to 0x60 in the object file */
-.fill 0x90
+.space 0x90
 #else
 /* padded to 0x60 in the object file */
-.fill 0x60
+.space 0x60
 #endif

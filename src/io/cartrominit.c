@@ -15,7 +15,7 @@
 OSPiHandle __CartRomHandle ALIGNED(8);
 
 OSPiHandle* osCartRomInit(void) {
-    u32 value; // value = 0;
+    u32 value = 0;
     u32 saveMask;
     static int first = TRUE;
     register u32 stat;

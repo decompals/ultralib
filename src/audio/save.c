@@ -26,6 +26,7 @@
 #else
 #ident "$Revision: 1.1 $"
 #endif
+#line 25
 
 Acmd *alSavePull(void *filter, s16 *outp, s32 outCount, s32 sampleOffset,
                  Acmd *p) 

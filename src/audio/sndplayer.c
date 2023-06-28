@@ -27,6 +27,7 @@
 #else
 #ident "$Revision: 1.1 $"
 #endif
+#line 26
 
 void alSndpNew(ALSndPlayer *sndp, ALSndpConfig *c) 
 {    

@@ -2,43 +2,6 @@
 #include "assert.h"
 #include "PR/ultraerror.h"
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // Adjust line numbers to match assert
 #if BUILD_VERSION < VERSION_J
 #line 46
@@ -61,6 +24,7 @@ s32 __osPiRawReadIo(u32 devAddr, u32* data) {
     }
 #endif
 
+#line 60
     assert(data != NULL);
 
     WAIT_ON_IOBUSY(stat);

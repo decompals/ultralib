@@ -4,42 +4,6 @@
 #include "PR/os_internal.h"
 #include "assert.h"
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // TODO: this comes from a header
 #ifndef BBPLAYER
 #ident "$Revision: 1.17 $"
@@ -52,6 +16,7 @@ void osFree(void* region, void* addr) {
     int i;
 
 #ifdef _DEBUG
+#line 51
     assert((region != NULL) && (addr != NULL));
     if (((char*)rp + ALIGN(sizeof(OSRegion), rp->r_alignSize)) != rp->r_startBufferAddress) {
         __osError(ERR_OSFREE_REGION, 1, region);

@@ -103,7 +103,7 @@ class Archive:
         armap_size = 4
         armap_string_data = bytearray()
         for i,file in enumerate(self.files):
-            elf = ElfFile(file.data)
+            elf = ElfFile(file.data, mdebug_version=1)
             if elf.symtab is not None:
                 for sym in elf.symtab.symbol_entries:
                     if sym.st_shndx != SHN_UND and sym.bind == SB_GLOBAL:

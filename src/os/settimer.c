@@ -9,7 +9,6 @@
 #endif
 
 int osSetTimer(OSTimer* t, OSTime countdown, OSTime interval, OSMesgQueue* mq, OSMesg msg) {
-    register u32 saveMask;
     OSTime time;
 #if BUILD_VERSION >= VERSION_K
     OSTimer* next;

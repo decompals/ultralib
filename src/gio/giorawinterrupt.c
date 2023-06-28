@@ -2,6 +2,10 @@
 #include "PR/rcp.h"
 #include "../io/piint.h"
 
+#ifdef BBPLAYER
+#ident "$Revision: 1.1 $"
+#endif
+
 void __osGIORawInterrupt(s32 value) {
     register u32 stat;
 

@@ -22,7 +22,7 @@ void osViSetMode(OSViMode* modep) {
         return;
     }
 
-#line 61
+#line 58
     assert(modep != NULL);
 #endif
 

@@ -3,49 +3,6 @@
 #include "assert.h"
 #include "viint.h"
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // TODO: this comes from a header
 #ifndef BBPLAYER
 #ident "$Revision: 1.17 $"
@@ -62,6 +19,7 @@ void osViSetEvent(OSMesgQueue* mq, OSMesg m, u32 retraceCount) {
         return;
     }
 
+#line 61
     assert(mq != NULL);
 #endif
 

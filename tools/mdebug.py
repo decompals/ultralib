@@ -31,9 +31,9 @@ import struct
 
 from STABS import STABS
 
-# Version 1 is the version that IDO emits
-# Version 2 is the version that EGCS emits
-MDEBUG_VERSION = 2
+class MdebugVersion(IntEnum):
+    IDO = 1
+    EGCS = 2
 
 class EcoffBt(IntEnum): # Basic Type
     NIL         =  0 # 
@@ -385,7 +385,7 @@ class EcoffSymr:
         self.c_repr = None
 
     def link_syms(self):
-        offset = 0 if MDEBUG_VERSION == 1 else self.fdr.isymBase
+        offset = self.fdr.offset()
 
         if self.st == EcoffSt.END:
             # print(self.fdr.symrs)
@@ -407,7 +407,7 @@ class EcoffSymr:
             return f"{stabs.c_repr}"
 
     def late_init(self, stabs_ctx):
-        offset = 0 if MDEBUG_VERSION == 1 else self.fdr.isymBase
+        offset = self.fdr.offset()
 
         if self.is_stab:
             if self.is_stab_continuation:
@@ -546,7 +546,7 @@ class EcoffSymr:
             # no type info
             return "", None
 
-        offset = 0 if MDEBUG_VERSION == 1 else self.fdr.iauxBase
+        offset = self.fdr.offset()
 
         if self.index + ind - offset >= len(self.fdr.auxs):
             return "", None # kludge for unmatched symbols
@@ -841,6 +841,9 @@ class EcoffFdr:
 
         self.size = sum([pdr.size for pdr in self.pdrs])
 
+    def offset(self):
+        return 0 if self.parent.hdrr.version == MdebugVersion.IDO else self.isymBase
+
     def late_init(self):
         for symr in self.symrs:
             symr.late_init(self.parent.stabs_ctx)
@@ -956,8 +959,10 @@ class EcoffHDRR:
     HDRR_MAGIC = 0x7009
     SIZE = 0x60
 
-    def __init__(self, data) -> None:
+    def __init__(self, data, version) -> None:
         self.data = data[:EcoffHDRR.SIZE]
+        
+        self.version = version
 
         self.magic, self.vstamp, self.ilineMax, self.cbLine, \
             self.cbLineOffset, self.idnMax, self.cbDnOffset, self.ipdMax, \

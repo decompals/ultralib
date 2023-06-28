@@ -3,42 +3,6 @@
 #include "PR/os_internal.h"
 #include "assert.h"
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // TODO: this comes from a header
 #ifndef BBPLAYER
 #ident "$Revision: 1.17 $"
@@ -50,6 +14,7 @@ s32 osGetRegionBufSize(void* region) {
     register OSRegion* rp = region;
 
 #ifdef _DEBUG
+#line 49
     assert(rp != NULL);
     if (((char*)rp + ALIGN(sizeof(OSRegion), rp->r_alignSize)) != rp->r_startBufferAddress) {
         __osError(ERR_OSGETREGIONBUFSIZE, 1, region);

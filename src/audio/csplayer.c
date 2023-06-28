@@ -49,6 +49,7 @@
 #else
 #ident "$Revision: 1.1 $"
 #endif
+#line 46
 
 
 static ALMicroTime      __CSPVoiceHandler(void *node);

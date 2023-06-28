@@ -31,6 +31,7 @@
 #else
 #ident "$Revision: 1.1 $"
 #endif
+#line 27
 
 #define RANGE 2.0
 extern ALGlobals *alGlobals;
