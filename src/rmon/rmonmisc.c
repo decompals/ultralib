@@ -10,8 +10,6 @@
 // TODO: this comes from a header
 #ident "$Revision: 1.4 $"
 
-OSMesgQueue __rmonMQ ALIGNED(8);
-
 int __rmonSetFault(KKHeader* req) {
     KKFaultRequest* request = (KKFaultRequest*)req;
     KKObjectEvent reply;
@@ -26,6 +24,7 @@ int __rmonSetFault(KKHeader* req) {
     return TV_ERROR_NO_ERROR;
 }
 
+OSMesgQueue __rmonMQ ALIGNED(8);
 static OSThread rmonIOThread ALIGNED(8);
 static OSMesg rmonMsgs[8] ALIGNED(8);
 static u64 rmonIOStack[2048] ALIGNED(16);

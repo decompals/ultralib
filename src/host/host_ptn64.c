@@ -1,6 +1,6 @@
 #include "PR/os_internal.h"
 #include "PR/rcp.h"
-#include "../io/piint.h"
+#include "memory.h"
 
 #include "macros.h"
 
@@ -12,6 +12,9 @@ static volatile unsigned int* n64piok = (unsigned*)PHYS_TO_K1(PI_STATUS_REG);
 static OSMesgQueue waitPtQueue ALIGNED(8);
 static OSMesg waitPtQueueBuf;
 static u32 isWaitPtQueueCreated = FALSE;
+
+void __osPiRelAccess(void);
+void __osPiGetAccess(void);
 
 static void createWaitPtQueue(void) {
     osCreateMesgQueue(&waitPtQueue, &waitPtQueueBuf, 1);
@@ -103,14 +106,13 @@ void osReadHost_pt(void* dramAddr, u32 nbytes) {
 
     while (ct != 0) {
         if (ct > 0x100) {
-            ct1 = 0x100;
-            ct1_bak = 0x100;
+            ct1_bak = ct1 = 0x100;
             ct -= 0x100;
         } else {
             ct1_bak = ct1 = ct;
             ct = 0;
         }
-        bp = &buf;
+        bp = (u32*)&buf;
 
         while (ct1 != 0) {
             *(bp++) = getPT();
@@ -179,8 +181,7 @@ void osWriteHost_pt(void* dramAddr, u32 nbytes) {
 
     while (ct != 0) {
         if (ct > 0x100) {
-            ct1 = 0x100;
-            ct1_bak = 0x100;
+            ct1_bak = ct1 = 0x100;
             ct -= 0x100;
         } else {
             ct1_bak = ct1 = ct;

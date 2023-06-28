@@ -1,6 +1,7 @@
 #include "macros.h"
 #include "PR/os_internal.h"
 #include "controller.h"
+#include "PR/rmon.h"
 
 __OSInode __osPfsInodeCache ALIGNED(8);
 s32 __osPfsInodeCacheChannel = -1;
@@ -15,7 +16,7 @@ u16 __osSumcalc(u8* ptr, int length) {
         sum += *tmp++;
     }
 
-    return sum;
+    return sum & 0xFFFF;
 }
 
 s32 __osIdCheckSum(u16* ptr, u16* csum, u16* icsum) {
@@ -25,7 +26,7 @@ s32 __osIdCheckSum(u16* ptr, u16* csum, u16* icsum) {
     *csum = *icsum = 0;
 
     for (j = 0; j < ((sizeof(__OSPackId) - sizeof(u32)) / sizeof(u8)); j += 2) {
-        data = *(u16*)((u8*)ptr + j);
+        data = *(u16*)((u32)ptr + j);
         *csum += data;
         *icsum += ~data;
     }

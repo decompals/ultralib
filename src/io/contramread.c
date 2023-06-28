@@ -18,13 +18,11 @@ s32 __osContRamRead(OSMesgQueue* mq, int channel, u16 address, u8* buffer) {
     do {
         ptr = (u8*)&__osPfsPifRam;
 
-        if (__osContLastCmd != CONT_CMD_READ_PAK || __osPfsLastChannel != channel) {
+        if (__osContLastCmd != CONT_CMD_READ_PAK || (u32)__osPfsLastChannel != channel) {
             __osContLastCmd = CONT_CMD_READ_PAK;
             __osPfsLastChannel = channel;
 
-            for (i = 0; i < channel; i++) {
-                *ptr++ = CONT_CMD_REQUEST_STATUS;
-            }
+            for (i = 0; i < channel; i++) { *ptr++ = CONT_CMD_REQUEST_STATUS; }
 
             __osPfsPifRam.pifstatus = CONT_CMD_EXE;
 
@@ -51,7 +49,7 @@ s32 __osContRamRead(OSMesgQueue* mq, int channel, u16 address, u8* buffer) {
         ret = CHNL_ERR(*READFORMAT(ptr));
 
         if (!ret) {
-            if (__osContDataCrc(&READFORMAT(ptr)->data) != READFORMAT(ptr)->datacrc) {
+            if (__osContDataCrc(READFORMAT(ptr)->data) != READFORMAT(ptr)->datacrc) {
                 ret = __osPfsGetStatus(mq, channel);
 
                 if (ret) {
@@ -60,7 +58,7 @@ s32 __osContRamRead(OSMesgQueue* mq, int channel, u16 address, u8* buffer) {
                     ret = PFS_ERR_CONTRFAIL;
                 }
             } else {
-                bcopy(&READFORMAT(ptr)->data, buffer, BLOCKSIZE);
+                bcopy(READFORMAT(ptr)->data, buffer, BLOCKSIZE);
             }
         } else {
             ret = PFS_ERR_NOPACK;

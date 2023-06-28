@@ -23,12 +23,12 @@ void osCreateViManager(OSPri pri) {
 #ifdef _DEBUG
     if ((pri < OS_PRIORITY_IDLE) || (pri > OS_PRIORITY_MAX)) {
         __osError(ERR_OSCREATEVIMANAGER, 1, pri);
-        return 0;
+        return;
     }
 #endif
 
     if (__osViDevMgr.active) {
-        return 0;
+        return;
     }
     __osTimerServicesInit();
     __additional_scanline = 0;

@@ -13,7 +13,7 @@ void osSetEventMesg(OSEvent event, OSMesgQueue* mq, OSMesg msg) {
 #ifdef _DEBUG
     if (event >= OS_NUM_EVENTS) {
         __osError(ERR_OSSETEVENTMESG, 1, event);
-        return 0;
+        return;
     }
 #endif
 

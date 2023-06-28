@@ -3,9 +3,9 @@
 #include "controller.h"
 #include "siint.h"
 
-static void __osPackEepReadData(u8 address);
 OSPifRam __osEepPifRam ALIGNED(16);
 s32 __osEepromRead16K;
+static void __osPackEepReadData(u8 address);
 
 s32 osEepromRead(OSMesgQueue* mq, u8 address, u8* buffer) {
     s32 ret = 0;

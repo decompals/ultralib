@@ -4,8 +4,8 @@
 #include "controller_gbpak.h"
 
 OSTimer __osGbpakTimer;
-OSMesg __osGbpakTimerMsg;
 OSMesgQueue __osGbpakTimerQ ALIGNED(8);
+OSMesg __osGbpakTimerMsg;
 
 s32 osGbpakInit(OSMesgQueue* mq, OSPfs* pfs, int channel) {
     int i;

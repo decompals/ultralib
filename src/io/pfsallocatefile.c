@@ -1,5 +1,6 @@
 #include "PR/os_internal.h"
 #include "controller.h"
+#include "PR/rmon.h"
 
 #define ROUND_UP_DIVIDE(numerator, denominator) (((numerator) + (denominator)-1) / (denominator))
 
@@ -54,7 +55,7 @@ s32 osPfsAllocateFile(OSPfs* pfs, u16 company_code, u32 game_code, u8* game_name
     }
 
     for (bank = 0; bank < pfs->banks; bank++) {
-        ERRCK(__osPfsRWInode(pfs, &inode, OS_READ, bank));
+        ERRCK(__osPfsRWInode(pfs, &inode, PFS_READ, bank));
         ERRCK(__osPfsDeclearPage(pfs, &inode, file_size_in_pages, &start_page, bank, &decleared, &last_page));
 
         if (start_page != -1) {
@@ -64,7 +65,7 @@ s32 osPfsAllocateFile(OSPfs* pfs, u16 company_code, u32 game_code, u8* game_name
             } else {
                 backup_inode.inode_page[old_last_page].inode_t.bank = bank;
                 backup_inode.inode_page[old_last_page].inode_t.page = start_page;
-                ERRCK(__osPfsRWInode(pfs, &backup_inode, OS_WRITE, old_bank));
+                ERRCK(__osPfsRWInode(pfs, &backup_inode, PFS_WRITE, old_bank));
             }
 
             if (file_size_in_pages > decleared) {
