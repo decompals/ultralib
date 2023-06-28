@@ -50,8 +50,7 @@ ifneq ($(NON_MATCHING),1)
 COMPARE_OBJ = cmp $(BASE_DIR)/$(@F:.marker=.o) $(@:.marker=.o) && echo "$(@:.marker=.o): OK"
 COMPARE_AR = cmp $(BASE_AR) $@ && echo "$@: OK"
 ifeq ($(COMPILER),ido)
-COMPARE_OBJ = $(CROSS)objcopy -p --strip-debug $(BASE_DIR)/$(@F:.marker=.o) $(BASE_DIR)/.cmp/$(@F:.marker=.cmp.o) && \
-              $(CROSS)objcopy -p --strip-debug $(WORKING_DIR)/$(@:.marker=.o) $(WORKING_DIR)/$(@:.marker=.cmp.o) && \
+COMPARE_OBJ = $(CROSS)objcopy -p --strip-debug $(WORKING_DIR)/$(@:.marker=.o) $(WORKING_DIR)/$(@:.marker=.cmp.o) && \
               cmp $(BASE_DIR)/.cmp/$(@F:.marker=.cmp.o) $(WORKING_DIR)/$(@:.marker=.cmp.o) && echo "$(@:.marker=.o): OK"
 COMPARE_AR = echo "$@: Cannot compare archive currently"
 endif
@@ -96,9 +95,8 @@ setup:
 	$(MAKE) -C tools
 	cd $(BASE_DIR) && $(AR) xo ../$(BASE_AR)
 	chmod -R +rw $(BASE_DIR)
-# make directory to store stripped base files
 ifeq ($(COMPILER),ido)
-	mkdir -p $(BASE_DIR)/.cmp
+	export CROSS=$(CROSS) && ./tools/strip_debug.sh $(BASE_DIR)
 endif
 
 $(BUILD_DIR)/$(BASE_DIR)/%.marker: $(BASE_DIR)/%.o
