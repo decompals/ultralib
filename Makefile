@@ -110,10 +110,10 @@ endif
 
 GBIDEFINE := -DF3DEX_GBI_2
 
-$(BUILD_DIR)/src/gu/parse_gbi.marker: GBIDEFINE :=
+$(BUILD_DIR)/src/gu/parse_gbi.marker: GBIDEFINE := -DF3D_GBI
 $(BUILD_DIR)/src/gu/us2dex_emu.marker: GBIDEFINE :=
 $(BUILD_DIR)/src/gu/us2dex2_emu.marker: GBIDEFINE :=
-$(BUILD_DIR)/src/sp/sprite.marker: GBIDEFINE :=
+$(BUILD_DIR)/src/sp/sprite.marker: GBIDEFINE := -DF3D_GBI
 $(BUILD_DIR)/src/sp/spriteex.marker: GBIDEFINE :=
 $(BUILD_DIR)/src/sp/spriteex2.marker: GBIDEFINE :=
 $(BUILD_DIR)/src/voice/%.marker: OPTFLAGS += -DLANG_JAPANESE -I$(WORKING_DIR)/src -I$(WORKING_DIR)/src/voice
