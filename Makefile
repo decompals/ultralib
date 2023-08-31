@@ -4,18 +4,31 @@ NON_MATCHING ?= 0
 # libgultra_rom, libgultra_d, libgultra
 # libultra_rom, libultra_d, libultra
 TARGET ?= libgultra_rom
+VERSION ?= L
 CROSS ?= mips-linux-gnu-
 
-BASE_DIR := base_$(TARGET)
-BASE_AR := $(TARGET).a
+BASE_DIR := extracted/$(VERSION)/$(TARGET)
+BASE_AR := base/$(VERSION)/$(TARGET).a
 BUILD_ROOT := build
-BUILD_DIR := $(BUILD_ROOT)/$(TARGET)
+BUILD_DIR := $(BUILD_ROOT)/$(VERSION)/$(TARGET)
 BUILD_AR := $(BUILD_DIR)/$(TARGET).a
 
 WORKING_DIR := $(shell pwd)
 
 CPP := cpp -P
 AR := ar
+
+VERSION_D := 1
+VERSION_E := 2
+VERSION_F := 3
+VERSION_G := 4
+VERSION_H := 5
+VERSION_I := 6
+VERSION_J := 7
+VERSION_K := 8
+VERSION_L := 9
+
+VERSION_DEFINE := -DBUILD_VERSION=$(VERSION_$(VERSION)) -DBUILD_VERSION_STRING=\"2.0$(VERSION)\"
 
 ifeq ($(findstring libgultra,$(TARGET)),libgultra)
 -include Makefile.gcc
@@ -40,8 +53,7 @@ ASM_DIRS := $(shell find asm -type d -not -path "asm/non_matchings*")
 C_FILES  := $(foreach dir,$(SRC_DIRS),$(wildcard $(dir)/*.c))
 S_FILES  := $(foreach dir,$(SRC_DIRS) $(ASM_DIRS),$(wildcard $(dir)/*.s))
 O_FILES  := $(foreach f,$(S_FILES:.s=.o),$(BUILD_DIR)/$f) \
-            $(foreach f,$(C_FILES:.c=.o),$(BUILD_DIR)/$f) \
-            $(foreach f,$(wildcard $(BASE_DIR)/*),$(BUILD_DIR)/$f)
+            $(foreach f,$(C_FILES:.c=.o),$(BUILD_DIR)/$f)
 # Because we patch the object file timestamps, we can't use them as the targets since they'll always be older than the C file
 # Therefore instead we use marker files that have actual timestamps as the dependencies for the archive
 MARKER_FILES := $(O_FILES:.o=.marker)
@@ -61,6 +73,17 @@ AR_OLD := $(AR)
 endif
 
 BASE_OBJS := $(wildcard $(BASE_DIR)/*.o)
+
+# Check to make sure the current version has been set up
+ifneq ($(NON_MATCHING),1)
+ifeq ($(BASE_OBJS),)
+# Ignore this check if the user is currently running setup, clean or distclean
+ifeq ($(filter $(MAKECMDGOALS),setup clean distclean),)
+$(error Current version ($(TARGET) 2.0$(VERSION)) has not been setup!)
+endif
+endif
+endif
+
 # Try to find a file corresponding to an archive file in any of src/ asm/ or the base directory, prioritizing src then asm then the original file
 AR_ORDER = $(foreach f,$(shell $(AR) t $(BASE_AR)),$(shell find $(BUILD_DIR)/src $(BUILD_DIR)/asm $(BUILD_DIR)/$(BASE_DIR) -iname $f -type f -print -quit))
 MATCHED_OBJS = $(filter-out $(BUILD_DIR)/$(BASE_DIR)/%,$(AR_ORDER))
@@ -69,7 +92,7 @@ NUM_OBJS = $(words $(AR_ORDER))
 NUM_OBJS_MATCHED = $(words $(MATCHED_OBJS))
 NUM_OBJS_UNMATCHED = $(words $(UNMATCHED_OBJS))
 
-$(shell mkdir -p asm $(BASE_DIR) src $(BUILD_DIR)/$(BASE_DIR) $(foreach dir,$(ASM_DIRS) $(SRC_DIRS),$(BUILD_DIR)/$(dir)))
+$(shell mkdir -p asm $(BASE_DIR) src $(foreach dir,$(ASM_DIRS) $(SRC_DIRS),$(BUILD_DIR)/$(dir)))
 
 .PHONY: all clean distclean setup
 all: $(BUILD_AR)
@@ -85,15 +108,15 @@ ifneq ($(NON_MATCHING),1)
 endif
 
 clean:
-	$(RM) -rf $(BUILD_ROOT)
+	$(RM) -rf $(BUILD_DIR)
 
-distclean: clean
+distclean:
 	$(MAKE) -C tools distclean
-	$(RM) -rf $(BASE_DIR)
+	$(RM) -rf extracted/ $(BUILD_ROOT)
 
 setup:
 	$(MAKE) -C tools
-	cd $(BASE_DIR) && $(AR) xo ../$(BASE_AR)
+	cd $(BASE_DIR) && $(AR) xo $(WORKING_DIR)/$(BASE_AR)
 	chmod -R +rw $(BASE_DIR)
 ifeq ($(COMPILER),ido)
 	export CROSS=$(CROSS) && ./tools/strip_debug.sh $(BASE_DIR)

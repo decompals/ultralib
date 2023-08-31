@@ -10,7 +10,9 @@ s32 osEepromWrite(OSMesgQueue* mq, u8 address, u8* buffer) {
     u8* ptr = (u8*)&__osEepPifRam.ramarray;
     __OSContEepromFormat eepromformat;
     OSContStatus sdata;
+#if BUILD_VERSION > VERSION_K
     u8 temp[8];
+#endif
 
     __osSiGetAccess();
     ret = __osEepStatus(mq, &sdata);
@@ -28,12 +30,15 @@ s32 osEepromWrite(OSMesgQueue* mq, u8 address, u8* buffer) {
                 if (address >= EEP16K_MAXBLOCKS) {
                     // not technically possible
                     ret = CONT_RANGE_ERROR;
-                } else if (__osEepromRead16K) {
+                }
+#if BUILD_VERSION >= VERSION_L
+                else if (__osEepromRead16K) {
                     __osEepromRead16K = 0;
                     __osSiRelAccess();
                     osEepromRead(mq, (address ^ 1), temp);
                     __osSiGetAccess();
                 }
+#endif
                 break;
             default:
                 ret = CONT_NO_RESPONSE_ERROR;
