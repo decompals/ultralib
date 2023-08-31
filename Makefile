@@ -7,10 +7,10 @@ TARGET ?= libgultra_rom
 VERSION ?= L
 CROSS ?= mips-linux-gnu-
 
-BASE_DIR := extracted/$(TARGET)_$(VERSION)
+BASE_DIR := extracted/$(VERSION)/$(TARGET)
 BASE_AR := base/$(VERSION)/$(TARGET).a
 BUILD_ROOT := build
-BUILD_DIR := $(BUILD_ROOT)/$(TARGET)_$(VERSION)
+BUILD_DIR := $(BUILD_ROOT)/$(VERSION)/$(TARGET)
 BUILD_AR := $(BUILD_DIR)/$(TARGET).a
 
 WORKING_DIR := $(shell pwd)
@@ -132,9 +132,6 @@ ifneq ($(NON_MATCHING),1)
 endif
 
 GBIDEFINE := -DF3DEX_GBI_2
-ifeq ($(findstring _d,$(TARGET)),_d)
-$(BUILD_DIR)/src/rmon/%.marker: OPTFLAGS := -O0
-endif
 
 $(BUILD_DIR)/src/gu/parse_gbi.marker: GBIDEFINE := -DF3D_GBI
 $(BUILD_DIR)/src/gu/us2dex_emu.marker: GBIDEFINE :=
