@@ -4,7 +4,7 @@ NON_MATCHING ?= 0
 # libgultra_rom, libgultra_d, libgultra
 # libultra_rom, libultra_d, libultra
 TARGET ?= libgultra_rom
-VERSION ?= K
+VERSION ?= L
 CROSS ?= mips-linux-gnu-
 
 BASE_DIR := extracted/$(TARGET)_$(VERSION)
@@ -77,8 +77,8 @@ BASE_OBJS := $(wildcard $(BASE_DIR)/*.o)
 # Check to make sure the current version has been set up
 ifneq ($(NON_MATCHING),1)
 ifeq ($(BASE_OBJS),)
-# Ignore this check if the user is currently running the setup command
-ifeq ($(findstring setup,$(MAKECMDGOALS)),)
+# Ignore this check if the user is currently running setup, clean or distclean
+ifeq ($(filter $(MAKECMDGOALS),setup clean distclean),)
 $(error Current version ($(TARGET) 2.0$(VERSION)) has not been setup!)
 endif
 endif
@@ -108,11 +108,11 @@ ifneq ($(NON_MATCHING),1)
 endif
 
 clean:
-	$(RM) -rf $(BUILD_ROOT)
+	$(RM) -rf $(BUILD_DIR)
 
-distclean: clean
+distclean:
 	$(MAKE) -C tools distclean
-	$(RM) -rf $(BASE_DIR)
+	$(RM) -rf extracted/ $(BUILD_ROOT)
 
 setup:
 	$(MAKE) -C tools
