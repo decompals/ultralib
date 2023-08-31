@@ -75,10 +75,12 @@ endif
 BASE_OBJS := $(wildcard $(BASE_DIR)/*.o)
 
 # Check to make sure the current version has been set up
+ifneq ($(NON_MATCHING),1)
 ifeq ($(BASE_OBJS),)
 # Ignore this check if the user is currently running the setup command
 ifeq ($(findstring setup,$(MAKECMDGOALS)),)
 $(error Current version ($(TARGET) 2.0$(VERSION)) has not been setup!)
+endif
 endif
 endif
 
