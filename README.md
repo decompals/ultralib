@@ -15,7 +15,7 @@ Currently this repo supports building the following versions:
 | 2.0I       | :x: / :x: | :x: / :x: | :x: / :x: |
 | 2.0I_patch | :x: / :x: | :x: / :x: | :x: / :x: |
 | 2.0J       | :x: / :x: | :x: / :x: | :x: / :x: |
-| 2.0K       | :x: / :x: | :x: / :x: | :x: / :x: |
+| 2.0K       | :heavy_check_mark: / :heavy_check_mark: | :x: / :heavy_check_mark: | :heavy_check_mark: / :heavy_check_mark: |
 | 2.0L       | :heavy_check_mark: / :heavy_check_mark: | :x: / :heavy_check_mark: | :heavy_check_mark: / :heavy_check_mark: |
 | ique_v1.5  | :x: | :x: | :x: |
 
