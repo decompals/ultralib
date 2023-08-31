@@ -18,14 +18,6 @@ WORKING_DIR := $(shell pwd)
 CPP := cpp -P
 AR := ar
 
-ifeq ($(findstring libgultra,$(TARGET)),libgultra)
--include Makefile.gcc
-else ifeq ($(findstring libultra,$(TARGET)),libultra)
--include Makefile.ido
-else
-$(error Invalid Target)
-endif
-
 VERSION_D := 1
 VERSION_E := 2
 VERSION_F := 3
@@ -37,6 +29,14 @@ VERSION_K := 8
 VERSION_L := 9
 
 VERSION_DEFINE := -DBUILD_VERSION=$(VERSION_$(VERSION)) -DBUILD_VERSION_STRING=\"2.0$(VERSION)\"
+
+ifeq ($(findstring libgultra,$(TARGET)),libgultra)
+-include Makefile.gcc
+else ifeq ($(findstring libultra,$(TARGET)),libultra)
+-include Makefile.ido
+else
+$(error Invalid Target)
+endif
 
 ifeq ($(findstring _d,$(TARGET)),_d)
 CPPFLAGS += -D_DEBUG
