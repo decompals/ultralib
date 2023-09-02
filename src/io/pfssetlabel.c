@@ -27,7 +27,7 @@ s32 osPfsSetLabel(OSPfs* pfs, u8* label) {
 
 #if BUILD_VERSION >= VERSION_J
     if (pfs->activebank != 0) {
-        ret = (SELECT_BANK(pfs, 0));
+        ret = SELECT_BANK(pfs, 0);
         if (ret == 0) {
             ret = (__osContRamWrite(pfs->queue, pfs->channel, PFS_LABEL_AREA, pfs->label, FALSE));
         }
