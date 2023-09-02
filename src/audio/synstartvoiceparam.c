@@ -42,11 +42,11 @@ void alSynStartVoiceParams(ALSynth *s, ALVoice *v, ALWaveTable *w,
         ALFailIf(update == 0, ERR_ALSYN_NO_UPDATE);
 
 #if BUILD_VERSION >= VERSION_J
-	    if (fxmix > 127) {
+        if (fxmix > 127) {
             fxmix = 127;
         }
 #else
-	    if (fxmix < 0) { // Not possible
+        if (fxmix < 0) { // Not possible
             fxmix = -fxmix;
         }
 #endif

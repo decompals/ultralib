@@ -51,11 +51,11 @@ s32 osEepromRead(OSMesgQueue* mq, u8 address, u8* buffer) {
         return ret;
     }
 #else
-	if (ret != 0)
-	{
-		__osSiRelAccess();
-		return CONT_NO_RESPONSE_ERROR;
-	} else {
+    if (ret != 0)
+    {
+        __osSiRelAccess();
+        return CONT_NO_RESPONSE_ERROR;
+    } else {
         switch (type) {
             case CONT_EEPROM:
                 if (address > EEPROM_MAXBLOCKS) {
@@ -111,9 +111,9 @@ static void __osPackEepReadData(u8 address) {
     int i;
 
 #if BUILD_VERSION < VERSION_J
-	for (i = 0; i < ARRLEN(__osEepPifRam.ramarray); i++) {
-		__osEepPifRam.ramarray[i] = CONT_CMD_NOP;
-	}
+    for (i = 0; i < ARRLEN(__osEepPifRam.ramarray); i++) {
+        __osEepPifRam.ramarray[i] = CONT_CMD_NOP;
+    }
 #endif
 
     __osEepPifRam.pifstatus = CONT_CMD_EXE;
@@ -124,9 +124,9 @@ static void __osPackEepReadData(u8 address) {
     eepromformat.address = address;
 
 #if BUILD_VERSION < VERSION_J
-	for (i = 0; i < ARRLEN(eepromformat.data); i++) {
-		eepromformat.data[i] = 0;
-	}
+    for (i = 0; i < ARRLEN(eepromformat.data); i++) {
+        eepromformat.data[i] = 0;
+    }
 #endif
 
     for (i = 0; i < MAXCONTROLLERS; i++) {
