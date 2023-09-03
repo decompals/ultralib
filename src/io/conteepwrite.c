@@ -6,19 +6,26 @@
 static void __osPackEepWriteData(u8 address, u8* buffer);
 s32 osEepromWrite(OSMesgQueue* mq, u8 address, u8* buffer) {
     s32 ret = 0;
+#if BUILD_VERSION < VERSION_J
+    int i;
+#endif
     u16 type;
     u8* ptr = (u8*)&__osEepPifRam.ramarray;
     __OSContEepromFormat eepromformat;
     OSContStatus sdata;
-#if BUILD_VERSION > VERSION_K
+#if BUILD_VERSION >= VERSION_L
     u8 temp[8];
 #endif
 
     __osSiGetAccess();
     ret = __osEepStatus(mq, &sdata);
+#if BUILD_VERSION < VERSION_J
+    ret = __osEepStatus(mq, &sdata); // Duplicate that was removed in 2.0J
+#endif
 
     type = sdata.type & (CONT_EEPROM | CONT_EEP16K);
 
+#if BUILD_VERSION >= VERSION_J
     if (ret == 0) {
         switch (type) {
             case CONT_EEPROM:
@@ -49,6 +56,32 @@ s32 osEepromWrite(OSMesgQueue* mq, u8 address, u8* buffer) {
         __osSiRelAccess();
         return ret;
     }
+#else
+    if (ret != 0) {
+        __osSiRelAccess();
+        return CONT_NO_RESPONSE_ERROR;
+    } else {
+        switch (type) {
+            case CONT_EEPROM:
+                if (address > EEPROM_MAXBLOCKS) {
+                    __osSiRelAccess();
+                    return -1;
+                }
+
+                break;
+            case CONT_EEPROM | CONT_EEP16K:
+                if (address > EEP16K_MAXBLOCKS) {
+                    // not technically possible
+                    __osSiRelAccess();
+                    return -1;
+                }
+                break;
+            default:
+                __osSiRelAccess();
+                return CONT_NO_RESPONSE_ERROR;
+        }
+    }
+#endif
 
     while (sdata.status & CONT_EEPROM_BUSY) {
         __osEepStatus(mq, &sdata);
@@ -62,7 +95,13 @@ s32 osEepromWrite(OSMesgQueue* mq, u8 address, u8* buffer) {
     osRecvMesg(mq, NULL, OS_MESG_BLOCK);
 
     // skip the first 4 bytes
+#if BUILD_VERSION >= VERSION_J
     ptr += 4;
+#else
+    for (i = 0; i < 4; i++) {
+        ptr++;
+    }
+#endif
 
     eepromformat = *(__OSContEepromFormat*)ptr;
 
@@ -77,6 +116,11 @@ static void __osPackEepWriteData(u8 address, u8* buffer) {
     __OSContEepromFormat eepromformat;
     int i;
 
+#if BUILD_VERSION < VERSION_J
+    for (i = 0; i < ARRLEN(__osEepPifRam.ramarray); i++) {
+        __osEepPifRam.ramarray[i] = CONT_CMD_NOP;
+    }
+#endif
     __osEepPifRam.pifstatus = CONT_CMD_EXE;
 
     eepromformat.txsize = CONT_CMD_WRITE_EEPROM_TX;
@@ -128,7 +172,11 @@ s32 __osEepStatus(OSMesgQueue* mq, OSContStatus* data) {
 
     ret = __osSiRawStartDma(OS_WRITE, &__osEepPifRam);
     osRecvMesg(mq, NULL, OS_MESG_BLOCK);
+#if BUILD_VERSION >= VERSION_J
     __osContLastCmd = CONT_CMD_END;
+#else
+    __osContLastCmd = CONT_CMD_REQUEST_STATUS;
+#endif
     ret = __osSiRawStartDma(OS_READ, &__osEepPifRam);
     osRecvMesg(mq, NULL, OS_MESG_BLOCK);
 

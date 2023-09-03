@@ -30,18 +30,18 @@ VERSION_L := 9
 
 VERSION_DEFINE := -DBUILD_VERSION=$(VERSION_$(VERSION)) -DBUILD_VERSION_STRING=\"2.0$(VERSION)\"
 
+ifeq ($(findstring _d,$(TARGET)),_d)
+DEBUGFLAG := -D_DEBUG
+else
+DEBUGFLAG := -DNDEBUG
+endif
+
 ifeq ($(findstring libgultra,$(TARGET)),libgultra)
 -include Makefile.gcc
 else ifeq ($(findstring libultra,$(TARGET)),libultra)
 -include Makefile.ido
 else
 $(error Invalid Target)
-endif
-
-ifeq ($(findstring _d,$(TARGET)),_d)
-CPPFLAGS += -D_DEBUG
-else
-CPPFLAGS += -DNDEBUG
 endif
 
 ifeq ($(findstring _rom,$(TARGET)),_rom)
@@ -52,11 +52,24 @@ SRC_DIRS := $(shell find src -type d)
 ASM_DIRS := $(shell find asm -type d -not -path "asm/non_matchings*")
 C_FILES  := $(foreach dir,$(SRC_DIRS),$(wildcard $(dir)/*.c))
 S_FILES  := $(foreach dir,$(SRC_DIRS) $(ASM_DIRS),$(wildcard $(dir)/*.s))
-O_FILES  := $(foreach f,$(S_FILES:.s=.o),$(BUILD_DIR)/$f) \
-            $(foreach f,$(C_FILES:.c=.o),$(BUILD_DIR)/$f)
+
+# Versions J and below used the C matrix math implementations
+MGU_MATRIX_FILES := mtxcatf normalize scale translate
+ifneq ($(filter $(VERSION),D E F G H I J),)
+S_FILES := $(filter-out $(addprefix src/mgu/,$(MGU_MATRIX_FILES:=.s)),$(S_FILES))
+else
+C_FILES := $(filter-out $(addprefix src/gu/,$(MGU_MATRIX_FILES:=.c)),$(C_FILES))
+endif
+
+C_O_FILES := $(foreach f,$(C_FILES:.c=.o),$(BUILD_DIR)/$f)
+S_O_FILES := $(foreach f,$(S_FILES:.s=.o),$(BUILD_DIR)/$f)
+O_FILES   := $(S_O_FILES) $(C_O_FILES)
 # Because we patch the object file timestamps, we can't use them as the targets since they'll always be older than the C file
 # Therefore instead we use marker files that have actual timestamps as the dependencies for the archive
-MARKER_FILES := $(O_FILES:.o=.marker)
+C_MARKER_FILES := $(C_O_FILES:.o=.marker)
+S_MARKER_FILES := $(S_O_FILES:.o=.marker)
+S_MARKER_FILES := $(filter-out $(MDEBUG_FILES),$(S_MARKER_FILES))
+MARKER_FILES   := $(C_MARKER_FILES) $(S_MARKER_FILES)
 
 ifneq ($(NON_MATCHING),1)
 COMPARE_OBJ = cmp $(BASE_DIR)/$(@F:.marker=.o) $(@:.marker=.o) && echo "$(@:.marker=.o): OK"
@@ -85,8 +98,8 @@ endif
 endif
 
 # Try to find a file corresponding to an archive file in any of src/ asm/ or the base directory, prioritizing src then asm then the original file
-AR_ORDER = $(foreach f,$(shell $(AR) t $(BASE_AR)),$(shell find $(BUILD_DIR)/src $(BUILD_DIR)/asm $(BUILD_DIR)/$(BASE_DIR) -iname $f -type f -print -quit))
-MATCHED_OBJS = $(filter-out $(BUILD_DIR)/$(BASE_DIR)/%,$(AR_ORDER))
+AR_ORDER = $(foreach f,$(shell $(AR) t $(BASE_AR)),$(shell find $(BUILD_DIR)/src $(BUILD_DIR)/asm $(BASE_DIR) -iname $f -type f -print -quit))
+MATCHED_OBJS = $(filter-out $(BASE_DIR)/%,$(AR_ORDER))
 UNMATCHED_OBJS = $(filter-out $(MATCHED_OBJS),$(AR_ORDER))
 NUM_OBJS = $(words $(AR_ORDER))
 NUM_OBJS_MATCHED = $(words $(MATCHED_OBJS))
@@ -131,7 +144,7 @@ ifneq ($(NON_MATCHING),1)
 	@touch $@
 endif
 
-GBIDEFINE := -DF3DEX_GBI_2
+GBIDEFINE := -DF3DEX_GBI
 
 $(BUILD_DIR)/src/gu/parse_gbi.marker: GBIDEFINE := -DF3D_GBI
 $(BUILD_DIR)/src/gu/us2dex_emu.marker: GBIDEFINE :=
@@ -142,7 +155,7 @@ $(BUILD_DIR)/src/sp/spriteex2.marker: GBIDEFINE :=
 $(BUILD_DIR)/src/voice/%.marker: OPTFLAGS += -DLANG_JAPANESE -I$(WORKING_DIR)/src -I$(WORKING_DIR)/src/voice
 $(BUILD_DIR)/src/voice/%.marker: CC := tools/compile_sjis.py -D__CC=$(WORKING_DIR)/$(CC) -D__BUILD_DIR=$(BUILD_DIR)
 
-$(BUILD_DIR)/%.marker: %.c
+$(C_MARKER_FILES): $(BUILD_DIR)/%.marker: %.c
 	cd $(<D) && $(WORKING_DIR)/$(CC) $(CFLAGS) $(MIPS_VERSION) $(CPPFLAGS) $(OPTFLAGS) $(<F) $(IINC) -o $(WORKING_DIR)/$(@:.marker=.o)
 ifneq ($(NON_MATCHING),1)
 # check if this file is in the archive; patch corrupted bytes and change file timestamps to match original if so
@@ -156,7 +169,7 @@ ifneq ($(NON_MATCHING),1)
 	@touch $@
 endif
 
-$(BUILD_DIR)/%.marker: %.s
+$(S_MARKER_FILES): $(BUILD_DIR)/%.marker: %.s
 	cd $(<D) && $(WORKING_DIR)/$(CC) $(ASFLAGS) $(MIPS_VERSION) $(CPPFLAGS) $(ASOPTFLAGS) $(<F) $(IINC) -o $(WORKING_DIR)/$(@:.marker=.o)
 ifneq ($(NON_MATCHING),1)
 # check if this file is in the archive; patch corrupted bytes and change file timestamps to match original if so
