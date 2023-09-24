@@ -6,11 +6,11 @@
 #include "macros.h"
 
 void __osLogWrite(OSLog* log, s16 code, s16 numArgs, va_list argPtr);
-void __osDefaultHandler(s16 code, s16 numArgs, ...);
+static void __osDefaultHandler(s16 code, s16 numArgs, ...);
 
 static u32 errorLogData[19] ALIGNED(8);
 static OSLog errorLog ALIGNED(8) = {
-    0x6b617479, // magic
+    OS_ERROR_MAGIC, // magic
     sizeof(errorLogData), // len
     errorLogData, // base
     0, //startCount
