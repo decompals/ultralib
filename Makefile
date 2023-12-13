@@ -46,7 +46,6 @@ $(error Invalid Target)
 endif
 
 ifeq ($(NON_MATCHING),1)
-  CFLAGS += -DNON_MATCHING
   CPPFLAGS += -DNON_MATCHING
   COMPARE := 0
 endif
