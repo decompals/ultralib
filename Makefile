@@ -104,6 +104,10 @@ endif
 endif
 
 AR_OBJECTS := $(shell cat base/$(VERSION)/$(TARGET).txt)
+ifeq ($(AR_OBJECTS),)
+AR_OBJECTS := $(shell ar t $(BASE_AR))
+endif
+
 
 # Try to find a file corresponding to an archive file in any of src/ asm/ or the base directory, prioritizing src then asm then the original file
 AR_ORDER = $(foreach f,$(AR_OBJECTS),$(shell find $(BUILD_DIR)/src $(BUILD_DIR)/asm $(BASE_DIR) -iname $f -type f -print -quit))
