@@ -104,6 +104,7 @@ endif
 endif
 
 AR_OBJECTS := $(shell cat base/$(VERSION)/$(TARGET).txt)
+# If the version and target doesn't have a text file yet, resort back to using the base archive to get objects
 ifeq ($(AR_OBJECTS),)
 AR_OBJECTS := $(shell ar t $(BASE_AR))
 endif
