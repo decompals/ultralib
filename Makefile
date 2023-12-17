@@ -49,7 +49,7 @@ CPPFLAGS += -D_FINALROM
 endif
 
 SRC_DIRS := $(shell find src -type d)
-ASM_DIRS := $(shell find asm -type d -not -path "asm/non_matchings*")
+ASM_DIRS := $(shell find asm -type d)
 C_FILES  := $(foreach dir,$(SRC_DIRS),$(wildcard $(dir)/*.c))
 S_FILES  := $(foreach dir,$(SRC_DIRS) $(ASM_DIRS),$(wildcard $(dir)/*.s))
 

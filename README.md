@@ -56,7 +56,7 @@ For example, if building the 2.0L PC archive you'd do the following:
 
 Every target flag combination requires separate a setup command.
 
-If building without an target archive, than you can use `COMAPRE=0` like the the following:
+If building without an target archive, than you can use `COMPARE=0` like the the following:
 
 - `make VERSION=L TARGET=libgultra_rom COMPARE=0 setup`
 - `make VERSION=L TARGET=libgultra_rom COMPARE=0`
