@@ -1,4 +1,3 @@
-NON_MATCHING ?= 0
 COMPARE ?= 1
 
 # One of:
@@ -43,11 +42,6 @@ else ifeq ($(findstring libultra,$(TARGET)),libultra)
 -include Makefile.ido
 else
 $(error Invalid Target)
-endif
-
-ifeq ($(NON_MATCHING),1)
-  CPPFLAGS += -DNON_MATCHING
-  COMPARE := 0
 endif
 
 ifeq ($(findstring _rom,$(TARGET)),_rom)
