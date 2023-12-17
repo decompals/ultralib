@@ -69,7 +69,7 @@ O_FILES   := $(S_O_FILES) $(C_O_FILES)
 C_MARKER_FILES := $(C_O_FILES:.o=.marker)
 S_MARKER_FILES := $(S_O_FILES:.o=.marker)
 S_MARKER_FILES := $(filter-out $(MDEBUG_FILES),$(S_MARKER_FILES))
-MARKER_FILES   := $(C_MARKER_FILES) $(S_MARKER_FILES)
+MARKER_FILES   := $(C_MARKER_FILES) $(S_MARKER_FILES) $(MDEBUG_FILES)
 
 ifneq ($(NON_MATCHING),1)
 COMPARE_OBJ = cmp $(BASE_DIR)/$(@F:.marker=.o) $(@:.marker=.o) && echo "$(@:.marker=.o): OK"
