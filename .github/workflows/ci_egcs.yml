@@ -1,5 +1,4 @@
 # CI file for EGCS builds
-# TODO: rename to `ci_egcs.yml` when the repo has EGCS / iQue support
 
 name: Build EGCS libultra
 
@@ -14,8 +13,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        version: [ique_v1.5]
-        suffix: [_rom] # [~, _d, _rom]
+        version: [L] # [ique_v1.5]
+        suffix: [_rom_iQue] # [_rom] # [~, _d, _rom]
 
     steps:
     - name: Checkout repository
