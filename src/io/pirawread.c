@@ -2,6 +2,44 @@
 #include "assert.h"
 #include "PR/ultraerror.h"
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// Adjust line numbers to match assert
+#if BUILD_VERSION < VERSION_J
+#line 42
+#endif
+
 // TODO: this comes from a header
 #ifndef BBPLAYER
 #ident "$Revision: 1.17 $"
@@ -17,10 +55,9 @@ s32 __osPiRawReadIo(u32 devAddr, u32* data) {
         __osError(ERR_OSPIRAWREADIO, 1, devAddr);
         return -1;
     }
-
-#line 60
-    assert(data != NULL);
 #endif
+
+    assert(data != NULL);
 
     WAIT_ON_IOBUSY(stat);
     *data = IO_READ((u32)osRomBase | devAddr);

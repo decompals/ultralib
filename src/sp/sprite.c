@@ -20,7 +20,7 @@
  */
 #include <assert.h>
 #include <sp.h>
-
+#include <PR/os_version.h>
 // TODO: this comes from a header
 #ifndef BBPLAYER
 #ident "$Revision: 1.17 $"
@@ -190,6 +190,7 @@ drawbitmap (Gfx **glp, Sprite *s, Bitmap *b,
     if( b->buf != prev_bmbuf ) {
 	switch(s->bmsiz) 
 	  {
+#if BUILD_VERSION >= VERSION_J
 	  case G_IM_SIZ_DD:
 		gDPLoadTextureTile_4b(gl++, b->buf, s->bmfmt, tex_width, tex_height,
 							  b->s, b->t,
@@ -199,6 +200,7 @@ drawbitmap (Gfx **glp, Sprite *s, Bitmap *b,
 							  s_mask,  t_mask, 
 							  s_lod,   t_lod);
 		break;
+#endif
 	  case G_IM_SIZ_4b:
 		if (s->attr & SP_TEXSHUF) {
 		  gDPLoadTextureBlock_4bS(gl++, b->buf, s->bmfmt,
@@ -727,6 +729,11 @@ spDraw ( Sprite   *s )
 
     gSPEndDisplayList ( gl++ );
 
+#if BUILD_VERSION >= VERSION_J
+#line 722
+#else
+#line 714
+#endif
     assert((gl - ogl) < s->ndisplist);
     s->rsp_dl_next   = gl;
     return(  dl_start );

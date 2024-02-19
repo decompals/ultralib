@@ -12,7 +12,7 @@ extern u32 __osBbEepromAddress;
 extern u32 __osBbEepromSize;
 
 OSPifRam __osEepPifRam BBALIGNED(16);
-#ifndef BBPLAYER
+#if BUILD_VERSION >= VERSION_L && !defined(BBPLAYER)
 s32 __osEepromRead16K;
 #endif
 
@@ -55,6 +55,7 @@ s32 osEepromRead(OSMesgQueue* mq, u8 address, u8* buffer) {
     ret = __osEepStatus(mq, &sdata);
     type = sdata.type & (CONT_EEPROM | CONT_EEP16K);
 
+#if BUILD_VERSION >= VERSION_J
     if (ret == 0) {
         switch (type) {
             case CONT_EEPROM:
@@ -66,9 +67,12 @@ s32 osEepromRead(OSMesgQueue* mq, u8 address, u8* buffer) {
                 if (address >= EEP16K_MAXBLOCKS) {
                     // not technically possible
                     ret = CONT_RANGE_ERROR;
-                } else {
+                }
+#if BUILD_VERSION >= VERSION_L
+                else {
                     __osEepromRead16K = 1;
                 }
+#endif
                 break;
             default:
                 ret = CONT_NO_RESPONSE_ERROR;
@@ -79,6 +83,32 @@ s32 osEepromRead(OSMesgQueue* mq, u8 address, u8* buffer) {
         __osSiRelAccess();
         return ret;
     }
+#else
+    if (ret != 0)
+    {
+        __osSiRelAccess();
+        return CONT_NO_RESPONSE_ERROR;
+    } else {
+        switch (type) {
+            case CONT_EEPROM:
+                if (address > EEPROM_MAXBLOCKS) {
+                    __osSiRelAccess();
+                    return CONT_RANGE_ERROR;
+                }
+                break;
+            case CONT_EEPROM | CONT_EEP16K:
+                if (address > EEP16K_MAXBLOCKS) {
+                    // not technically possible
+                    __osSiRelAccess();
+                    return CONT_RANGE_ERROR;
+                }
+                break;
+            default:
+                __osSiRelAccess();
+                return CONT_NO_RESPONSE_ERROR;
+        }
+    }
+#endif
 
     while (sdata.status & CONT_EEPROM_BUSY) {
         __osEepStatus(mq, &sdata);
@@ -115,12 +145,24 @@ static void __osPackEepReadData(u8 address) {
     __OSContEepromFormat eepromformat;
     int i;
 
+#if BUILD_VERSION < VERSION_J
+    for (i = 0; i < ARRLEN(__osEepPifRam.ramarray); i++) {
+        __osEepPifRam.ramarray[i] = CONT_CMD_NOP;
+    }
+#endif
+
     __osEepPifRam.pifstatus = CONT_CMD_EXE;
 
     eepromformat.txsize = CONT_CMD_READ_EEPROM_TX;
     eepromformat.rxsize = CONT_CMD_READ_EEPROM_RX;
     eepromformat.cmd = CONT_CMD_READ_EEPROM;
     eepromformat.address = address;
+
+#if BUILD_VERSION < VERSION_J
+    for (i = 0; i < ARRLEN(eepromformat.data); i++) {
+        eepromformat.data[i] = 0;
+    }
+#endif
 
     for (i = 0; i < MAXCONTROLLERS; i++) {
         *ptr++ = 0;

@@ -9,11 +9,19 @@ STRIP =
 
 CFLAGS := -w -nostdinc -c -G 0 -D_LANGUAGE_C -Wa,-irix-symtab -fno-PIC -mno-abicalls -mcpu=4300 -D__sgi
 ASFLAGS := -w -nostdinc -c -G 0 -Wa,-irix-symtab -DMIPSEB -D_LANGUAGE_ASSEMBLY -D_MIPS_SIM=1 -D_ULTRA64 -x assembler-with-cpp -fno-PIC -non_shared -mcpu=4300
-CPPFLAGS = -D_MIPS_SZLONG=32 -D__USE_ISOC99 $(GBIDEFINE)
+CPPFLAGS = -D_MIPS_SZLONG=32 -D__USE_ISOC99 $(GBIDEFINE) $(VERSION_DEFINE) $(DEBUGFLAG)
 IINC = -I . -I $(WORKING_DIR)/include -I $(WORKING_DIR)/include/gcc -I $(WORKING_DIR)/include/PR
 MIPS_VERSION := -mips2
 REG_SIZES := -mgp32 -mfp32
 ASOPTFLAGS :=
+
+ifeq ($(findstring _rom,$(TARGET)),_rom)
+DEBUGFLAG := -DNDEBUG
+else ifeq ($(findstring _d,$(TARGET)),_d)
+DEBUGFLAG := -D_DEBUG
+else
+DEBUGFLAG :=
+endif
 
 ifeq ($(findstring _d,$(TARGET)),_d)
 OPTFLAGS := -O0

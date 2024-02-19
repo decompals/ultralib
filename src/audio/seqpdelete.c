@@ -17,7 +17,7 @@
  * DOD or NASA FAR Supplement. Unpublished - rights reserved under the
  * Copyright Laws of the United States.
  *====================================================================*/
-
+#include <PR/os_version.h>
 #include <libaudio.h>
 #include <assert.h>
 // TODO: this comes from a header
@@ -26,17 +26,18 @@
 #else
 #ident "$Revision: 1.1 $"
 #endif
-#line 26
+#line 25
 
 void alSeqpDelete(ALSeqPlayer *seqp)
 {
     /* sct 1/4/96 - If the sequence player isn't stopped, then you may end
        up with stuck notes.  Application should check state before calling
        this routine to be sure. */
-
-#ifdef _DEBUG
-    assert(seqp->state == AL_STOPPED);
+#if BUILD_VERSION < VERSION_J
+#line 31
 #endif
+    assert(seqp->state == AL_STOPPED);
+
 
     alSynRemovePlayer(seqp->drvr, &seqp->node);
 }

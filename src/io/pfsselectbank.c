@@ -6,6 +6,7 @@
 #ident "$Revision: 1.1 $"
 #endif
 
+#if BUILD_VERSION >= VERSION_J
 s32 __osPfsSelectBank(OSPfs* pfs, u8 bank) {
     u8 temp[BLOCKSIZE];
     int i;
@@ -23,3 +24,4 @@ s32 __osPfsSelectBank(OSPfs* pfs, u8 bank) {
 
     return ret;
 }
+#endif

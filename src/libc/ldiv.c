@@ -1,3 +1,4 @@
+#include "os_version.h"
 #include "stdlib.h"
 
 #ifndef BBPLAYER

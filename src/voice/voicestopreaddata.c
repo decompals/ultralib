@@ -2,6 +2,7 @@
 #include "io/controller.h"
 #include "PR/os_voice.h"
 #include "voiceinternal.h"
+#include "os_version.h"
 
 // TODO: this comes from a header
 #ifdef BBPLAYER
@@ -13,7 +14,9 @@ s32 osVoiceStopReadData(OSVoiceHandle* hd) {
     return CONT_ERR_DEVICE;
 #else
     s32 ret;
+#if BUILD_VERSION >= VERSION_K 
     s32 i;
+#endif
     u8 stat;
     u8 temp[4];
 
@@ -32,7 +35,9 @@ s32 osVoiceStopReadData(OSVoiceHandle* hd) {
     ret = __osVoiceContWrite4(hd->__mq, hd->__channel, 0, temp);
 
     if (ret == 0) {
+#if BUILD_VERSION >= VERSION_K 
         i = 0;
+#endif
         do {
             ret = __osVoiceCheckResult(hd, &stat);
             if (ret & 0xFF00) {
@@ -45,12 +50,18 @@ s32 osVoiceStopReadData(OSVoiceHandle* hd) {
             } else {
                 hd->__mode = 0;
             }
+#if BUILD_VERSION >= VERSION_K 
             i++;
         } while ((ret == CONT_ERR_VOICE_NO_RESPONSE) && (i < 20));
+#else
+        } while ((ret == CONT_ERR_VOICE_NO_RESPONSE));
+#endif
     }
+#if BUILD_VERSION >= VERSION_K 
     if (i >= 20) {
         ret == CONT_ERR_VOICE_NO_RESPONSE;
     }
+#endif
 
     return ret;
 #endif

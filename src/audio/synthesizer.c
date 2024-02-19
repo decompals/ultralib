@@ -17,7 +17,7 @@
  *====================================================================*/
 #include "synthInternals.h"
 #include <assert.h>
-
+#include <PR/os_version.h>
 // TODO: this comes from a header
 #ifndef BBPLAYER
 #ident "$Revision: 1.17 $"
@@ -286,7 +286,6 @@ void _freePVoice(ALSynth *drvr, PVoice *pvoice)
     alLink((ALLink *)pvoice, &drvr->pLameList);
 }
 
-
 /*
   Add 0.5 to adjust the average affect of
   the truncation error produced by casting
@@ -308,10 +307,10 @@ static s32 __nextSampleTime(ALSynth *drvr, ALPlayer **client)
 {
     ALMicroTime delta = 0x7fffffff;     /* max delta for s32 */
     ALPlayer *cl;
-
-#ifdef _DEBUG
-    assert(drvr->head);
+#if BUILD_VERSION < VERSION_J // Adjust line numbers to match assert
+#line 306
 #endif
+    assert(drvr->head);
 
     *client = 0;
     

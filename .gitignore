@@ -26,3 +26,5 @@ tools/ido
 
 # Tool artifacts
 ctx.c
+
+libultra_collection/

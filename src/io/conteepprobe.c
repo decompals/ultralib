@@ -46,7 +46,9 @@ s32 osEepromProbe(OSMesgQueue* mq) {
         }
     }
 
+#if BUILD_VERSION >= VERSION_L
     __osEepromRead16K = 0;
+#endif
     __osSiRelAccess();
     return ret;
 #endif

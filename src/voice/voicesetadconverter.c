@@ -5,7 +5,7 @@
 #include "io/controller_voice.h"
 #include "io/siint.h"
 
-#define SWRITEFORMAT(p) ((__OSVoiceSWriteFormat*)(p))
+#define SWRITEFORMAT(ptr) ((__OSVoiceSWriteFormat*)(ptr))
 
 // TODO: this comes from a header
 #ifdef BBPLAYER
@@ -29,7 +29,7 @@ s32 __osVoiceSetADConverter(OSMesgQueue* mq, s32 channel, u8 data) {
             __osContLastCmd = CONT_CMD_SWRITE_VOICE;
             __osPfsLastChannel = channel;
 
-            for (i = 0; i < channel; i++) { *ptr++ = 0; }
+            for (i = 0; i < channel; i++) { *ptr++ = CONT_CMD_REQUEST_STATUS; }
 
             __osPfsPifRam.pifstatus = CONT_CMD_EXE;
 

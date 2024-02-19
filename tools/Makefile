@@ -61,9 +61,9 @@ $(EGCS_DIR):
 # IDO
 
 $(IDO-5.3): | $(IDO_DIR)
-	wget https://github.com/decompals/ido-static-recomp/releases/latest/download/ido-5.3-recomp-ubuntu-20.04.tar.gz
-	tar xf ido-5.3-recomp-ubuntu-20.04.tar.gz -C $(IDO_DIR)
-	$(RM) ido-5.3-recomp-ubuntu-20.04.tar.gz
+	wget https://github.com/decompals/ido-static-recomp/releases/latest/download/ido-5.3-recomp-linux.tar.gz
+	tar xf ido-5.3-recomp-linux.tar.gz -C $(IDO_DIR)
+	$(RM) ido-5.3-recomp-linux.tar.gz
 
 $(IDO_DIR):
 	mkdir -p $@

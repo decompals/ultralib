@@ -118,7 +118,8 @@ void _Ldtob(_Pft* px, char code) {
                 }
 
                 for (p += 8, j = 8; lo > 0 && --j >= 0;) {
-                    ldiv_t qr = ldiv(lo, 10);
+                    ldiv_t qr;
+                    qr = ldiv(lo, 10);
                     *--p = qr.rem + '0', lo = qr.quot;
                 }
                 
@@ -162,7 +163,7 @@ void _Ldtob(_Pft* px, char code) {
 }
 
 s16 _Ldunscale(s16* pex, _Pft* px) {
-    u16* ps = px;
+    u16* ps = (u16*)px;
     s16 xchar = (ps[_D0] & _DMASK) >> _DOFF;
 
 

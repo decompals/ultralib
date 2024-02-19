@@ -2,6 +2,47 @@
 #include "assert.h"
 #include "siint.h"
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// Adjust line numbers to match assert
+#if BUILD_VERSION < VERSION_J
+#line 43
+#endif
+
 // TODO: this comes from a header
 #ifndef BBPLAYER
 #ident "$Revision: 1.17 $"
@@ -12,13 +53,16 @@
 extern u32 __osBbIsBb;
 
 s32 __osSiRawStartDma(s32 direction, void* dramAddr) {
-#ifdef _DEBUG
-#line 56
     assert(((u32)dramAddr & 0x3) == 0);
-#endif
+#if BUILD_VERSION >= VERSION_J
     if (IO_READ(SI_STATUS_REG) & (SI_STATUS_DMA_BUSY | SI_STATUS_RD_BUSY)) {
         return -1;
     }
+#else
+    if (__osSiDeviceBusy()) {
+        return -1;
+    }
+#endif
 
     if (direction == OS_WRITE) {
         osWritebackDCache(dramAddr, 64);
