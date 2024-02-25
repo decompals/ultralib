@@ -1,5 +1,5 @@
-#include "xstdio.h"
 #include "string.h"
+#include "xstdio.h"
 #include "os.h"
 
 // TODO: this comes from a header

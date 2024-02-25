@@ -1,4 +1,5 @@
 #include "stdlib.h"
+#include "getopt.h"
 #include "string.h"
 #include "xstdio.h"
 
@@ -15,8 +16,8 @@ static char udigs[] = "0123456789ABCDEF";
 void _Litob(_Pft *args, char type) {
     char buff[BUFF_LEN];
     const char *digs;
-    s32 base;
-    s32 i;
+    int base;
+    int i;
     unsigned long long ullval;
 
     digs = (type == 'X') ? udigs : ldigs;
