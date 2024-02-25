@@ -8,7 +8,7 @@ endif
 # One of:
 # libgultra_rom, libgultra_d, libgultra
 # libultra_rom, libultra_d, libultra
-TARGET ?= libgultra_rom
+TARGET ?= libultra_d
 VERSION ?= L
 CROSS ?= mips-linux-gnu-
 
