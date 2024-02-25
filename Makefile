@@ -49,9 +49,8 @@ CPPFLAGS += -D_FINALROM
 endif
 
 SRC_DIRS := $(shell find src -type d)
-ASM_DIRS := $(shell find asm -type d)
 C_FILES  := $(foreach dir,$(SRC_DIRS),$(wildcard $(dir)/*.c))
-S_FILES  := $(foreach dir,$(SRC_DIRS) $(ASM_DIRS),$(wildcard $(dir)/*.s))
+S_FILES  := $(foreach dir,$(SRC_DIRS),$(wildcard $(dir)/*.s))
 
 # Versions J and below used the C matrix math implementations
 MGU_MATRIX_FILES := mtxcatf normalize scale translate
@@ -112,7 +111,7 @@ NUM_OBJS = $(words $(AR_ORDER))
 NUM_OBJS_MATCHED = $(words $(MATCHED_OBJS))
 NUM_OBJS_UNMATCHED = $(words $(UNMATCHED_OBJS))
 
-$(shell mkdir -p asm $(BASE_DIR) src $(foreach dir,$(ASM_DIRS) $(SRC_DIRS),$(BUILD_DIR)/$(dir)))
+$(shell mkdir -p asm $(BASE_DIR) src $(foreach dir,$(SRC_DIRS),$(BUILD_DIR)/$(dir)))
 
 .PHONY: all clean distclean setup
 all: $(BUILD_AR)
