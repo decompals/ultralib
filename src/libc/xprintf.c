@@ -1,7 +1,8 @@
 #include "macros.h"
-#include "string.h"
-#include "stdarg.h"
+#include "stdlib.h"
+#include "getopt.h"
 #include "xstdio.h"
+#include "string.h"
 
 // TODO: these come from headers
 #ident "$Revision: 1.34 $"
@@ -47,7 +48,7 @@ int _Printf(outfun prout, char *arg, const char *fmt, va_list args) {
     
     x.nchar = 0;
 
-    while (TRUE) {
+    while (1) {
         const char *s;
         char c;
         const char *t;
@@ -152,13 +153,13 @@ static void _Putfld(_Pft *x, va_list *args, char type, char *buff) {
             if (x->qual == 'l') {
                 x->v.ll = va_arg(*args, int);
             } else if (x->qual == 'L') {
-                x->v.ll = va_arg(*args, s64);
+                x->v.ll = va_arg(*args, long long);
             } else {
                 x->v.ll = va_arg(*args, int);
             }
 
             if (x->qual == 'h') {
-                x->v.ll = (s16)x->v.ll;
+                x->v.ll = (short)x->v.ll;
             }
 
             if (x->v.ll < 0) {
@@ -180,13 +181,13 @@ static void _Putfld(_Pft *x, va_list *args, char type, char *buff) {
             if (x->qual == 'l') {
                 x->v.ll = va_arg(*args, int);
             } else if (x->qual == 'L') {
-                x->v.ll = va_arg(*args, s64);
+                x->v.ll = va_arg(*args, long long);
             } else {
                 x->v.ll = va_arg(*args, int);
             }
 
             if (x->qual == 'h') {
-                x->v.ll = (u16)x->v.ll;
+                x->v.ll = (unsigned short)x->v.ll;
             } else if (x->qual == 0) {
                 x->v.ll = (unsigned int)x->v.ll;
             }
@@ -208,7 +209,7 @@ static void _Putfld(_Pft *x, va_list *args, char type, char *buff) {
         case 'E':
         case 'G':
             //... okay?
-            x->v.ld = x->qual == 'L' ? va_arg(*args, f64) : va_arg(*args, f64);
+            x->v.ld = x->qual == 'L' ? va_arg(*args, double) : va_arg(*args, double);
 
             if (LDSIGN(x->v.ld))
                 buff[x->n0++] = '-';
@@ -223,11 +224,11 @@ static void _Putfld(_Pft *x, va_list *args, char type, char *buff) {
 
         case 'n':
             if (x->qual == 'h') {
-                *(va_arg(*args, u16 *)) = x->nchar;
+                *(va_arg(*args, unsigned short *)) = x->nchar;
             } else if (x->qual == 'l') {
                 *va_arg(*args, unsigned int *) = x->nchar;
             } else if (x->qual == 'L') {
-                *va_arg(*args, u64 *) = x->nchar;
+                *va_arg(*args, unsigned long long *) = x->nchar;
             } else {
                 *va_arg(*args, unsigned int *) = x->nchar;
             }
