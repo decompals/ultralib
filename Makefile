@@ -178,13 +178,13 @@ ifneq ($(COMPARE),0)
 	 touch -r $(BASE_DIR)/$(@F:.marker=.o) $(@:.marker=.o), \
 	 echo "Object file $(@F:.marker=.o) is not in the current archive" \
 	)
-# create or update the marker file
 endif
 ifneq ($(FIXUPS),0)
 	tools/set_o32abi_bit.py $(WORKING_DIR)/$(@:.marker=.o)
 	$(CROSS)strip $(WORKING_DIR)/$(@:.marker=.o) -N asdasdasdasd
 	$(CROSS)objcopy --remove-section .mdebug $(WORKING_DIR)/$(@:.marker=.o)
 endif
+# create or update the marker file
 	@touch $@
 
 $(S_MARKER_FILES): $(BUILD_DIR)/%.marker: %.s
@@ -197,13 +197,13 @@ ifneq ($(COMPARE),0)
 	 touch -r $(BASE_DIR)/$(@F:.marker=.o) $(@:.marker=.o), \
 	 echo "Object file $(@F:.marker=.o) is not in the current archive" \
 	)
-# create or update the marker file
 endif
 ifneq ($(FIXUPS),0)
 	tools/set_o32abi_bit.py $(WORKING_DIR)/$(@:.marker=.o)
 	$(CROSS)strip $(WORKING_DIR)/$(@:.marker=.o) -N asdasdasdasd
 	$(CROSS)objcopy --remove-section .mdebug $(WORKING_DIR)/$(@:.marker=.o)
 endif
+# create or update the marker file
 	@touch $@
 
 # Rule for building files that require specific file paths in the mdebug section
@@ -220,13 +220,13 @@ ifneq ($(COMPARE),0)
 	 touch -r $(BASE_DIR)/$(@F:.marker=.o) $(@:.marker=.o), \
 	 echo "Object file $(@F:.marker=.o) is not in the current archive" \
 	)
-# create or update the marker file
 endif
 ifneq ($(FIXUPS),0)
 	tools/set_o32abi_bit.py $(WORKING_DIR)/$(@:.marker=.o)
 	$(CROSS)strip $(WORKING_DIR)/$(@:.marker=.o) -N asdasdasdasd
 	$(CROSS)objcopy --remove-section .mdebug $(WORKING_DIR)/$(@:.marker=.o)
 endif
+# create or update the marker file
 	@touch $@
 
 # Disable built-in rules
