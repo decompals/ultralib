@@ -1,4 +1,9 @@
 COMPARE ?= 1
+FIXUPS ?= 0
+
+ifneq ($(FIXUPS),0)
+COMPARE := 0
+endif
 
 # One of:
 # libgultra_rom, libgultra_d, libgultra
@@ -174,7 +179,8 @@ ifneq ($(COMPARE),0)
 	 echo "Object file $(@F:.marker=.o) is not in the current archive" \
 	)
 # create or update the marker file
-else
+endif
+ifneq ($(FIXUPS),0)
 	tools/set_o32abi_bit.py $(WORKING_DIR)/$(@:.marker=.o)
 	$(CROSS)strip $(WORKING_DIR)/$(@:.marker=.o) -N asdasdasdasd
 	$(CROSS)objcopy --remove-section .mdebug $(WORKING_DIR)/$(@:.marker=.o)
@@ -192,7 +198,8 @@ ifneq ($(COMPARE),0)
 	 echo "Object file $(@F:.marker=.o) is not in the current archive" \
 	)
 # create or update the marker file
-else
+endif
+ifneq ($(FIXUPS),0)
 	tools/set_o32abi_bit.py $(WORKING_DIR)/$(@:.marker=.o)
 	$(CROSS)strip $(WORKING_DIR)/$(@:.marker=.o) -N asdasdasdasd
 	$(CROSS)objcopy --remove-section .mdebug $(WORKING_DIR)/$(@:.marker=.o)
@@ -214,7 +221,8 @@ ifneq ($(COMPARE),0)
 	 echo "Object file $(@F:.marker=.o) is not in the current archive" \
 	)
 # create or update the marker file
-else
+endif
+ifneq ($(FIXUPS),0)
 	tools/set_o32abi_bit.py $(WORKING_DIR)/$(@:.marker=.o)
 	$(CROSS)strip $(WORKING_DIR)/$(@:.marker=.o) -N asdasdasdasd
 	$(CROSS)objcopy --remove-section .mdebug $(WORKING_DIR)/$(@:.marker=.o)
