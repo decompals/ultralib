@@ -108,15 +108,15 @@ AR_OBJECTS := $(shell ar t $(BASE_AR))
 endif
 
 
-# Try to find a file corresponding to an archive file in any of src/ asm/ or the base directory, prioritizing src then asm then the original file
-AR_ORDER = $(foreach f,$(AR_OBJECTS),$(shell find $(BUILD_DIR)/src $(BUILD_DIR)/asm $(BASE_DIR) -iname $f -type f -print -quit))
+# Try to find a file corresponding to an archive file in src/ or the base directory, prioritizing src then the original file
+AR_ORDER = $(foreach f,$(AR_OBJECTS),$(shell find $(BUILD_DIR)/src $(BASE_DIR) -iname $f -type f -print -quit))
 MATCHED_OBJS = $(filter-out $(BASE_DIR)/%,$(AR_ORDER))
 UNMATCHED_OBJS = $(filter-out $(MATCHED_OBJS),$(AR_ORDER))
 NUM_OBJS = $(words $(AR_ORDER))
 NUM_OBJS_MATCHED = $(words $(MATCHED_OBJS))
 NUM_OBJS_UNMATCHED = $(words $(UNMATCHED_OBJS))
 
-$(shell mkdir -p asm $(BASE_DIR) src $(foreach dir,$(SRC_DIRS),$(BUILD_DIR)/$(dir)))
+$(shell mkdir -p $(BASE_DIR) src $(foreach dir,$(SRC_DIRS),$(BUILD_DIR)/$(dir)))
 
 .PHONY: all clean distclean setup
 all: $(BUILD_AR)
