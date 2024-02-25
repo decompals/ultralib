@@ -27,6 +27,7 @@ endif
 
 ifeq ($(findstring _d,$(TARGET)),_d)
 $(BUILD_DIR)/src/mgu/%.marker: ASOPTFLAGS := -O2 -g2
+$(BUILD_DIR)/src/os/%.marker: ASOPTFLAGS := -O2 -g2
 else
 $(BUILD_DIR)/src/debug/%.marker: OPTFLAGS := -O1
 $(BUILD_DIR)/src/host/%.marker: OPTFLAGS := -O1
