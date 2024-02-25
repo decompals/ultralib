@@ -4,6 +4,8 @@
 		stdlib.h
 */
 
+extern unsigned char __ctype[];
+
 #ifndef _SIZE_T_DEF
 #define _SIZE_T_DEF
 typedef unsigned size_t;
