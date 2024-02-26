@@ -2,11 +2,6 @@
 #include "assert.h"
 #include "PR/ultraerror.h"
 
-// Adjust line numbers to match assert
-#if BUILD_VERSION < VERSION_J
-#line 46
-#endif
-
 // TODO: this comes from a header
 #ifndef BBPLAYER
 #ident "$Revision: 1.17 $"
@@ -24,7 +19,11 @@ s32 __osPiRawReadIo(u32 devAddr, u32* data) {
     }
 #endif
 
-#line 60
+#if BUILD_VERSION < VERSION_J
+#line 58
+#else
+#line 59
+#endif
     assert(data != NULL);
 
     WAIT_ON_IOBUSY(stat);

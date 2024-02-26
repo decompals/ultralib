@@ -11,14 +11,13 @@ extern u32 __osBbPakAddress[4];
 extern u32 __osBbPakSize;
 #endif
 
-#ifndef BBPLAYER
-s32 __osPfsLastChannel = -1;
-#endif
-
 #define READFORMAT(ptr) ((__OSContRamReadFormat*)(ptr))
 
 #if BUILD_VERSION >= VERSION_J
+
+#ifndef BBPLAYER
 s32 __osPfsLastChannel = -1;
+#endif
 
 s32 __osContRamRead(OSMesgQueue* mq, int channel, u16 address, u8* buffer) {
 #ifdef BBPLAYER

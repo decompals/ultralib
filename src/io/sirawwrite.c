@@ -2,10 +2,6 @@
 #include "siint.h"
 #include "assert.h"
 
-// Adjust line numbers to match assert
-#if BUILD_VERSION < VERSION_J
-#line 46
-#endif
 
 // TODO: this comes from a header
 #ifndef BBPLAYER
@@ -15,10 +11,12 @@
 #endif
 
 s32 __osSiRawWriteIo(u32 devAddr, u32 data) {
-#ifdef _DEBUG
-#line 53
-    assert((devAddr & 0x3) == 0);
+#if BUILD_VERSION < VERSION_J
+#line 49
+#else
+#line 52
 #endif
+    assert((devAddr & 0x3) == 0);
 
     if (__osSiDeviceBusy()) {
         return -1;

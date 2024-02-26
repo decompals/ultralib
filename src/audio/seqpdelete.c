@@ -20,13 +20,13 @@
 #include <PR/os_version.h>
 #include <libaudio.h>
 #include <assert.h>
+
 // TODO: this comes from a header
 #ifndef BBPLAYER
 #ident "$Revision: 1.17 $"
 #else
 #ident "$Revision: 1.1 $"
 #endif
-#line 26
 
 void alSeqpDelete(ALSeqPlayer *seqp)
 {
@@ -34,7 +34,9 @@ void alSeqpDelete(ALSeqPlayer *seqp)
        up with stuck notes.  Application should check state before calling
        this routine to be sure. */
 #if BUILD_VERSION < VERSION_J
-#line 31
+#line 29
+#else
+#line 33
 #endif
     assert(seqp->state == AL_STOPPED);
 

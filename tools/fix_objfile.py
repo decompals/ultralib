@@ -49,9 +49,14 @@ def main():
     parser.add_argument("--fix-section-flags", help="", action="store_true")
     args = parser.parse_args()
 
+    mdebug_ver = {
+        "ido"  : MdebugVersion.IDO,
+        "egcs" : MdebugVersion.EGCS,
+    }[args.v]
+
     elf = None
     with open(args.compiled, "rb") as elf_file:
-        elf = ElfFile(bytearray(elf_file.read()), int(args.v))
+        elf = ElfFile(bytearray(elf_file.read()), mdebug_version=mdebug_ver)
 
     original = None
     with open(args.original, "rb") as original_file:
