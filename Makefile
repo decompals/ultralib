@@ -8,9 +8,8 @@ endif
 # One of:
 # libgultra_rom, libgultra_d, libgultra
 # libultra_rom, libultra_d, libultra
-# libultra_rom_iQue
-TARGET ?= libultra_rom_iQue
-VERSION ?= L
+TARGET ?= libultra_rom
+VERSION ?= ique_v1.5
 CROSS ?= mips-linux-gnu-
 
 BASE_DIR := extracted/$(VERSION)/$(TARGET)
@@ -33,8 +32,10 @@ VERSION_I := 6
 VERSION_J := 7
 VERSION_K := 8
 VERSION_L := 9
+VERSION_IQUE_V15 := 15
 
-VERSION_DEFINE := -DBUILD_VERSION=$(VERSION_$(VERSION)) -DBUILD_VERSION_STRING=\"2.0$(VERSION)\"
+BUILD_VERSION_ID := $(VERSION_$(shell echo '$(VERSION)' | tr '[:lower:]' '[:upper:]' | tr -d '.'))
+VERSION_DEFINE := -DBUILD_VERSION=$(BUILD_VERSION_ID) -DBUILD_VERSION_STRING=\"2.0$(VERSION)\"
 
 ifeq ($(findstring _d,$(TARGET)),_d)
 DEBUGFLAG := -D_DEBUG
@@ -42,12 +43,16 @@ else
 DEBUGFLAG := -DNDEBUG
 endif
 
-ifeq ($(findstring _iQue,$(TARGET)),_iQue)
--include Makefile.egcs
-else ifeq ($(findstring libgultra,$(TARGET)),libgultra)
+ifeq ($(findstring libgultra,$(TARGET)),libgultra)
 -include Makefile.gcc
 else ifeq ($(findstring libultra,$(TARGET)),libultra)
+
+ifeq ($(findstring ique_,$(VERSION)),ique_)
+-include Makefile.egcs
+else
 -include Makefile.ido
+endif
+
 else
 $(error Invalid Target)
 endif
@@ -56,7 +61,7 @@ ifeq ($(findstring _rom,$(TARGET)),_rom)
 CPPFLAGS += -D_FINALROM
 endif
 
-ifeq ($(findstring _iQue,$(TARGET)),_iQue)
+ifeq ($(findstring ique_,$(VERSION)),ique_)
 CPPFLAGS += -DBBPLAYER
 SRC_DIRS := $(shell find src -type d)
 else
@@ -75,7 +80,7 @@ C_FILES := $(filter-out $(addprefix src/gu/,$(MGU_MATRIX_FILES:=.c)),$(C_FILES))
 endif
 
 # Exclude src/reg/_%.c from non-iQue
-ifneq ($(findstring _iQue,$(TARGET)),_iQue)
+ifneq ($(findstring ique_,$(VERSION)),ique_)
 C_FILES := $(filter-out src/reg/_%.c,$(C_FILES))
 endif
 
