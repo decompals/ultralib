@@ -49,7 +49,7 @@ else
 $(error Invalid Target)
 endif
 
-SJIS_FILES := $(BUILD_DIR)/src/voice/voicecheckword.marker $(BUILD_DIR)/src/voice/voicecountsyllables.marker
+export COMPILER_PATH := $(WORKING_DIR)/$(COMPILER_DIR)
 
 ifeq ($(findstring _rom,$(TARGET)),_rom)
 CPPFLAGS += -D_FINALROM
@@ -73,10 +73,9 @@ O_FILES   := $(S_O_FILES) $(C_O_FILES)
 # Because we patch the object file timestamps, we can't use them as the targets since they'll always be older than the C file
 # Therefore instead we use marker files that have actual timestamps as the dependencies for the archive
 C_MARKER_FILES := $(C_O_FILES:.o=.marker)
-C_MARKER_FILES := $(filter-out $(SJIS_FILES),$(C_MARKER_FILES))
 S_MARKER_FILES := $(S_O_FILES:.o=.marker)
 S_MARKER_FILES := $(filter-out $(MDEBUG_FILES),$(S_MARKER_FILES))
-MARKER_FILES   := $(C_MARKER_FILES) $(SJIS_FILES) $(S_MARKER_FILES) $(MDEBUG_FILES)
+MARKER_FILES   := $(C_MARKER_FILES) $(S_MARKER_FILES) $(MDEBUG_FILES)
 
 ifneq ($(COMPARE),0)
 COMPARE_OBJ = cmp $(BASE_DIR)/$(@F:.marker=.o) $(@:.marker=.o) && echo "$(@:.marker=.o): OK"
@@ -169,28 +168,10 @@ $(BUILD_DIR)/src/sp/sprite.marker: GBIDEFINE := -DF3D_GBI
 $(BUILD_DIR)/src/sp/spriteex.marker: GBIDEFINE :=
 $(BUILD_DIR)/src/sp/spriteex2.marker: GBIDEFINE :=
 $(BUILD_DIR)/src/voice/%.marker: OPTFLAGS += -DLANG_JAPANESE -I$(WORKING_DIR)/src -I$(WORKING_DIR)/src/voice
+$(BUILD_DIR)/src/voice/%.marker: CC := tools/compile_sjis.py -D__CC=$(WORKING_DIR)/$(CC) -D__BUILD_DIR=$(BUILD_DIR)
 
 $(C_MARKER_FILES): $(BUILD_DIR)/%.marker: %.c
 	cd $(<D) && $(WORKING_DIR)/$(CC) $(CFLAGS) $(MIPS_VERSION) $(CPPFLAGS) $(OPTFLAGS) $(<F) $(IINC) -o $(WORKING_DIR)/$(@:.marker=.o)
-ifneq ($(COMPARE),0)
-# check if this file is in the archive; patch corrupted bytes and change file timestamps to match original if so
-	@$(if $(findstring $(BASE_DIR)/$(@F:.marker=.o), $(BASE_OBJS)), \
-	 python3 tools/fix_objfile.py $(@:.marker=.o) $(BASE_DIR)/$(@F:.marker=.o) $(STRIP) && \
-	 $(COMPARE_OBJ) && \
-	 touch -r $(BASE_DIR)/$(@F:.marker=.o) $(@:.marker=.o), \
-	 echo "Object file $(@F:.marker=.o) is not in the current archive" \
-	)
-endif
-ifneq ($(FIXUPS),0)
-	tools/set_o32abi_bit.py $(WORKING_DIR)/$(@:.marker=.o)
-	$(CROSS)strip $(WORKING_DIR)/$(@:.marker=.o) -N asdasdasdasd
-	$(CROSS)objcopy --remove-section .mdebug $(WORKING_DIR)/$(@:.marker=.o)
-endif
-# create or update the marker file
-	@touch $@
-
-$(SJIS_FILES): $(BUILD_DIR)/%.marker: %.c
-	cd $(<D) && $(WORKING_DIR)/tools/compile_sjis.py -D__CC=$(WORKING_DIR)/$(CC) -D__BUILD_DIR=$(BUILD_DIR) $(CFLAGS) $(MIPS_VERSION) $(CPPFLAGS) $(OPTFLAGS) $(<F) $(IINC) -o $(WORKING_DIR)/$(@:.marker=.o)
 ifneq ($(COMPARE),0)
 # check if this file is in the archive; patch corrupted bytes and change file timestamps to match original if so
 	@$(if $(findstring $(BASE_DIR)/$(@F:.marker=.o), $(BASE_OBJS)), \
