@@ -83,6 +83,8 @@ void __osBbFsFormatName(char*, const char*);
 
 void __osBbFCheck(void);
 
+s32 __osBbFsSync(int force);
+
 extern u16 __osBbFatBlock;
 extern u16 __osBbFsBlocks;
 extern BbFat16* __osBbFat;

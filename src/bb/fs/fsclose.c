@@ -5,7 +5,7 @@ s32 osBbFClose(s32 fd) {
     BbFat16* fat;
     s32 rv;
 
-    if (fd >= 0x199U) {
+    if (fd >= (u32)BB_INODE16_NUM) {
         return -3;
     }
 
