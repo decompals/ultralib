@@ -1,4 +1,5 @@
 #include "PR/os_internal.h"
+#include "PR/os_bbcard.h"
 #include "bcp.h"
 
 void __osBbCardDmaCopy(u32 which, void* addr, u32 dir);
@@ -54,7 +55,7 @@ static void write_dummy(u32 dev) {
     } while (IO_READ(PI_48_REG) & 0x80000000);
 }
 
-s32 osBbCardWriteBlock(u32 dev, u16 block, void* addr, void* spare) {
+s32 osBbCardWriteBlock(u32 dev, u16 block, const void* addr, const void* spare) {
     u32 i;
     u32 b = 0;
     s32 rv;
@@ -62,7 +63,7 @@ s32 osBbCardWriteBlock(u32 dev, u16 block, void* addr, void* spare) {
 
 #ifdef _DEBUG
     if (((u32)addr & 0xF) != 0) {
-        return -3;
+        return BBCARD_ERR_INVALID;
     }
 #endif
 
@@ -108,7 +109,7 @@ s32 osBbCardWriteBlock(u32 dev, u16 block, void* addr, void* spare) {
 #ifdef _DEBUG
             osSyncPrintf("block %d write failed 0x%x\n", block, tmp);
 #endif
-            rv = -2;
+            rv = BBCARD_ERR_FAIL;
             goto err;
         }
         b ^= 1;
@@ -119,7 +120,7 @@ err:
     return rv;
 }
 
-s32 osBbCardWriteBlocks(u32 dev, u16* block, u32 n, void* addr, void* spare) {
+s32 osBbCardWriteBlocks(u32 dev, const u16 block[], u32 n, const void* addr, const void* spare) {
     u32 i;
     u32 j;
     u32 b = 0;
@@ -128,7 +129,7 @@ s32 osBbCardWriteBlocks(u32 dev, u16* block, u32 n, void* addr, void* spare) {
 
 #ifdef _DEBUG
     if (((u32)addr & 0xF) != 0) {
-        return -3;
+        return BBCARD_ERR_INVALID;
     }
 #endif
 
@@ -197,11 +198,11 @@ s32 osBbCardWriteBlocks(u32 dev, u16* block, u32 n, void* addr, void* spare) {
             }
 
             if (__osBbCardStatus(dev, &tmp, 0) != 0) {
-                rv = -4;
+                rv = BBCARD_ERR_CHANGED;
                 goto err;
             }
             if (tmp != 0xC0) {
-                rv = -2;
+                rv = BBCARD_ERR_FAIL;
                 goto err;
             }
         }
