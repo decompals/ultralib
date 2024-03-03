@@ -74,6 +74,7 @@ s32 osBbFCreate(const char* name, u8 type, u32 len);
 s32 osBbFRename(const char* old, const char* new);
 s32 osBbFStat(s32 fd, OSBbStatBuf* sb, u16* blockList, u32 listLen);
 s32 osBbFReadDir(OSBbDirEnt* dir, u32 count);
+s32 osBbFRepairBlock(s32 fd, u32 off, void* buf, u32 len);
 
 // private
 
@@ -85,6 +86,8 @@ void __osBbFsFormatName(char*, const char*);
 void __osBbFCheck(void);
 
 s32 __osBbFsSync(int force);
+
+u16 __osBbFReallocBlock(BbInode* in, u16 block, BbFatEntry newVal);
 
 extern u16 __osBbFatBlock;
 extern u16 __osBbFsBlocks;

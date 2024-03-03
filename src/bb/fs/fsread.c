@@ -1,9 +1,6 @@
 #include "PR/os_internal.h"
 #include "PR/bbfs.h"
 
-// TODO: move to header
-s32 osBbCardReadBlock(u32 dev, u16 block, void* addr, void* spare);
-
 s32 osBbFRead(s32 fd, u32 off, void* buf, u32 len) {
     s32 rv;
     BbInode* in;
