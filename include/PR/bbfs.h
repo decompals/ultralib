@@ -75,6 +75,9 @@ s32 osBbFRename(const char* old, const char* new);
 s32 osBbFStat(s32 fd, OSBbStatBuf* sb, u16* blockList, u32 listLen);
 s32 osBbFReadDir(OSBbDirEnt* dir, u32 count);
 s32 osBbFRepairBlock(s32 fd, u32 off, void* buf, u32 len);
+s32 osBbFShuffle(s32 sfd, s32 dfd, s32 release, void* buf, u32 len);
+s32 osBbFAutoSync(u32 on);
+s32 osBbFSync(void);
 
 // private
 
