@@ -73,6 +73,7 @@ s32 osBbFDelete(const char* name);
 s32 osBbFCreate(const char* name, u8 type, u32 len);
 s32 osBbFRename(const char* old, const char* new);
 s32 osBbFStat(s32 fd, OSBbStatBuf* sb, u16* blockList, u32 listLen);
+s32 osBbFReadDir(OSBbDirEnt* dir, u32 count);
 
 // private
 
