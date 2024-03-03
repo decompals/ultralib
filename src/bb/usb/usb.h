@@ -1,6 +1,8 @@
 #ifndef USB_H_
 #define USB_H_
 
+#include "PR/os_usb.h"
+
 typedef char* char_ptr;
 typedef unsigned char uchar;
 typedef unsigned char* uchar_ptr;
@@ -28,28 +30,6 @@ typedef struct _usb_ctlr_state_s /* size=0x8 */ {
     /* 0x0000 */ int ucs_mode;
     /* 0x0004 */ int ucs_mask;
 } _usb_ctlr_state_t;
-
-typedef struct OSBbUsbInfo_s /* size=0x1C */ {
-    /* 0x0000 */ u8 ua_type;
-    /* 0x0001 */ u8 ua_class;
-    /* 0x0002 */ u8 ua_subclass;
-    /* 0x0003 */ u8 ua_protocol;
-    /* 0x0004 */ u16 ua_vendor;
-    /* 0x0006 */ u16 ua_product;
-    /* 0x0008 */ u8 ua_cfg;
-    /* 0x0009 */ u8 ua_ifc;
-    /* 0x000A */ u8 ua_ep;
-    /* 0x000B */ u8 ua_speed;
-    /* 0x000C */ u8 ua_mode;
-    /* 0x000D */ u8 ua_blksize;
-    /* 0x000E */ u8 ua_support;
-    /* 0x000F */ u8 ua_state;
-    /* 0x0010 */ u8* ua_mfr_str;
-    /* 0x0014 */ u8* ua_prod_str;
-    /* 0x0018 */ u8* ua_driver_name;
-} OSBbUsbInfo;
-
-typedef void* OSBbUsbHandle;
 
 typedef struct __OSBbUsbMesg_s /* size=0x28 */ {
     /* 0x0000 */ u8 um_type;
