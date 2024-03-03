@@ -37,9 +37,9 @@ s32 osBbFRepairBlock(s32 fd, u32 off, void* buf, u32 len) {
     if ((temp_s6->type != 0) && !(off & 0x3FFF)&& (off < temp_s6->size)) {
         if ((len == 0x4000) && (off + 0x4000 >= off) && (temp_s6->size >= off + 0x4000)) {
             var_s0 = temp_s6->block;
-            
+
             for (var_a0 = 0; var_a0 < off / 0x4000; var_a0++) {
-                var_s0 = temp_s4[var_s0 >> 0xC].entry[var_s0 & 0xFFF];
+                var_s0 = temp_s4[var_s0 / 0x1000].entry[var_s0 % 0x1000];
             }
 
             if (var_s0 != 0) {
@@ -65,15 +65,15 @@ s32 osBbFRepairBlock(s32 fd, u32 off, void* buf, u32 len) {
                         }
 
                         if (var_s2 == -2) {
-                            temp_s4[var_s0 >> 0xC].entry[var_s0 & 0xFFF] = -2;
+                            temp_s4[var_s0 / 0x1000].entry[var_s0 % 0x1000] = -2;
                             goto loop_14;
                         }
                     
                         loop_14_end:;
 
                         if ((var_s3 != 0xFFFE) && (var_s0 != var_s3)) {
-                            temp_s4[var_s3 >> 0xC].entry[var_s3 & 0xFFF] = temp_s4[var_s0 >> 0xC].entry[var_s0 & 0xFFF];
-                            temp_s4[var_s0 >> 0xC].entry[var_s0 & 0xFFF] = 0;
+                            temp_s4[var_s3 / 0x1000].entry[var_s3 % 0x1000] = temp_s4[var_s0 / 0x1000].entry[var_s0 % 0x1000];
+                            temp_s4[var_s0 / 0x1000].entry[var_s0 % 0x1000] = 0;
 
                             if (off == 0) {
                                 temp_s6->block = var_s3;
@@ -81,10 +81,10 @@ s32 osBbFRepairBlock(s32 fd, u32 off, void* buf, u32 len) {
                                 var_s0 = temp_s6->block;
 
                                 for (var_a0 = 0; var_a0 < off / 0x4000 - 1; var_a0++) {
-                                    var_s0 = temp_s4[var_s0 >> 0xC].entry[var_s0 & 0xFFF];
+                                    var_s0 = temp_s4[var_s0 / 0x1000].entry[var_s0 % 0x1000];
                                     
                                 }
-                                temp_s4[var_s0 >> 0xC].entry[var_s0 & 0xFFF] = var_s3;
+                                temp_s4[var_s0 / 0x1000].entry[var_s0 % 0x1000] = var_s3;
                             }
                         }
                         var_s1 = __osBbFsSync(0);

@@ -25,7 +25,7 @@ u16 __osBbFReallocBlock(BbInode* in, u16 block, u16 newVal) {
     }
 
     while (ob < __osBbFsBlocks) {
-        if (fat[ob >> 0xC].entry[ob & 0xFFF] == 0) {
+        if (fat[ob / 0x1000].entry[ob % 0x1000] == 0) {
             break;
         }
         ob += incr;
@@ -35,16 +35,16 @@ u16 __osBbFReallocBlock(BbInode* in, u16 block, u16 newVal) {
         b = in->block;
         while (b != block) {
             prev = b;
-            b = fat[b >> 0xC].entry[b & 0xFFF];
+            b = fat[b / 0x1000].entry[b % 0x1000];
         }
         if (prev != 0) {
-            fat[(prev >> 0xC) & 0xFFFF].entry[prev & 0xFFF] = ob;
+            fat[prev / 0x1000].entry[prev % 0x1000] = ob;
         } else {
             in->block = ob;
         }
 
-        fat[ob >> 0xC].entry[ob & 0xFFF] = fat[b >> 0xC].entry[b & 0xFFF];
-        fat[b >> 0xC].entry[b & 0xFFF] = newVal;
+        fat[ob / 0x1000].entry[ob % 0x1000] = fat[b / 0x1000].entry[b % 0x1000];
+        fat[b / 0x1000].entry[b % 0x1000] = newVal;
         if (__osBbFsSync(0) == 0) {
             return ob;
         }
@@ -73,9 +73,9 @@ s32 osBbFWrite(s32 fd, u32 off, void* buf, u32 len) {
     }
 
     fat = __osBbFat;
-
     in = &fat->inode[fd];
     rv = -3;
+
     if ((in->type != 0) && !(off & 0x3FFF) && (off < in->size)) {
         if (!(len & 0x3FFF) && (off + len >= off) && (in->size >= off + len)) {
             if (len == 0) {
@@ -85,7 +85,7 @@ s32 osBbFWrite(s32 fd, u32 off, void* buf, u32 len) {
 
             b = in->block;
             for (i = 0; i < off / 0x4000; i++) {
-                b = fat[b >> 0xC].entry[b & 0xFFF];
+                b = fat[b / 0x1000].entry[b % 0x1000];
             }
 
             count = 0;
@@ -97,13 +97,13 @@ s32 osBbFWrite(s32 fd, u32 off, void* buf, u32 len) {
                     }
 
                     blocks[n] = b;
-                    b = fat[b >> 0xC].entry[b & 0xFFF];
+                    b = fat[b / 0x1000].entry[b % 0x1000];
 
                     len = (len > 0x4000) ? (len - 0x4000) : 0;
                     count += 0x4000;
                 }
 
-                if (((rv = osBbCardEraseBlocks(0U, blocks, n)) < 0) || (rv = osBbCardWriteBlocks(0U, blocks, n, buf, NULL)) < 0) {
+                if (((rv = osBbCardEraseBlocks(0, blocks, n)) < 0) || (rv = osBbCardWriteBlocks(0, blocks, n, buf, NULL)) < 0) {
                     int i;
 
                     if (rv != -2) {
@@ -112,28 +112,21 @@ s32 osBbFWrite(s32 fd, u32 off, void* buf, u32 len) {
 
                     for(i = 0; i < n; i++) {
                         u16 b = blocks[i];
-                        u16 temp;
 
-retry:
-                        if ((rv = osBbCardEraseBlock(0U, b)) < 0 || ((rv = osBbCardWriteBlock(0U, b, buf + i * 0x4000, NULL)) < 0)) {
-
+                    retry:
+                        if ((rv = osBbCardEraseBlock(0, b)) < 0 || ((rv = osBbCardWriteBlock(0, b, buf + i * 0x4000, NULL)) < 0)) {
                             if (rv != -2) {
                                 goto end;
                             }
-
-                            temp = __osBbFReallocBlock(in, b, 0xFFFE);
-                            if (temp == 0xFFFE) {
+                            if ((b = __osBbFReallocBlock(in, b, 0xFFFE)) == 0xFFFE) {
                                 goto end;
                             }
-                            b = temp;
                             goto retry;
                         }
                     }
                 }
-
                 buf += n  * 0x4000;
             }
-
             rv = count;
         }
     }

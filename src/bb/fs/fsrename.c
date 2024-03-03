@@ -48,8 +48,8 @@ s32 osBbFRename(const char* old, const char* new) {
             while (b != 0xFFFF) {
                 u16 temp;
 
-                temp = fat[b >> 0xC].entry[b & 0xFFF];
-                fat[b >> 0xC].entry[b & 0xFFF] = 0;
+                temp = fat[b / 0x1000].entry[b % 0x1000];
+                fat[b / 0x1000].entry[b % 0x1000] = 0;
                 b = temp;
             }
             bzero(&fat->inode[inew], 0x14);
