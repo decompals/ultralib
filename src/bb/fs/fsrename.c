@@ -5,10 +5,8 @@ s32 osBbFRename(const char* old, const char* new) {
     unsigned char fold[BB_INODE16_NAMELEN];
     unsigned char fnew[BB_INODE16_NAMELEN];
     s32 rv;
-
     s32 inew;
     s32 iold;
-
     BbFat16* fat;
     int i;
 
@@ -19,7 +17,7 @@ s32 osBbFRename(const char* old, const char* new) {
     __osBbFsFormatName(fnew, new);
 
     if ((fold[0] == '\0') || (fnew[0] == '\0')) {
-        return -3;
+        return BBFS_ERR_INVALID;
     }
 
     rv = __osBbFsGetAccess();
@@ -39,7 +37,7 @@ s32 osBbFRename(const char* old, const char* new) {
         }
     }
 
-    rv = -8;
+    rv = BBFS_ERR_ENTRY;
     if (iold != -1) {
         if (inew != -1) {
             u16 b;
@@ -54,6 +52,7 @@ s32 osBbFRename(const char* old, const char* new) {
             }
             bzero(&fat->inode[inew], 0x14);
         }
+
         bcopy(fnew, fat->inode[iold].name, BB_INODE16_NAMELEN * sizeof(unsigned char));
         rv = __osBbFsSync(0);
     }

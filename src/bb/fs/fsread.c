@@ -9,8 +9,8 @@ s32 osBbFRead(s32 fd, u32 off, void* buf, u32 len) {
     u32 i;
     BbFat16* fat;
 
-    if (fd >= (u32)BB_INODE16_NUM) {
-        return -3;
+    if ((u32)fd >= BB_INODE16_NUM) {
+        return BBFS_ERR_INVALID;
     }
 
     rv = __osBbFsGetAccess();
@@ -20,9 +20,9 @@ s32 osBbFRead(s32 fd, u32 off, void* buf, u32 len) {
 
     fat = __osBbFat;
     in = &fat->inode[fd];
-    rv = -3;
+    rv = BBFS_ERR_INVALID;
 
-    if ((in->type != 0) && !(off & 0x3FFF)) {
+    if ((in->type != 0) && (off % 0x4000 == 0)) {
         if ((off < in->size) && (off + len >= off)) {
             if (in->size < off + len) {
                 len = in->size - off;
@@ -37,7 +37,7 @@ s32 osBbFRead(s32 fd, u32 off, void* buf, u32 len) {
 
             for (i = 0; i < off / 0x4000; i++) {
                 b = fat[b / 0x1000].entry[b % 0x1000];
-            } 
+            }
 
             count = 0;
 

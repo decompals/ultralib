@@ -9,8 +9,8 @@ s32 osBbFDelete(const char* name) {
 
     __osBbFsFormatName(fname, name);
 
-    if (fname[0] == 0) {
-        return -3;
+    if (fname[0] == '\0') {
+        return BBFS_ERR_INVALID;
     }
 
     rv = __osBbFsGetAccess();
@@ -18,14 +18,14 @@ s32 osBbFDelete(const char* name) {
         return rv;
     }
 
-    rv = -8;
+    rv = BBFS_ERR_ENTRY;
 
     fat = __osBbFat;
     for (i = 0; i < BB_INODE16_NUM; i++) {
         u16 b;
 
         if (fat->inode[i].type != 0) {
-            if (bcmp(fname, fat->inode[i].name, BB_INODE16_NAMELEN) == 0) {
+            if (bcmp(fname, fat->inode[i].name, BB_INODE16_NAMELEN * sizeof(unsigned char)) == 0) {
                 b = fat->inode[i].block;
                 while (b != 0xFFFF) {
                     u16 temp_v0; // not present on mdebug

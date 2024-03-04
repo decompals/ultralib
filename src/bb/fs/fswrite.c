@@ -63,8 +63,8 @@ s32 osBbFWrite(s32 fd, u32 off, void* buf, u32 len) {
     u16 blocks[4];
     u16 n;
 
-    if ((u32) fd >= 0x199U) {
-        return -3;
+    if ((u32) fd >= BB_INODE16_NUM) {
+        return BBFS_ERR_INVALID;
     }
 
     rv = __osBbFsGetAccess();
@@ -74,10 +74,10 @@ s32 osBbFWrite(s32 fd, u32 off, void* buf, u32 len) {
 
     fat = __osBbFat;
     in = &fat->inode[fd];
-    rv = -3;
+    rv = BBFS_ERR_INVALID;
 
-    if ((in->type != 0) && !(off & 0x3FFF) && (off < in->size)) {
-        if (!(len & 0x3FFF) && (off + len >= off) && (in->size >= off + len)) {
+    if ((in->type != 0) && (off % 0x4000 == 0) && (off < in->size)) {
+        if ((len % 0x4000 == 0) && (off + len >= off) && (in->size >= off + len)) {
             if (len == 0) {
                 rv = 0;
                 goto end;
@@ -91,8 +91,8 @@ s32 osBbFWrite(s32 fd, u32 off, void* buf, u32 len) {
             count = 0;
 
             while (len != 0) {
-                for (n = 0; (len != 0) && (n < 4U); n++) {
-                    if ((b == 0) || (b >= (u32) (__osBbFsBlocks - 0x10))) {
+                for (n = 0; (len != 0) && (n < 4); n++) {
+                    if ((b == 0) || (b >= __osBbFsBlocks - 0x10)) {
                         goto end;
                     }
 
@@ -106,7 +106,7 @@ s32 osBbFWrite(s32 fd, u32 off, void* buf, u32 len) {
                 if (((rv = osBbCardEraseBlocks(0, blocks, n)) < 0) || (rv = osBbCardWriteBlocks(0, blocks, n, buf, NULL)) < 0) {
                     int i;
 
-                    if (rv != -2) {
+                    if (rv != BBFS_ERR_FAIL) {
                         goto end;
                     }
 
@@ -115,7 +115,7 @@ s32 osBbFWrite(s32 fd, u32 off, void* buf, u32 len) {
 
                     retry:
                         if ((rv = osBbCardEraseBlock(0, b)) < 0 || ((rv = osBbCardWriteBlock(0, b, buf + i * 0x4000, NULL)) < 0)) {
-                            if (rv != -2) {
+                            if (rv != BBFS_ERR_FAIL) {
                                 goto end;
                             }
                             if ((b = __osBbFReallocBlock(in, b, 0xFFFE)) == 0xFFFE) {
@@ -127,6 +127,7 @@ s32 osBbFWrite(s32 fd, u32 off, void* buf, u32 len) {
                 }
                 buf += n  * 0x4000;
             }
+
             rv = count;
         }
     }
