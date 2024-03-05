@@ -1,4 +1,5 @@
 #include "PR/os_internal.h"
+#include "PR/os_bbexec_export.h"
 #include "PR/bcp.h"
 #include "memory.h"
 #include "macros.h"

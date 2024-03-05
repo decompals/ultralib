@@ -1,4 +1,5 @@
 #include "PR/os_internal.h"
+#include "PR/os_bbcard.h"
 #include "PR/bcp.h"
 
 u8 __osBbCardChange = TRUE;
@@ -51,9 +52,9 @@ s32 __osBbCardGetAccess(void) {
         __osBbCardRelAccess();
 
         if (!__osBbCardPresent()) {
-            return -1;
+            return BBCARD_ERR_NO_CARD;
         }
-        return -4;
+        return BBCARD_ERR_CHANGED;
     }
     return 0;
 }

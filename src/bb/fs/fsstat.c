@@ -1,4 +1,5 @@
 #include "PR/os_internal.h"
+#include "os_bbfs_export.h"
 
 typedef struct /* size=0x8 */ {
     /* 0x0000 */ u8 type;
@@ -35,7 +36,7 @@ s32 osBbFStat(s32 fd, OSBbStatBuf* sb, u16* blockList, u32 listLen) {
     sizeof(BbFat16);
 
     if (fd >= 0x199U) {
-        return -3;
+        return BBFS_ERR_INVALID;
     }
 
     rv = __osBbFsGetAccess();
@@ -43,7 +44,7 @@ s32 osBbFStat(s32 fd, OSBbStatBuf* sb, u16* blockList, u32 listLen) {
         return rv;
     }
 
-    rv = -3;
+    rv = BBFS_ERR_INVALID;
 
     fat = __osBbFat;
     in = &fat->inode[fd];
