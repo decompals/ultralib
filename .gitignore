@@ -27,5 +27,6 @@ tools/ido
 
 # Tool artifacts
 ctx.c
+ctx.c.m2c
 
 libultra_collection/
