@@ -1,4 +1,5 @@
 #include "PR/os_internal.h"
+#include "PR/bbcard.h"
 #include "PR/bcp.h"
 
 u8 __osBbCardChange = TRUE;
@@ -51,9 +52,9 @@ s32 __osBbCardGetAccess(void) {
         __osBbCardRelAccess();
 
         if (!__osBbCardPresent()) {
-            return -1;
+            return BBCARD_ERR_NO_CARD;
         }
-        return -4;
+        return BBCARD_ERR_CHANGED;
     }
     return 0;
 }
@@ -67,7 +68,7 @@ void osBbCardInit(void) {
         osSendMesg(&__osBbCardAccessQueue, NULL, 0);
         __osBbCardInitEvent();
 
-        IO_WRITE(MI_3C_REG, 0x08002000);
+        IO_WRITE(MI_3C_REG, 0x08002000); // enable flash interrupt
 
         __osBbCardHandler.type = 6;
         __osBbCardHandler.baseAddress = 0;
@@ -84,7 +85,7 @@ void osBbCardInit(void) {
         __osBbCardInit = TRUE;
     }
 
-    IO_WRITE(PI_48_REG, 0);
+    IO_WRITE(PI_48_REG, NAND_CTRL_CLR_INTR);
     __osBbCardChange = FALSE;
 
     __osBbCardFlushEvent();
@@ -113,15 +114,15 @@ void __osBbCardDmaCopy(u32 which, void* addr, u32 dir) {
     m.hdr.pri = 0;
     m.hdr.retQueue = &__osBbCardDmaQ;
     m.dramAddr = addr;
-    m.size = 0x200;
-    m.devAddr = which * 0x200;
+    m.size = NAND_BYTES_PER_PAGE;
+    m.devAddr = which * NAND_BYTES_PER_PAGE;
 
     if (dir == OS_WRITE) {
-        osWritebackDCache(addr, 0x200);
+        osWritebackDCache(addr, NAND_BYTES_PER_PAGE);
     }
     osEPiStartDma(&__osBbCardHandler, &m, dir);
     osRecvMesg(&__osBbCardDmaQ, NULL, OS_MESG_BLOCK);
     if (dir == OS_READ) {
-        osInvalDCache(addr, 0x200);
+        osInvalDCache(addr, NAND_BYTES_PER_PAGE);
     }
 }

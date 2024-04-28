@@ -1,5 +1,6 @@
 #include "PR/os_internal.h"
 #include "PR/bcp.h"
+#include "PR/bbcard.h"
 #include "memory.h"
 #include "macros.h"
 
@@ -392,7 +393,7 @@ s32 osBbGetLaunchMetaData(OSBbLaunchMetaData* md, u16* blockList, s32 listSize) 
     // ?
     IO_WRITE(PI_50_REG, 0);
     IO_WRITE(PI_44_REG, 0);
-    IO_WRITE(PI_48_REG, 0x1F008BFF);
+    IO_WRITE(PI_48_REG, NAND_ATB_CONFIG(0, TRUE));
 
     // Read the CMD from the end of the block with programmed IO reads
     for (i = 0x4000 - sizeof(*md); i < 0x4000; i += 4) {

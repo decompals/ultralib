@@ -1,4 +1,5 @@
 #include "PR/os_internal.h"
+#include "PR/bbcard.h"
 #include "bcp.h"
 
 void __osBbCardDmaCopy(u32 which, void* addr, u32 dir);
@@ -9,8 +10,8 @@ s32 __osBbCardWaitEvent(void);
 u32 __osBbCardSbErr;
 
 static void read_page(u32 dev, u32 addr, u32 which_buf) {
-    IO_WRITE(PI_70_REG, addr << 9);
-    IO_WRITE(PI_48_REG, 0xDF008000 | (which_buf << 0xE) | (dev << 0xC) | 0xA10);
+    IO_WRITE(PI_70_REG, NAND_PAGE_TO_ADDR(addr));
+    IO_WRITE(PI_48_REG, NAND_READ_0(0x210, which_buf, dev, TRUE, TRUE));
 }
 
 s32 osBbCardReadBlock(u32 dev, u16 block, void* addr, void* spare) {
@@ -29,14 +30,14 @@ s32 osBbCardReadBlock(u32 dev, u16 block, void* addr, void* spare) {
         ((u8*)spare)[5] = 0xFF;
     }
 
-    for (i = 0; i < 0x20; i++) {
-        read_page(dev, (block * 0x4000 + i * 0x200) >> 9, b);
+    for (i = 0; i < NAND_PAGES_PER_BLOCK; i++) {
+        read_page(dev, (block * NAND_BYTES_PER_BLOCK + i * NAND_BYTES_PER_PAGE) / NAND_BYTES_PER_PAGE, b);
 
         if (i != 0) {
-            __osBbCardDmaCopy(b ^ 1, &((u8*)addr)[0x200 * (i - 1)], 0);
+            __osBbCardDmaCopy(b ^ 1, &((u8*)addr)[NAND_BYTES_PER_PAGE * (i - 1)], 0);
 
             if (spare != NULL) {
-                u32 addr = PI_BASE_REG + 0x10400 + (b ^ 1) * 0x10;
+                u32 addr = PI_NAND_SPARE_BUFFER(b ^ 1, 0);
 
                 ((u8*)spare)[5] &= IO_READ(addr + 4) >> 8;
             }
@@ -48,29 +49,29 @@ s32 osBbCardReadBlock(u32 dev, u16 block, void* addr, void* spare) {
         }
 
         x = IO_READ(PI_48_REG);
-        if (x & 0x400) {
-            db = -2;
+        if (x & NAND_STATUS_ERROR_DB) {
+            db = BBCARD_ERR_FAIL;
 
-            if (spare == NULL || i == 0x1F) {
+            if (spare == NULL || i == (NAND_PAGES_PER_BLOCK - 1)) {
                 goto err;
             }
         }
 
-        if (x & 0x800) {
+        if (x & NAND_STATUS_ERROR_SB) {
             __osBbCardSbErr++;
         }
         b ^= 1;
     }
 
-    __osBbCardDmaCopy(b ^ 1, addr + 0x200 * (i - 1), 0);
+    __osBbCardDmaCopy(b ^ 1, addr + NAND_BYTES_PER_PAGE * (i - 1), 0);
 
 err:
     if (spare != NULL) {
         u8* p = spare;
-        u32 addr = PI_BASE_REG + 0x10400 + (b ^ 1) * 0x10;
+        u32 addr = PI_NAND_SPARE_BUFFER(b ^ 1, 0);
 
-        for (i = 0; i < 4; i++) {
-            u32 x = IO_READ(addr + 4 * i);
+        for (i = 0; i < NAND_PAGE_SPARE_SIZE/sizeof(u32); i++) {
+            u32 x = IO_READ(addr + sizeof(u32) * i);
 
             p[0] = x >> 0x18;
             p[1] = x >> 0x10;
@@ -81,7 +82,7 @@ err:
             }
             p[3] = x;
 
-            p += 4;
+            p += sizeof(u32);
         }
     }
 

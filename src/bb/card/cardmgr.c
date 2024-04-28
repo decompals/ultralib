@@ -1,4 +1,5 @@
 #include "PR/os_internal.h"
+#include "PR/bbcard.h"
 #include "macros.h"
 
 #ident "$Revision: 1.1 $"
@@ -51,8 +52,8 @@ s32 __osBbCardWaitEvent(void) {
             osSyncPrintf("md interrupt\n");
 #endif
             __osBbCardChange = TRUE;
-            return -4;
+            return BBCARD_ERR_CHANGED;
         default:
-            return -2;
+            return BBCARD_ERR_FAIL;
     }
 }

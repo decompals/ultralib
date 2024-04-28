@@ -237,7 +237,7 @@ class MipsDisasm:
 
             # Apply relocation
             if len(rels) != 0:
-                rel = rels[0]
+                rel : Relocation = rels[0]
                 if rel.rel_type == R_MIPS_26:
                     if insn.id == MIPS_INS_JAL:
                         op_str = rel.relocated_symbol.name
@@ -265,9 +265,17 @@ class MipsDisasm:
                     assert insn.id in [MIPS_INS_LUI]
                     rel_name = rel.relocated_symbol.name
                     if rel.relocated_symbol.type == ST_SECTION:
-                        rel_name = f".{rel_name[1].upper()}_00000000"
-                        if cur_fdr is not None:
-                            pass
+                        for sym in self.elf_file.symtab.symbol_entries:
+                            sym : Symbol
+
+                            if sym.type == ST_SECTION:
+                                continue
+
+                            if sym.parent_section is not None and sym.parent_section.name == rel.relocated_symbol.name:
+                                if sym.st_value == rel.r_addend:
+                                    break
+
+                        rel_name = sym.name
 
                     op_str = f"{insn.abi.gpr_names[insn.rt]}, %hi({rel_name})"
                 elif rel.rel_type == R_MIPS_LO16:
