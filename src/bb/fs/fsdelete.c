@@ -36,7 +36,7 @@ s32 osBbFDelete(const char* name) {
                 }
 
                 bzero(&fat->inode[i], sizeof(fat->inode[i]));
-                rv = __osBbFsSync(0);
+                rv = __osBbFsSync(FALSE);
                 break;
             }
         }

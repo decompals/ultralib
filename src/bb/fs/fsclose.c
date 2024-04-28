@@ -5,7 +5,7 @@ s32 osBbFClose(s32 fd) {
     BbFat16* fat;
     s32 rv;
 
-    if ((u32)fd >= BB_INODE16_NUM) {
+    if (fd < 0 || fd >= BB_INODE16_NUM) {
         return BBFS_ERR_INVALID;
     }
 

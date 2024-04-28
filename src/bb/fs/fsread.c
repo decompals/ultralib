@@ -9,7 +9,7 @@ s32 osBbFRead(s32 fd, u32 off, void* buf, u32 len) {
     u32 i;
     BbFat16* fat;
 
-    if ((u32)fd >= BB_INODE16_NUM) {
+    if (fd < 0 || fd >= BB_INODE16_NUM) {
         return BBFS_ERR_INVALID;
     }
 
@@ -22,8 +22,8 @@ s32 osBbFRead(s32 fd, u32 off, void* buf, u32 len) {
     in = &fat->inode[fd];
     rv = BBFS_ERR_INVALID;
 
-    if ((in->type != 0) && (off % 0x4000 == 0)) {
-        if ((off < in->size) && (off + len >= off)) {
+    if (in->type != 0 && off % 0x4000 == 0) {
+        if (off < in->size && off + len >= off) {
             if (in->size < off + len) {
                 len = in->size - off;
             }
@@ -42,7 +42,7 @@ s32 osBbFRead(s32 fd, u32 off, void* buf, u32 len) {
             count = 0;
 
             while (len != 0) {
-                if ((b == 0) || (b >= __osBbFsBlocks - 0x10)) {
+                if (b == 0 || b >= __osBbFsBlocks - 0x10) {
                     goto end;
                 }
 

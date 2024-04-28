@@ -16,7 +16,7 @@ s32 osBbFRename(const char* old, const char* new) {
     __osBbFsFormatName(fold, old);
     __osBbFsFormatName(fnew, new);
 
-    if ((fold[0] == '\0') || (fnew[0] == '\0')) {
+    if (fold[0] == '\0' || fnew[0] == '\0') {
         return BBFS_ERR_INVALID;
     }
 
@@ -54,7 +54,7 @@ s32 osBbFRename(const char* old, const char* new) {
         }
 
         bcopy(fnew, fat->inode[iold].name, BB_INODE16_NAMELEN * sizeof(unsigned char));
-        rv = __osBbFsSync(0);
+        rv = __osBbFsSync(FALSE);
     }
 
     __osBbFsRelAccess();

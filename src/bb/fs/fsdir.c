@@ -26,11 +26,11 @@ s32 osBbFReadDir(OSBbDirEnt* dir, u32 count) {
         }
 
         rv++;
-        if ((d != NULL) && (j < count)) {
+        if (d != NULL && j < count) {
             d->type = fat->inode[i].type;
             d->size = fat->inode[i].size;
 
-            for (k = 0; (var_s2[k] != '\0') && (k < 8); k++) {
+            for (k = 0; var_s2[k] != '\0' && k < 8; k++) {
                 d->name[k] = var_s2[k];
             }
 

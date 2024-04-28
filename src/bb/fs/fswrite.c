@@ -45,7 +45,7 @@ u16 __osBbFReallocBlock(BbInode* in, u16 block, u16 newVal) {
 
         fat[ob / 0x1000].entry[ob % 0x1000] = fat[b / 0x1000].entry[b % 0x1000];
         fat[b / 0x1000].entry[b % 0x1000] = newVal;
-        if (__osBbFsSync(0) == 0) {
+        if (__osBbFsSync(FALSE) == 0) {
             return ob;
         }
     }
@@ -76,8 +76,8 @@ s32 osBbFWrite(s32 fd, u32 off, void* buf, u32 len) {
     in = &fat->inode[fd];
     rv = BBFS_ERR_INVALID;
 
-    if ((in->type != 0) && (off % 0x4000 == 0) && (off < in->size)) {
-        if ((len % 0x4000 == 0) && (off + len >= off) && (in->size >= off + len)) {
+    if (in->type != 0 && off % 0x4000 == 0 && off < in->size) {
+        if (len % 0x4000 == 0 && off + len >= off && in->size >= off + len) {
             if (len == 0) {
                 rv = 0;
                 goto end;
@@ -91,7 +91,7 @@ s32 osBbFWrite(s32 fd, u32 off, void* buf, u32 len) {
             count = 0;
 
             while (len != 0) {
-                for (n = 0; (len != 0) && (n < 4); n++) {
+                for (n = 0; len != 0 && n < 4; n++) {
                     if ((b == 0) || (b >= __osBbFsBlocks - 0x10)) {
                         goto end;
                     }

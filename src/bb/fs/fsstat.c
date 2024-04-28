@@ -7,7 +7,7 @@ s32 osBbFStat(s32 fd, OSBbStatBuf* sb, u16* blockList, u32 listLen) {
     BbInode* in;
     BbFat16* fat;
 
-    if ((u32)fd >= BB_INODE16_NUM) {
+    if (fd < 0 || fd >= BB_INODE16_NUM) {
         return BBFS_ERR_INVALID;
     }
 
@@ -25,9 +25,8 @@ s32 osBbFStat(s32 fd, OSBbStatBuf* sb, u16* blockList, u32 listLen) {
         sb->type = in->type;
         sb->size = in->size;
 
-        if ((blockList != NULL) && (listLen != 0)) {
+        if (blockList != NULL && listLen != 0) {
             u16 b = in->block;
-            i = 0;
 
             for (i = 0; b != 0xFFFF && i < listLen; i++) {
                 blockList[i] = b;
