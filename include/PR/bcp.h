@@ -99,11 +99,11 @@
 #define PI_GPIO_MASK_RTC_1  (8 << 4)
 /* RTC (TODO) */
 /* LED */
-#define PI_GPIO_LED_ON      (1 << 1)
-#define PI_GPIO_LED_OFF     (0 << 1)
+#define PI_GPIO_LED_ON      (0 << 1)
+#define PI_GPIO_LED_OFF     (1 << 1)
 /* Power */
-#define PI_GPIO_PWR_ON      (1 << 0)
 #define PI_GPIO_PWR_OFF     (0 << 0)
+#define PI_GPIO_PWR_ON      (1 << 0)
 
 
 
