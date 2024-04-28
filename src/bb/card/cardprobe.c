@@ -1,4 +1,5 @@
 #include "PR/os_internal.h"
+#include "PR/os_bbcard.h"
 #include "PR/bcp.h"
 
 s32 __osBbCardFlushEvent(void);
@@ -22,7 +23,7 @@ s32 osBbCardProbe(u32 dev) {
     IO_WRITE(PI_10000_REG(0), 0);
     IO_WRITE(PI_48_REG, (dev << 0xC) | 0x90700001);
 
-    rv = -1;
+    rv = BBCARD_ERR_NO_CARD;
 
     for (count = 0; count < 1000; count++) {
         if (!(IO_READ(PI_48_REG) & 0x80000000)) {

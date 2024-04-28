@@ -1,4 +1,5 @@
 #include "PR/os_internal.h"
+#include "PR/os_bbcard.h"
 #include "PR/bcp.h"
 
 s32 __osBbCardWaitEvent(void);
@@ -65,7 +66,7 @@ s32 osBbCardClearChange(void) {
 
 u32 osBbCardBlocks(u32 dev) {
     s32 rv;
-    
+
     rv = __osBbCardGetAccess();
     if (rv < 0) {
         return rv;

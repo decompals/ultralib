@@ -1,4 +1,5 @@
 #include "PR/os_internal.h"
+#include "PR/os_bbfs_export.h"
 #include "PR/bbfs.h"
 
 s32 osBbFClose(s32 fd) {

@@ -144,7 +144,7 @@ static void __usbOtgStateChange(s32 which) {
     }
 }
 
-s32 osBbUsbGetResetCount(s32 which) {
+u32 osBbUsbGetResetCount(s32 which) {
     return __Usb_Reset_Count[which];
 }
 

@@ -1,4 +1,5 @@
 #include "PR/os_internal.h"
+#include "PR/os_bbcard.h"
 #include "bcp.h"
 
 void __osBbCardDmaCopy(u32 which, void* addr, u32 dir);

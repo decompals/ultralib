@@ -1,4 +1,5 @@
 #include "PR/os_internal.h"
+#include "PR/os_bbcard.h"
 #include "PR/bcp.h"
 
 s32 __osBbCardGetAccess(void);
