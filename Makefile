@@ -141,7 +141,7 @@ endif
 
 # Try to find a file corresponding to an archive file in src/ or the base directory, prioritizing src then the original file
 AR_ORDER = $(foreach f,$(AR_OBJECTS),$(shell find $(BUILD_DIR)/src $(BASE_DIR) -iname $f -type f -print -quit))
-MATCHED_OBJS = $(filter-out $(BUILD_DIR)/$(BASE_DIR)/%,$(AR_ORDER))
+MATCHED_OBJS = $(filter-out $(BASE_DIR)/%,$(AR_ORDER))
 UNMATCHED_OBJS = $(filter-out $(MATCHED_OBJS),$(AR_ORDER))
 NUM_OBJS = $(words $(AR_ORDER))
 NUM_OBJS_MATCHED = $(words $(MATCHED_OBJS))

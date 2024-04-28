@@ -64,6 +64,7 @@ extern s32  osBbCardWriteBlock(u32 dev, u16 block, const void* addr,
 	                       const void* spare);
 extern s32  osBbCardWriteBlocks(u32 dev, const u16 block[], u32 n,
 	                        const void* addr, const void* spare);
+
 #endif  /* defined(_LANGUAGE_C) || defined(_LANGUAGE_C_PLUS_PLUS) */
 #ifdef _LANGUAGE_C_PLUS_PLUS
 }
