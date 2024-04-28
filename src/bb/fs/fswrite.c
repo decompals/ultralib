@@ -1,19 +1,17 @@
 #include "PR/os_internal.h"
 #include "PR/bbfs.h"
 #include "PR/os_bbcard.h"
+#include "macros.h"
 
 u16 __osBbFReallocBlock(BbInode* in, u16 block, u16 newVal) {
     u16 b;
     u16 ob;
-    u16 prev;
+    u16 prev = BBFS_BLOCK_FREE;
     s32 incr;
-    BbFat16* fat;
+    BbFat16* fat = __osBbFat;
 
-    prev = 0;
-    fat = __osBbFat;
-
-    if (in->size > 0x100000) {
-        ob = 0x40;
+    if (in->size > 64 * BB_FL_BLOCK_SIZE) {
+        ob = BBFS_SKSA_LIMIT;
         incr = 1;
     } else {
         incr = -1;
@@ -21,11 +19,11 @@ u16 __osBbFReallocBlock(BbInode* in, u16 block, u16 newVal) {
     }
 
     if (ob >= __osBbFsBlocks) {
-        return 0xFFFE;
+        return BBFS_BLOCK_BAD;
     }
 
     while (ob < __osBbFsBlocks) {
-        if (BBFS_NEXT_BLOCK(fat, ob) == 0) {
+        if (BBFS_NEXT_BLOCK(fat, ob) == BBFS_BLOCK_FREE) {
             break;
         }
         ob += incr;
@@ -37,7 +35,8 @@ u16 __osBbFReallocBlock(BbInode* in, u16 block, u16 newVal) {
             prev = b;
             b = BBFS_NEXT_BLOCK(fat, b);
         }
-        if (prev != 0) {
+
+        if (prev != BBFS_BLOCK_FREE) {
             BBFS_NEXT_BLOCK(fat, prev) = ob;
         } else {
             in->block = ob;
@@ -45,12 +44,12 @@ u16 __osBbFReallocBlock(BbInode* in, u16 block, u16 newVal) {
 
         BBFS_NEXT_BLOCK(fat, ob) = BBFS_NEXT_BLOCK(fat, b);
         BBFS_NEXT_BLOCK(fat, b) = newVal;
+
         if (__osBbFsSync(FALSE) == 0) {
             return ob;
         }
     }
-
-    return 0xFFFE;
+    return BBFS_BLOCK_BAD;
 }
 
 s32 osBbFWrite(s32 fd, u32 off, void* buf, u32 len) {
@@ -63,7 +62,7 @@ s32 osBbFWrite(s32 fd, u32 off, void* buf, u32 len) {
     u16 blocks[4];
     u16 n;
 
-    if ((u32) fd >= BB_INODE16_NUM) {
+    if (fd < 0 || fd >= BB_INODE16_NUM) {
         return BBFS_ERR_INVALID;
     }
 
@@ -76,61 +75,76 @@ s32 osBbFWrite(s32 fd, u32 off, void* buf, u32 len) {
     in = &fat->inode[fd];
     rv = BBFS_ERR_INVALID;
 
-    if (in->type != 0 && off % 0x4000 == 0 && off < in->size) {
-        if (len % 0x4000 == 0 && off + len >= off && in->size >= off + len) {
-            if (len == 0) {
-                rv = 0;
+    if (in->type == 0) {
+        goto end;
+    }
+    if (off % BB_FL_BLOCK_SIZE != 0) {
+        goto end;
+    }
+    if (off >= in->size) {
+        goto end;
+    }
+    if (len % BB_FL_BLOCK_SIZE != 0) {
+        goto end;
+    }
+    if (off + len < off) {
+        goto end;
+    }
+    if (in->size < off + len) {
+        goto end;
+    }
+
+    if (len == 0) {
+        rv = 0;
+        goto end;
+    }
+
+    b = in->block;
+    for (i = 0; i < off / BB_FL_BLOCK_SIZE; i++) {
+        b = BBFS_NEXT_BLOCK(fat, b);
+    }
+
+    count = 0;
+    while (len != 0) {
+        for (n = 0; len != 0 && n < ARRLEN(blocks); n++) {
+            if (b == BBFS_BLOCK_FREE || b >= __osBbFsBlocks - BBFS_FAT_LIMIT) {
                 goto end;
             }
 
-            b = in->block;
-            for (i = 0; i < off / 0x4000; i++) {
-                b = BBFS_NEXT_BLOCK(fat, b);
+            blocks[n] = b;
+            b = BBFS_NEXT_BLOCK(fat, b);
+
+            len = (len > BB_FL_BLOCK_SIZE) ? (len - BB_FL_BLOCK_SIZE) : 0;
+            count += BB_FL_BLOCK_SIZE;
+        }
+
+        if ((rv = osBbCardEraseBlocks(0, blocks, n)) < 0 ||
+            (rv = osBbCardWriteBlocks(0, blocks, n, buf, NULL)) < 0) {
+            int i;
+
+            if (rv != BBFS_ERR_FAIL) {
+                goto end;
             }
 
-            count = 0;
+            for (i = 0; i < n; i++) {
+                u16 b = blocks[i];
 
-            while (len != 0) {
-                for (n = 0; len != 0 && n < 4; n++) {
-                    if ((b == 0) || (b >= __osBbFsBlocks - 0x10)) {
-                        goto end;
-                    }
-
-                    blocks[n] = b;
-                    b = BBFS_NEXT_BLOCK(fat, b);
-
-                    len = (len > 0x4000) ? (len - 0x4000) : 0;
-                    count += 0x4000;
-                }
-
-                if (((rv = osBbCardEraseBlocks(0, blocks, n)) < 0) || (rv = osBbCardWriteBlocks(0, blocks, n, buf, NULL)) < 0) {
-                    int i;
-
+            retry:
+                if ((rv = osBbCardEraseBlock(0, b)) < 0 ||
+                    (rv = osBbCardWriteBlock(0, b, buf + i * BB_FL_BLOCK_SIZE, NULL)) < 0) {
                     if (rv != BBFS_ERR_FAIL) {
                         goto end;
                     }
-
-                    for(i = 0; i < n; i++) {
-                        u16 b = blocks[i];
-
-                    retry:
-                        if ((rv = osBbCardEraseBlock(0, b)) < 0 || ((rv = osBbCardWriteBlock(0, b, buf + i * 0x4000, NULL)) < 0)) {
-                            if (rv != BBFS_ERR_FAIL) {
-                                goto end;
-                            }
-                            if ((b = __osBbFReallocBlock(in, b, 0xFFFE)) == 0xFFFE) {
-                                goto end;
-                            }
-                            goto retry;
-                        }
+                    if ((b = __osBbFReallocBlock(in, b, BBFS_BLOCK_BAD)) == BBFS_BLOCK_BAD) {
+                        goto end;
                     }
+                    goto retry;
                 }
-                buf += n * 0x4000;
             }
-
-            rv = count;
         }
+        buf += n * BB_FL_BLOCK_SIZE;
     }
+    rv = count;
 
 end:
     __osBbFsRelAccess();

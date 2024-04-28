@@ -5,13 +5,10 @@ s32 osBbFRename(const char* old, const char* new) {
     unsigned char fold[BB_INODE16_NAMELEN];
     unsigned char fnew[BB_INODE16_NAMELEN];
     s32 rv;
-    s32 inew;
-    s32 iold;
+    s32 inew = -1;
+    s32 iold = -1;
     BbFat16* fat;
     int i;
-
-    inew = -1;
-    iold = -1;
 
     __osBbFsFormatName(fold, old);
     __osBbFsFormatName(fnew, new);
@@ -40,17 +37,13 @@ s32 osBbFRename(const char* old, const char* new) {
     rv = BBFS_ERR_ENTRY;
     if (iold != -1) {
         if (inew != -1) {
-            u16 b;
-
-            b = fat->inode[inew].block;
-            while (b != 0xFFFF) {
-                u16 temp;
-
-                temp = BBFS_NEXT_BLOCK(fat, b);
-                BBFS_NEXT_BLOCK(fat, b) = 0;
-                b = temp;
+            u16 b = fat->inode[inew].block;
+            while (b != BBFS_BLOCK_EOC) {
+                u16 next = BBFS_NEXT_BLOCK(fat, b);
+                BBFS_NEXT_BLOCK(fat, b) = BBFS_BLOCK_FREE;
+                b = next;
             }
-            bzero(&fat->inode[inew], 0x14);
+            bzero(&fat->inode[inew], sizeof(BbInode));
         }
 
         bcopy(fnew, fat->inode[iold].name, BB_INODE16_NAMELEN * sizeof(unsigned char));

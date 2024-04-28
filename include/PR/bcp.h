@@ -22,7 +22,6 @@
 #define MI_38_REG (MI_BASE_REG + 0x38)
 
 
-
 //! MI_HW_INTR_MASK_REG ?
 #define MI_3C_REG (MI_BASE_REG + 0x3C)
 
@@ -42,7 +41,18 @@
 
 
 
-//! PI_CARD_CNT_REG ?
+/**
+ *  [31]    : Exec
+ *  [30]    : Raise interrupt when command is done
+ *  [29:24] : ??
+ *  [23:16] : NAND command
+ *  [15]    : ??
+ *  [14]    : Buffer Select
+ *  [13:12] : Device Select
+ *  [11]    : ECC
+ *  [10]    : NAND command is multi-cycle
+ *  [ 9: 0] : Transfer Length
+ */
 #define PI_48_REG (PI_BASE_REG + 0x48)
 
 
@@ -88,8 +98,9 @@
 
 
 //! PI_EX_DMA_BUF ?
-#define PI_10000_REG(i) (PI_BASE_REG + 0x10000 + (i))
-
+#define PI_10000_BUF(offset)                    (PI_BASE_REG + 0x10000 + (offset))
+#define PI_NAND_DATA_BUFFER(bufSelect, offset)  PI_10000_BUF((bufSelect) * 0x200 + (offset))
+#define PI_NAND_SPARE_BUFFER(bufSelect, offset) PI_10000_BUF(0x400 + (bufSelect) * 0x10 + (offset))
 
 
 //! PI_ATB_LOWER_REG ?

@@ -1,6 +1,7 @@
 #include "PR/os_internal.h"
 #include "PR/os_pi.h"
 #include "PR/bcp.h"
+#include "PR/bbcard.h"
 #include "macros.h"
 
 #include "../usb/usb.h"
@@ -56,7 +57,7 @@ u32 osBbLoadApp(OSBbLaunchMetaData* md, u16* blockList, s32 listSize, s32 loadAl
     handler = osCartRomInit();
 
     IO_WRITE(PI_44_REG, 0);
-    IO_WRITE(PI_48_REG, 0x1F008BFF);
+    IO_WRITE(PI_48_REG, NAND_ATB_CONFIG(0, TRUE));
 
     // Read app entry point from ROM header
     osEPiReadIo(handler, 8, &addr);
@@ -178,7 +179,7 @@ s32 osBbExecFile(s32 fd, char* name, OSBbLaunchMetaData* md, u8* buffer) {
 
         IO_WRITE(PI_50_REG, 0);
         IO_WRITE(PI_44_REG, 0);
-        IO_WRITE(PI_48_REG, 0x1F008BFF);
+        IO_WRITE(PI_48_REG, NAND_ATB_CONFIG(0, TRUE));
 
         // Read game entry point from ROM header
         osEPiReadIo(handler, 8, &addr);

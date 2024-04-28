@@ -1,24 +1,13 @@
 #include "PR/os_internal.h"
 #include "PR/bcp.h"
-
-s32 __osBbCardWaitEvent(void);
-
-s32 __osBbCardGetAccess(void);
-void __osBbCardRelAccess(void);
-
-s32 __osBbCardPresent(void);
-
-extern u16 __osBbCardBlocks;
-extern u8 __osBbCardChange;
-extern u8 __osBbCardInit;
-extern u8 __osBbCardMultiplane;
+#include "PR/bbcard.h"
 
 s32 osBbCardUnhappy(void) {
     if (!__osBbCardInit || !__osBbCardPresent()) {
-        return -1;
+        return BBCARD_ERR_NO_CARD;
     }
     if (__osBbCardChange) {
-        return -4;
+        return BBCARD_ERR_CHANGED;
     }
     return 0;
 }
@@ -27,13 +16,12 @@ s32 __osBbCardStatus(u32 dev, u8* status, u32 buf) {
     s32 rv;
     u32 cmd;
 
-    cmd = __osBbCardMultiplane ? 0x71 : 0x70;
-
-    IO_WRITE(PI_48_REG, 0xD0000000 | (cmd << 0x10) | (buf << 0xE) | (dev << 0xC) | 1);
+    cmd = __osBbCardMultiplane ? NAND_CMD_READ_STATUS_MP : NAND_CMD_READ_STATUS;
+    IO_WRITE(PI_48_REG, NAND_READ_STATUS_CMD(cmd, buf, dev, TRUE));
 
     rv = __osBbCardWaitEvent();
     if (rv == 0) {
-        *status = IO_READ(PI_10000_REG((buf != 0) ? 0x200 : 0x000)) >> 0x18;
+        *status = IO_READ(PI_NAND_DATA_BUFFER(buf != 0, 0)) >> 0x18;
     } else {
         *status = 0;
     }

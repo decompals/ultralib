@@ -1,10 +1,10 @@
-#ifndef BBFS_H_
-#define BBFS_H_
+#ifndef _BBFS_H_
+#define _BBFS_H_
 
 #include "ultratypes.h"
 
 #define BB_FL_BLOCK_SIZE	16384
-#define BB_INODE16_NAMELEN	11	/* maximum name length */
+#define BB_INODE16_NAMELEN	11	    /* maximum name length */
 #define BB_INODE16_NUM      409
 
 #define BBFS_ERR_NO_CARD    (-1)    /* card not present */
@@ -17,18 +17,36 @@
 #define BBFS_ERR_ENTRY      (-8)    /* no entry */
 
 /* Used for saving auxilliary game state data */
-#define BBFS_ERR_STATE          (-9)   /* invalid state */
-#define BBFS_ERR_STATE_LIMIT   (-10)   /* state limit reached */
+#define BBFS_ERR_STATE          (-9)    /* invalid state */
+#define BBFS_ERR_STATE_LIMIT   (-10)    /* state limit reached */
 
 typedef u16 BbFatEntry;
+#define BBFS_BLOCK_FREE     (0x0000)    /* block is available */
+#define BBFS_BLOCK_EOC      (0xFFFF)    /* indicates end-of-chain */
+#define BBFS_BLOCK_BAD      (0xFFFE)    /* indicates a bad block */
+#define BBFS_BLOCK_RESERVED (0xFFFD)    /* indicates system-reserved area */
+
+/**
+ * FS structure assuming 64MB NAND with 4096 blocks:
+ *  -    0 ..   63  SKSA
+ *  -   64 .. 4079  Data area
+ *  - 4080 .. 4095  BBFS FAT
+ */
+#define BBFS_SKSA_LIMIT 64  /* FIRST 64 blocks */
+#define BBFS_FAT_LIMIT  16  /* LAST 16 blocks */
 
 typedef struct {
-    /* 0x0000 */ u8 name[BB_INODE16_NAMELEN];
+    /* 0x0000 */ u8 name[BB_INODE16_NAMELEN]; // 8.3 name+extension format
     /* 0x000B */ u8 type;
-    /* 0x000C */ u16 block;
+    /* 0x000C */ u16 block; // first block in the chain belonging to this file
     /* 0x000E */ u16 pad;
     /* 0x0010 */ u32 size;
 } BbInode; // size = 0x14
+
+// `fat` is a `BbFat16` pointer
+#define BBFS_NEXT_BLOCK(fat, b) ((fat)[(b) >> 0xC].entry[(b) & 0xFFF])
+
+#define BBFS_CHECKSUM_VALUE (0xCAD7)
 
 typedef struct {
     /* 0x0000 */ BbFatEntry entry[4096];
@@ -38,9 +56,6 @@ typedef struct {
     /* 0x3FFC */ u16 link;
     /* 0x3FFE */ u16 cksum;
 } BbFat16; // size = 0x4000
-
-// `fat` is a `BbFat16` pointer
-#define BBFS_NEXT_BLOCK(fat, b) (fat[b >> 0xC].entry[b & 0xFFF])
 
 extern BbFat16* __osBbFat;
 
