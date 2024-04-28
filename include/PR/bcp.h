@@ -97,6 +97,13 @@
 
 
 
+#define	RDB_WRITE16(addr,data) (*(vu16*)PHYS_TO_K1(addr)=(u16)(data))
+#define	RDB_READ16(addr)       (*(vu16*)PHYS_TO_K1(addr))
+
+#define RDB_20000_REG (PI_BASE_REG + 0x20000)
+#define RDB_E0400_REG (PI_BASE_REG + 0xE0400)
+#define RDB_E8000_REG (PI_BASE_REG + 0xE8000)
+
 /**
  * Serial Interface (SI) Additional Registers
  */
