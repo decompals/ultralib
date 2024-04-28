@@ -125,7 +125,7 @@ s32 osBbFWrite(s32 fd, u32 off, void* buf, u32 len) {
                         }
                     }
                 }
-                buf += n  * 0x4000;
+                buf += n * 0x4000;
             }
 
             rv = count;
