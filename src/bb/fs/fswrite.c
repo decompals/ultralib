@@ -25,7 +25,7 @@ u16 __osBbFReallocBlock(BbInode* in, u16 block, u16 newVal) {
     }
 
     while (ob < __osBbFsBlocks) {
-        if (fat[ob / 0x1000].entry[ob % 0x1000] == 0) {
+        if (BBFS_NEXT_BLOCK(fat, ob) == 0) {
             break;
         }
         ob += incr;
@@ -35,16 +35,16 @@ u16 __osBbFReallocBlock(BbInode* in, u16 block, u16 newVal) {
         b = in->block;
         while (b != block) {
             prev = b;
-            b = fat[b / 0x1000].entry[b % 0x1000];
+            b = BBFS_NEXT_BLOCK(fat, b);
         }
         if (prev != 0) {
-            fat[prev / 0x1000].entry[prev % 0x1000] = ob;
+            BBFS_NEXT_BLOCK(fat, prev) = ob;
         } else {
             in->block = ob;
         }
 
-        fat[ob / 0x1000].entry[ob % 0x1000] = fat[b / 0x1000].entry[b % 0x1000];
-        fat[b / 0x1000].entry[b % 0x1000] = newVal;
+        BBFS_NEXT_BLOCK(fat, ob) = BBFS_NEXT_BLOCK(fat, b);
+        BBFS_NEXT_BLOCK(fat, b) = newVal;
         if (__osBbFsSync(FALSE) == 0) {
             return ob;
         }
@@ -85,7 +85,7 @@ s32 osBbFWrite(s32 fd, u32 off, void* buf, u32 len) {
 
             b = in->block;
             for (i = 0; i < off / 0x4000; i++) {
-                b = fat[b / 0x1000].entry[b % 0x1000];
+                b = BBFS_NEXT_BLOCK(fat, b);
             }
 
             count = 0;
@@ -97,7 +97,7 @@ s32 osBbFWrite(s32 fd, u32 off, void* buf, u32 len) {
                     }
 
                     blocks[n] = b;
-                    b = fat[b / 0x1000].entry[b % 0x1000];
+                    b = BBFS_NEXT_BLOCK(fat, b);
 
                     len = (len > 0x4000) ? (len - 0x4000) : 0;
                     count += 0x4000;

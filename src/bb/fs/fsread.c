@@ -36,7 +36,7 @@ s32 osBbFRead(s32 fd, u32 off, void* buf, u32 len) {
             b = in->block;
 
             for (i = 0; i < off / 0x4000; i++) {
-                b = fat[b / 0x1000].entry[b % 0x1000];
+                b = BBFS_NEXT_BLOCK(fat, b);
             }
 
             count = 0;
@@ -51,7 +51,7 @@ s32 osBbFRead(s32 fd, u32 off, void* buf, u32 len) {
                     goto end;
                 }
 
-                b = fat[b / 0x1000].entry[b % 0x1000];
+                b = BBFS_NEXT_BLOCK(fat, b);
                 buf += 0x4000;
                 len = (len > 0x4000) ? (len - 0x4000) : 0;
                 count += 0x4000;

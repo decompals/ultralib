@@ -30,8 +30,8 @@ s32 osBbFDelete(const char* name) {
                 while (b != 0xFFFF) {
                     u16 temp_v0; // not present on mdebug
 
-                    temp_v0 = fat[b / 0x1000].entry[b % 0x1000];
-                    fat[b / 0x1000].entry[b % 0x1000] = 0;
+                    temp_v0 = BBFS_NEXT_BLOCK(fat, b);
+                    BBFS_NEXT_BLOCK(fat, b) = 0;
                     b = temp_v0;
                 }
 

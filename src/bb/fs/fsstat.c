@@ -30,7 +30,7 @@ s32 osBbFStat(s32 fd, OSBbStatBuf* sb, u16* blockList, u32 listLen) {
 
             for (i = 0; b != 0xFFFF && i < listLen; i++) {
                 blockList[i] = b;
-                b = fat[b / 0x1000].entry[b % 0x1000];
+                b = BBFS_NEXT_BLOCK(fat, b);
             }
 
             if (i < listLen) {

@@ -39,6 +39,9 @@ typedef struct {
     /* 0x3FFE */ u16 cksum;
 } BbFat16; // size = 0x4000
 
+// `fat` is a `BbFat16` pointer
+#define BBFS_NEXT_BLOCK(fat, b) (fat[b >> 0xC].entry[b & 0xFFF])
+
 extern BbFat16* __osBbFat;
 
 typedef struct {
