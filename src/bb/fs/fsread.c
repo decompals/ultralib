@@ -1,4 +1,5 @@
 #include "PR/os_internal.h"
+#include "PR/os_bbfs_export.h"
 #include "PR/bbfs.h"
 
 s32 osBbFRead(s32 fd, u32 off, void* buf, u32 len) {
