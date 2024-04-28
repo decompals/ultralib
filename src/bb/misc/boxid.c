@@ -2,5 +2,5 @@
 #include "PR/bcp.h"
 
 u32 osBbGetBoxId(void) {
-    return IO_READ(PI_60_REG) >> 0x10;
+    return PI_GPIO_GET_BOXID(IO_READ(PI_GPIO_REG));
 }

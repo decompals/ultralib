@@ -70,10 +70,40 @@
 //! ?
 #define PI_5C_REG (PI_BASE_REG + 0x5C)
 
+/**
+ * [31:16] Box ID
+ *   [31:30] ?? (osInitialize checks this and sets __osBbIsBb to 2 if != 0)
+ *   [29:27] ?? (unused so far)
+ *   [26:25] ?? (system clock speed identifier?)
+ *   [24:22] ?? (bootrom, checked against MI_10_REG and copied there if mismatch)
+ * [ 7: 6] RTC mask
+ *     [5] Error LED mask
+ *     [4] Power Control mask
+ * [ 3: 2] RTC control
+ *     [1] Error LED (1=on, 0=off)
+ *     [0] Power Control (1=on, 0=off)
+ */
+#define PI_GPIO_REG (PI_BASE_REG + 0x60)
 
+#define PI_GPIO_GET_BOXID(reg)  ((reg) >> 16)
+#define PI_GPIO_GET_PWR(reg)    (((reg) >> 0) & 1)
+#define PI_GPIO_GET_LED(reg)    (((reg) >> 1) & 1)
 
-//! PI_MISC_REG ?
-#define PI_60_REG (PI_BASE_REG + 0x60)
+/* Box ID masks */
+#define PI_GPIO_BOXID_MASK_30_31 (3 << 30)
+
+/* Enable masks */
+#define PI_GPIO_MASK_PWR    (1 << 4)
+#define PI_GPIO_MASK_LED    (2 << 4)
+#define PI_GPIO_MASK_RTC_0  (4 << 4)
+#define PI_GPIO_MASK_RTC_1  (8 << 4)
+/* RTC (TODO) */
+/* LED */
+#define PI_GPIO_LED_ON      (1 << 1)
+#define PI_GPIO_LED_OFF     (0 << 1)
+/* Power */
+#define PI_GPIO_PWR_ON      (1 << 0)
+#define PI_GPIO_PWR_OFF     (0 << 0)
 
 
 

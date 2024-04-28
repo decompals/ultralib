@@ -5,29 +5,29 @@
 void __osBbDelay(u32 usec);
 
 static void write_rtc(u32 x) {
-    IO_WRITE(PI_60_REG, x);
+    IO_WRITE(PI_GPIO_REG, x);
     __osBbDelay(2);
 }
 
 static void send_start(u8 write) {
     u32 i;
     u32 j;
-    u32 mask = IO_READ(PI_60_REG) & ~0xCC;
+    u32 mask = IO_READ(PI_GPIO_REG) & ~(PI_GPIO_MASK_RTC_0 | PI_GPIO_MASK_RTC_1 | 0xC);
     u8 byte[2];
 
     byte[0] = (!write) ? 0xD1 : 0xD0;
     byte[1] = 0;
 
-    write_rtc(mask | 0xC4);
-    write_rtc(mask | 0xC0);
+    write_rtc(mask | (PI_GPIO_MASK_RTC_1 | 0) | (PI_GPIO_MASK_RTC_0 | 4));
+    write_rtc(mask | (PI_GPIO_MASK_RTC_1 | 0) | (PI_GPIO_MASK_RTC_0 | 0));
 
     for (i = 0; i < write + 1; i++) {
         for (j = 0; j < 8; j++) {
-            u32 b = ((byte[i] >> (7 - j)) & 1) ? 8 : 0;
+            u32 b = ((byte[i] >> (7 - j)) & 1) ? (2 << 2) : (0 << 2);
 
-            write_rtc(mask | (0x80 | b) | 0x40);
-            write_rtc(mask | (0x80 | b) | 0x44);
-            write_rtc(mask | (0x80 | b) | 0x40);
+            write_rtc(mask | (PI_GPIO_MASK_RTC_1 | b) | (PI_GPIO_MASK_RTC_0 | 0));
+            write_rtc(mask | (PI_GPIO_MASK_RTC_1 | b) | (PI_GPIO_MASK_RTC_0 | 4));
+            write_rtc(mask | (PI_GPIO_MASK_RTC_1 | b) | (PI_GPIO_MASK_RTC_0 | 0));
         }
         write_rtc(mask | 0x40);
         write_rtc(mask | 0x44);
@@ -36,39 +36,39 @@ static void send_start(u8 write) {
 }
 
 static void send_stop(void) {
-    u32 mask = IO_READ(PI_60_REG) & ~0xCC;
-    write_rtc(mask | 0x80 | 0x40);
-    write_rtc(mask | 0x80 | 0x44);
-    write_rtc(mask | 0x80 | 0x4C);
+    u32 mask = IO_READ(PI_GPIO_REG) & ~(PI_GPIO_MASK_RTC_1 | PI_GPIO_MASK_RTC_0 | 0xC);
+    write_rtc(mask | (PI_GPIO_MASK_RTC_1 | 0) | (PI_GPIO_MASK_RTC_0 | 0x0));
+    write_rtc(mask | (PI_GPIO_MASK_RTC_1 | 0) | (PI_GPIO_MASK_RTC_0 | 0x4));
+    write_rtc(mask | (PI_GPIO_MASK_RTC_1 | 0) | (PI_GPIO_MASK_RTC_0 | 0xC));
 }
 
 static void read_bytes(u8* bytes, u8 len) {
     u32 ack;
     u32 i;
-    u32 mask = IO_READ(PI_60_REG) & ~0xCC;
+    u32 mask = IO_READ(PI_GPIO_REG) & ~(PI_GPIO_MASK_RTC_0 | PI_GPIO_MASK_RTC_1 | 0xC);
 
     while (len-- > 0) {
         u32 x = 0;
 
         for (i = 0; i < 8; i++) {
-            write_rtc(mask | 0x40);
-            write_rtc(mask | 0x44);
+            write_rtc(mask | (PI_GPIO_MASK_RTC_0 | 0));
+            write_rtc(mask | (PI_GPIO_MASK_RTC_0 | 4));
             x <<= 1;
-            x |= (IO_READ(PI_60_REG) >> 3) & 1;
+            x |= (IO_READ(PI_GPIO_REG) >> 3) & 1;
         }
         *(bytes++) = x;
 
-        ack = (len == 0) ? 0x88 : 0x80;
+        ack = (len == 0) ? (PI_GPIO_MASK_RTC_1 | 8) : (PI_GPIO_MASK_RTC_1 | 0);
 
-        write_rtc(mask | 0x40 | 0x80);
-        write_rtc(mask | 0x44 | ack);
+        write_rtc(mask | (PI_GPIO_MASK_RTC_1 | 0) | (PI_GPIO_MASK_RTC_0 | 0));
+        write_rtc(mask | (PI_GPIO_MASK_RTC_0 | 4) | ack);
     }
     send_stop();
 }
 
 static void write_bytes(u8* bytes, u8 len) {
     u32 i;
-    u32 mask = IO_READ(PI_60_REG) & ~0xCC;
+    u32 mask = IO_READ(PI_GPIO_REG) & ~(PI_GPIO_MASK_RTC_0 | PI_GPIO_MASK_RTC_1 | 0xC);
 
     while (len-- > 0) {
         u32 x = *(bytes++);
@@ -76,21 +76,21 @@ static void write_bytes(u8* bytes, u8 len) {
         for (i = 0; i < 8; i++) {
             u32 b = (x & 0x80) ? 8 : 0;
 
-            write_rtc(mask | (0x80 | b) | 0x40);
-            write_rtc(mask | (0x80 | b) | 0x44);
-            write_rtc(mask | (0x80 | b) | 0x44);
+            write_rtc(mask | (PI_GPIO_MASK_RTC_1 | b) | (PI_GPIO_MASK_RTC_0 | 0));
+            write_rtc(mask | (PI_GPIO_MASK_RTC_1 | b) | (PI_GPIO_MASK_RTC_0 | 4));
+            write_rtc(mask | (PI_GPIO_MASK_RTC_1 | b) | (PI_GPIO_MASK_RTC_0 | 4));
             x <<= 1;
         }
-        write_rtc(mask | 0x40);
-        write_rtc(mask | 0x44);
-        IO_READ(PI_60_REG);
-        write_rtc(mask | 0x40);
+        write_rtc(mask | (PI_GPIO_MASK_RTC_0 | 0));
+        write_rtc(mask | (PI_GPIO_MASK_RTC_0 | 4));
+        IO_READ(PI_GPIO_REG);
+        write_rtc(mask | (PI_GPIO_MASK_RTC_0 | 0));
     }
     send_stop();
 }
 
 void osBbRtcInit(void) {
-    write_rtc(IO_READ(PI_60_REG) | 0xCC);
+    write_rtc(IO_READ(PI_GPIO_REG) | PI_GPIO_MASK_RTC_0 | PI_GPIO_MASK_RTC_1 | 0xC);
 }
 
 void osBbRtcSet(u8 year, u8 month, u8 day, u8 dow, u8 hour, u8 min, u8 sec) {

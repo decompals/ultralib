@@ -2,11 +2,9 @@
 #include "PR/bcp.h"
 
 void osBbPowerOn(void) {
-    // Power control = 1, Power mask = 1
-    IO_WRITE(PI_60_REG, 0x11);
+    IO_WRITE(PI_GPIO_REG, PI_GPIO_MASK_PWR | PI_GPIO_PWR_ON);
 }
 
 void osBbPowerOff(void) {
-    // Power control = 0, Power mask = 1
-    IO_WRITE(PI_60_REG, 0x10);
+    IO_WRITE(PI_GPIO_REG, PI_GPIO_MASK_PWR | PI_GPIO_PWR_OFF);
 }
