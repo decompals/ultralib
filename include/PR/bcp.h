@@ -85,25 +85,33 @@
  */
 #define PI_GPIO_REG (PI_BASE_REG + 0x60)
 
-#define PI_GPIO_GET_BOXID(reg)  ((reg) >> 16)
-#define PI_GPIO_GET_PWR(reg)    (((reg) >> 0) & 1)
-#define PI_GPIO_GET_LED(reg)    (((reg) >> 1) & 1)
+#define PI_GPIO_GET_BOXID(reg)      ((reg) >> 16)
+#define PI_GPIO_GET_PWR(reg)        (((reg) >> 0) & 1)
+#define PI_GPIO_GET_LED(reg)        (((reg) >> 1) & 1)
+#define PI_GPIO_GET_RTC_CLK(reg)    (((reg) >> 2) & 1)
+#define PI_GPIO_GET_RTC_DAT(reg)    (((reg) >> 3) & 1)
 
 /* Box ID masks */
 #define PI_GPIO_BOXID_MASK_30_31 (3 << 30)
 
 /* Enable masks */
-#define PI_GPIO_MASK_PWR    (1 << 4)
-#define PI_GPIO_MASK_LED    (2 << 4)
-#define PI_GPIO_MASK_RTC_0  (4 << 4)
-#define PI_GPIO_MASK_RTC_1  (8 << 4)
-/* RTC (TODO) */
-/* LED */
-#define PI_GPIO_LED_ON      (0 << 1)
-#define PI_GPIO_LED_OFF     (1 << 1)
+#define PI_GPIO_MASK_PWR        (1 << 4)
+#define PI_GPIO_MASK_LED        (2 << 4)
+#define PI_GPIO_MASK_RTC_CLK    (4 << 4)
+#define PI_GPIO_MASK_RTC_DAT    (8 << 4)
+
+/* Controls */
 /* Power */
-#define PI_GPIO_PWR_OFF     (0 << 0)
-#define PI_GPIO_PWR_ON      (1 << 0)
+#define PI_GPIO_PWR_OFF         (0 << 0)
+#define PI_GPIO_PWR_ON          (1 << 0)
+/* LED */
+#define PI_GPIO_LED_ON          (0 << 1)
+#define PI_GPIO_LED_OFF         (1 << 1)
+/* RTC */
+#define PI_GPIO_RTC_CLK_LO      (0 << 2)
+#define PI_GPIO_RTC_CLK_HI      (1 << 2)
+#define PI_GPIO_RTC_DAT_LO      (0 << 3)
+#define PI_GPIO_RTC_DAT_HI      (1 << 3)
 
 
 
