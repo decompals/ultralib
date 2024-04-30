@@ -106,7 +106,7 @@ void INITIALIZE_FUNC() {
     }
 
     if (__osBbIsBb) {
-        if (IO_READ(PI_60_REG) & 0xC0000000) {
+        if (IO_READ(PI_GPIO_REG) & PI_GPIO_BOXID_MASK_30_31) {
             __osBbIsBb = 2;
         }
     }
