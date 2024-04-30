@@ -2,7 +2,7 @@
 #include "bcp.h"
 #include "macros.h"
 
-#define RTC_MASK ((PI_GPIO_MASK_RTC_DAT | PI_GPIO_RTC_DAT_HI) | (PI_GPIO_MASK_RTC_CLK | PI_GPIO_RTC_CLK_HI))
+#define RTC_MASK ((PI_GPIO_O_RTC_DAT | PI_GPIO_RTC_DAT_HI) | (PI_GPIO_O_RTC_CLK | PI_GPIO_RTC_CLK_HI))
 
 #define RTC_ADDR 0xD0
 #define RTC_WR   0
@@ -28,8 +28,8 @@ static void send_start(u8 write) {
     // Cyc -1 | 0 | 1
     // CLK ‾‾‾|‾‾‾|___
     // DAT ‾‾‾|___|___
-    write_rtc(mask | (PI_GPIO_MASK_RTC_DAT | PI_GPIO_RTC_DAT_LO) | (PI_GPIO_MASK_RTC_CLK | PI_GPIO_RTC_CLK_HI));
-    write_rtc(mask | (PI_GPIO_MASK_RTC_DAT | PI_GPIO_RTC_DAT_LO) | (PI_GPIO_MASK_RTC_CLK | PI_GPIO_RTC_CLK_LO));
+    write_rtc(mask | (PI_GPIO_O_RTC_DAT | PI_GPIO_RTC_DAT_LO) | (PI_GPIO_O_RTC_CLK | PI_GPIO_RTC_CLK_HI));
+    write_rtc(mask | (PI_GPIO_O_RTC_DAT | PI_GPIO_RTC_DAT_LO) | (PI_GPIO_O_RTC_CLK | PI_GPIO_RTC_CLK_LO));
 
     for (i = 0; i < write + 1; i++) {
         // Send address in byte[0], for writes also send word address in byte[1]
@@ -40,24 +40,24 @@ static void send_start(u8 write) {
             // Cyc  0 | 1 | 2
             // CLK ___|‾‾‾|___
             // DAT  b | b | b
-            write_rtc(mask | (PI_GPIO_MASK_RTC_DAT | b) | (PI_GPIO_MASK_RTC_CLK | PI_GPIO_RTC_CLK_LO));
-            write_rtc(mask | (PI_GPIO_MASK_RTC_DAT | b) | (PI_GPIO_MASK_RTC_CLK | PI_GPIO_RTC_CLK_HI));
-            write_rtc(mask | (PI_GPIO_MASK_RTC_DAT | b) | (PI_GPIO_MASK_RTC_CLK | PI_GPIO_RTC_CLK_LO));
+            write_rtc(mask | (PI_GPIO_O_RTC_DAT | b) | (PI_GPIO_O_RTC_CLK | PI_GPIO_RTC_CLK_LO));
+            write_rtc(mask | (PI_GPIO_O_RTC_DAT | b) | (PI_GPIO_O_RTC_CLK | PI_GPIO_RTC_CLK_HI));
+            write_rtc(mask | (PI_GPIO_O_RTC_DAT | b) | (PI_GPIO_O_RTC_CLK | PI_GPIO_RTC_CLK_LO));
         }
 
         // Toggle CLK to receive ACK from the RTC, but don't read it
         // Cyc  0 | 1
         // CLK ___|‾‾‾
         // DAT  x | x
-        write_rtc(mask | (PI_GPIO_MASK_RTC_CLK | PI_GPIO_RTC_CLK_LO));
-        write_rtc(mask | (PI_GPIO_MASK_RTC_CLK | PI_GPIO_RTC_CLK_HI));
+        write_rtc(mask | PI_GPIO_I_RTC_DAT | (PI_GPIO_O_RTC_CLK | PI_GPIO_RTC_CLK_LO));
+        write_rtc(mask | PI_GPIO_I_RTC_DAT | (PI_GPIO_O_RTC_CLK | PI_GPIO_RTC_CLK_HI));
     }
 
     // End on CLK LOW
     // Cyc  0
     // CLK ___
     // DAT  x
-    write_rtc(mask | PI_GPIO_MASK_RTC_CLK | PI_GPIO_RTC_CLK_LO);
+    write_rtc(mask | PI_GPIO_I_RTC_DAT | (PI_GPIO_O_RTC_CLK | PI_GPIO_RTC_CLK_LO));
 }
 
 static void send_stop(void) {
@@ -67,9 +67,9 @@ static void send_stop(void) {
     // Cyc  0 | 1 | 2
     // CLK ___|‾‾‾|‾‾‾
     // DAT ___|___|‾‾‾
-    write_rtc(mask | (PI_GPIO_MASK_RTC_DAT | PI_GPIO_RTC_DAT_LO) | (PI_GPIO_MASK_RTC_CLK | PI_GPIO_RTC_CLK_LO));
-    write_rtc(mask | (PI_GPIO_MASK_RTC_DAT | PI_GPIO_RTC_DAT_LO) | (PI_GPIO_MASK_RTC_CLK | PI_GPIO_RTC_CLK_HI));
-    write_rtc(mask | (PI_GPIO_MASK_RTC_DAT | PI_GPIO_RTC_DAT_HI) | (PI_GPIO_MASK_RTC_CLK | PI_GPIO_RTC_CLK_HI));
+    write_rtc(mask | (PI_GPIO_O_RTC_DAT | PI_GPIO_RTC_DAT_LO) | (PI_GPIO_O_RTC_CLK | PI_GPIO_RTC_CLK_LO));
+    write_rtc(mask | (PI_GPIO_O_RTC_DAT | PI_GPIO_RTC_DAT_LO) | (PI_GPIO_O_RTC_CLK | PI_GPIO_RTC_CLK_HI));
+    write_rtc(mask | (PI_GPIO_O_RTC_DAT | PI_GPIO_RTC_DAT_HI) | (PI_GPIO_O_RTC_CLK | PI_GPIO_RTC_CLK_HI));
 }
 
 static void read_bytes(u8* bytes, u8 len) {
@@ -86,8 +86,8 @@ static void read_bytes(u8* bytes, u8 len) {
             // Cyc  0 | 1
             // CLK ___|‾‾‾
             // DAT  x | x
-            write_rtc(mask | (PI_GPIO_MASK_RTC_CLK | PI_GPIO_RTC_CLK_LO));
-            write_rtc(mask | (PI_GPIO_MASK_RTC_CLK | PI_GPIO_RTC_CLK_HI));
+            write_rtc(mask | PI_GPIO_I_RTC_DAT | (PI_GPIO_O_RTC_CLK | PI_GPIO_RTC_CLK_LO));
+            write_rtc(mask | PI_GPIO_I_RTC_DAT | (PI_GPIO_O_RTC_CLK | PI_GPIO_RTC_CLK_HI));
 
             // Read the bit sent by the RTC
             x <<= 1;
@@ -95,14 +95,14 @@ static void read_bytes(u8* bytes, u8 len) {
         }
         *(bytes++) = x;
 
-        ack = (len == 0) ? (PI_GPIO_MASK_RTC_DAT | PI_GPIO_RTC_DAT_HI) : (PI_GPIO_MASK_RTC_DAT | PI_GPIO_RTC_DAT_LO);
+        ack = (len == 0) ? (PI_GPIO_O_RTC_DAT | PI_GPIO_RTC_DAT_HI) : (PI_GPIO_O_RTC_DAT | PI_GPIO_RTC_DAT_LO);
 
         // Send ACK or NACK, DAT HIGH is NACK while DAT LOW is ACK. NACK is sent at th end.
         // Cyc  0 | 1
         // CLK ___|‾‾‾
         // DAT ___| a
-        write_rtc(mask | (PI_GPIO_MASK_RTC_DAT | PI_GPIO_RTC_DAT_LO) | (PI_GPIO_MASK_RTC_CLK | PI_GPIO_RTC_CLK_LO));
-        write_rtc(mask | (PI_GPIO_MASK_RTC_CLK | PI_GPIO_RTC_CLK_HI) | ack);
+        write_rtc(mask | (PI_GPIO_O_RTC_DAT | PI_GPIO_RTC_DAT_LO) | (PI_GPIO_O_RTC_CLK | PI_GPIO_RTC_CLK_LO));
+        write_rtc(mask | (PI_GPIO_O_RTC_CLK | PI_GPIO_RTC_CLK_HI) | ack);
     }
     send_stop();
 }
@@ -121,9 +121,9 @@ static void write_bytes(u8* bytes, u8 len) {
             // Cyc  0 | 1 | 2
             // CLK ___|‾‾‾|‾‾‾
             // DAT  b | b | b
-            write_rtc(mask | (PI_GPIO_MASK_RTC_DAT | b) | (PI_GPIO_MASK_RTC_CLK | PI_GPIO_RTC_CLK_LO));
-            write_rtc(mask | (PI_GPIO_MASK_RTC_DAT | b) | (PI_GPIO_MASK_RTC_CLK | PI_GPIO_RTC_CLK_HI));
-            write_rtc(mask | (PI_GPIO_MASK_RTC_DAT | b) | (PI_GPIO_MASK_RTC_CLK | PI_GPIO_RTC_CLK_HI));
+            write_rtc(mask | (PI_GPIO_O_RTC_DAT | b) | (PI_GPIO_O_RTC_CLK | PI_GPIO_RTC_CLK_LO));
+            write_rtc(mask | (PI_GPIO_O_RTC_DAT | b) | (PI_GPIO_O_RTC_CLK | PI_GPIO_RTC_CLK_HI));
+            write_rtc(mask | (PI_GPIO_O_RTC_DAT | b) | (PI_GPIO_O_RTC_CLK | PI_GPIO_RTC_CLK_HI));
             x <<= 1;
         }
 
@@ -131,10 +131,10 @@ static void write_bytes(u8* bytes, u8 len) {
         // Cyc  0 | 1 | 2 | 3
         // CLK ___|‾‾‾|‾‾‾|___
         // DAT  x | x | x | x
-        write_rtc(mask | (PI_GPIO_MASK_RTC_CLK | PI_GPIO_RTC_CLK_LO));
-        write_rtc(mask | (PI_GPIO_MASK_RTC_CLK | PI_GPIO_RTC_CLK_HI));
+        write_rtc(mask | PI_GPIO_I_RTC_DAT | (PI_GPIO_O_RTC_CLK | PI_GPIO_RTC_CLK_LO));
+        write_rtc(mask | PI_GPIO_I_RTC_DAT | (PI_GPIO_O_RTC_CLK | PI_GPIO_RTC_CLK_HI));
         IO_READ(PI_GPIO_REG);
-        write_rtc(mask | (PI_GPIO_MASK_RTC_CLK | PI_GPIO_RTC_CLK_LO));
+        write_rtc(mask | PI_GPIO_I_RTC_DAT | (PI_GPIO_O_RTC_CLK | PI_GPIO_RTC_CLK_LO));
     }
     send_stop();
 }
@@ -144,7 +144,7 @@ void osBbRtcInit(void) {
     // Cyc  0
     // CLK ‾‾‾
     // DAT ‾‾‾
-    write_rtc(IO_READ(PI_GPIO_REG) | (PI_GPIO_MASK_RTC_DAT | PI_GPIO_RTC_DAT_HI) | (PI_GPIO_MASK_RTC_CLK | PI_GPIO_RTC_CLK_HI));
+    write_rtc(IO_READ(PI_GPIO_REG) | (PI_GPIO_O_RTC_DAT | PI_GPIO_RTC_DAT_HI) | (PI_GPIO_O_RTC_CLK | PI_GPIO_RTC_CLK_HI));
 }
 
 void osBbRtcSet(u8 year, u8 month, u8 day, u8 dow, u8 hour, u8 min, u8 sec) {
