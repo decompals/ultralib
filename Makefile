@@ -49,6 +49,8 @@ else
 $(error Invalid Target)
 endif
 
+export COMPILER_PATH := $(WORKING_DIR)/$(COMPILER_DIR)
+
 ifeq ($(findstring _rom,$(TARGET)),_rom)
 CPPFLAGS += -D_FINALROM
 endif
