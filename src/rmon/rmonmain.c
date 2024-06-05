@@ -12,9 +12,9 @@
 
 #include "dbgproto.h"
 #include "PR/os_internal.h"
-#include "rmonint.h"
+#include "PR/rmonint.h"
 #include "PR/rcp.h"
-#include "sptask.h"
+#include "PR/sptask.h"
 #include "PR/rdb.h"
 
 #include "macros.h"

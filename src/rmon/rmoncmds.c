@@ -1,7 +1,7 @@
 #ifndef _FINALROM
 
 #include "dbgproto.h"
-#include "rmonint.h"
+#include "PR/rmonint.h"
 
 #include "macros.h"
 
