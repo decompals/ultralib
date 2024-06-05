@@ -1,5 +1,5 @@
 #include "PR/os_internal.h"
-#include "controller.h"
+#include "PR/controller.h"
 #include "os_version.h"
 
 s32 __osGbpakSetBank(OSPfs* pfs, u8 bank);

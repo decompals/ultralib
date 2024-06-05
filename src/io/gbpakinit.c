@@ -1,6 +1,6 @@
 #include "macros.h"
 #include "PR/os_internal.h"
-#include "controller.h"
+#include "PR/controller.h"
 #include "controller_gbpak.h"
 
 OSTimer __osGbpakTimer;

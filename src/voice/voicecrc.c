@@ -1,5 +1,5 @@
 #include "PR/os_internal.h"
-#include "io/controller.h"
+#include "PR/controller.h"
 #include "PR/os_voice.h"
 
 #define VOICE_CRC_LENGTH 8

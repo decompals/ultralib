@@ -1,5 +1,5 @@
 #include "PR/os_internal.h"
-#include "controller.h"
+#include "PR/controller.h"
 
 #if BUILD_VERSION >= VERSION_J
 s32 __osPfsSelectBank(OSPfs* pfs, u8 bank) {

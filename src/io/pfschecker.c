@@ -1,5 +1,5 @@
 #include "PR/os_internal.h"
-#include "controller.h"
+#include "PR/controller.h"
 
 s32 corrupted_init(OSPfs* pfs, __OSInodeCache* cache);
 s32 corrupted(OSPfs* pfs, __OSInodeUnit fpage, __OSInodeCache* cache);

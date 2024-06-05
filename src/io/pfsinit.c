@@ -1,5 +1,5 @@
 #include "PR/os_internal.h"
-#include "controller.h"
+#include "PR/controller.h"
 #include "siint.h"
 
 s32 osPfsInit(OSMesgQueue* queue, OSPfs* pfs, int channel) {

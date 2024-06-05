@@ -1,6 +1,6 @@
 #include "macros.h"
 #include "PR/os_internal.h"
-#include "controller.h"
+#include "PR/controller.h"
 
 s32 osGbpakCheckConnector(OSPfs* pfs, u8* status) {
     s32 ret;

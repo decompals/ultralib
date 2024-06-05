@@ -1,5 +1,5 @@
 #include "PR/os_internal.h"
-#include "controller.h"
+#include "PR/controller.h"
 
 static s32 __osPfsGetNextPage(OSPfs* pfs, u8* bank, __OSInode* inode, __OSInodeUnit* page) {
     s32 ret;

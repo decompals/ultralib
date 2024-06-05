@@ -1,7 +1,7 @@
 #include "macros.h"
 #include "PR/os_internal.h"
 #include "PR/os_version.h"
-#include "controller.h"
+#include "PR/controller.h"
 #include "PR/rmon.h"
 
 #if BUILD_VERSION >= VERSION_J

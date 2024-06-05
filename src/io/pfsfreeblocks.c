@@ -1,5 +1,5 @@
 #include "PR/os_internal.h"
-#include "controller.h"
+#include "PR/controller.h"
 
 s32 osPfsFreeBlocks(OSPfs* pfs, s32* bytes_not_used) {
     int j;

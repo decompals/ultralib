@@ -1,6 +1,6 @@
 #include "PR/os_internal.h"
 #include "PR/rcp.h"
-#include "controller.h"
+#include "PR/controller.h"
 #include "siint.h"
 
 static void __osPackEepWriteData(u8 address, u8* buffer);

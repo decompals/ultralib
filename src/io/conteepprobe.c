@@ -1,4 +1,4 @@
-#include "controller.h"
+#include "PR/controller.h"
 #include "siint.h"
 
 s32 osEepromProbe(OSMesgQueue* mq) {
