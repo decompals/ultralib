@@ -1,3 +1,4 @@
+#include "macros.h"
 #include "PR/os_internal.h"
 #include "PR/controller.h"
 
