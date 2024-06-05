@@ -1,7 +1,7 @@
 #include "PR/os_internal.h"
 #include "PR/R4300.h"
 #include "PR/ultraerror.h"
-#include "osint.h"
+#include "PR/osint.h"
 
 extern __OSThreadprofile_s thprof[];
 

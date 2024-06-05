@@ -1,6 +1,6 @@
 #include "PR/os_internal.h"
 #include "PR/ultraerror.h"
-#include "osint.h"
+#include "PR/osint.h"
 
 void osCreateMesgQueue(OSMesgQueue* mq, OSMesg* msg, s32 msgCount) {
 

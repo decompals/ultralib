@@ -1,7 +1,7 @@
 #include "PR/os_internal.h"
 #include "PR/rcp.h"
 #include "PR/sptask.h"
-#include "../os/osint.h"
+#include "PR/osint.h"
 
 // TODO: this comes from a header
 #ident "$Revision: 1.17 $"

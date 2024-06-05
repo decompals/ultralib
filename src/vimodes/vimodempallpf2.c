@@ -1,6 +1,6 @@
 #include "PR/os.h"
 #include "PR/rcp.h"
-#include "../io/viint.h"
+#include "PR/viint.h"
 
 OSViMode osViModeMpalLpf2 = {
     OS_VI_MPAL_LPF2, // type

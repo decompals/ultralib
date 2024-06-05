@@ -1,6 +1,6 @@
 #include "PR/os_internal.h"
 #include "PR/rcp.h"
-#include "../os/osint.h"
+#include "PR/osint.h"
 #include "assert.h"
 
 

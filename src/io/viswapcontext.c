@@ -1,6 +1,6 @@
 #include "PR/os_internal.h"
 #include "PR/rcp.h"
-#include "viint.h"
+#include "PR/viint.h"
 
 // TODO: this comes from a header
 #ident "$Revision: 1.17 $"
