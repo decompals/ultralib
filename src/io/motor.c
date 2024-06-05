@@ -2,7 +2,7 @@
 #include "PR/os_internal.h"
 #include "PR/os_version.h"
 #include "PR/controller.h"
-#include "siint.h"
+#include "PR/siint.h"
 
 #if BUILD_VERSION >= VERSION_J
 static OSPifRam __MotorDataBuf[MAXCONTROLLERS] ALIGNED(8);

@@ -1,7 +1,7 @@
 #include "PR/os_internal.h"
 #include "PR/rcp.h"
 #include "PR/controller.h"
-#include "siint.h"
+#include "PR/siint.h"
 
 extern s32 __osPfsLastChannel;
 

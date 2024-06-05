@@ -1,7 +1,7 @@
 #include "macros.h"
 #include "PR/os_internal.h"
 #include "PR/controller.h"
-#include "siint.h"
+#include "PR/siint.h"
 
 OSPifRam __osPfsPifRam ALIGNED(16);
 

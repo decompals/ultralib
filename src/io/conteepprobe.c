@@ -1,5 +1,5 @@
 #include "PR/controller.h"
-#include "siint.h"
+#include "PR/siint.h"
 
 s32 osEepromProbe(OSMesgQueue* mq) {
     s32 ret = 0;

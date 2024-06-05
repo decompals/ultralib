@@ -1,7 +1,7 @@
 #include "macros.h"
 #include "PR/rcp.h"
 #include "PR/controller.h"
-#include "siint.h"
+#include "PR/siint.h"
 
 OSPifRam __osEepPifRam ALIGNED(16);
 #if BUILD_VERSION >= VERSION_L
