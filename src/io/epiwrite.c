@@ -1,4 +1,4 @@
-#include "piint.h"
+#include "PR/piint.h"
 #include "PR/ultraerror.h"
 
 s32 osEPiWriteIo(OSPiHandle* pihandle, u32 devAddr, u32 data) {

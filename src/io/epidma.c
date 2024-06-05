@@ -1,4 +1,4 @@
-#include "piint.h"
+#include "PR/piint.h"
 #include "PR/ultraerror.h"
 
 s32 osEPiStartDma(OSPiHandle* pihandle, OSIoMesg* mb, s32 direction) {

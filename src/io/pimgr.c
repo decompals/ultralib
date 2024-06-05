@@ -1,7 +1,7 @@
 #include "macros.h"
 #include "PR/os_internal.h"
 #include "PR/ultraerror.h"
-#include "piint.h"
+#include "PR/piint.h"
 #include "PR/rdb.h"
 
 static OSThread piThread ALIGNED(8);

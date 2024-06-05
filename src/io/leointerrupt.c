@@ -1,7 +1,7 @@
 #include "PR/os_internal.h"
 #include "PR/rcp.h"
 #include "PR/osint.h"
-#include "piint.h"
+#include "PR/piint.h"
 #include "macros.h"
 
 extern OSPiHandle *__osDiskHandle;

@@ -3,7 +3,7 @@
 #include "PR/os_internal.h"
 #include "PR/R4300.h"
 #include "PR/rcp.h"
-#include "piint.h"
+#include "PR/piint.h"
 
 #if BUILD_VERSION >= VERSION_J
 OSPiHandle __CartRomHandle ALIGNED(8);

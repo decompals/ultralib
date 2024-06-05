@@ -1,5 +1,5 @@
 #include "PR/os_internal.h"
-#include "piint.h"
+#include "PR/piint.h"
 
 // TODO: this comes from a header
 #ident "$Revision: 1.17 $"
