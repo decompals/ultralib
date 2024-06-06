@@ -1,6 +1,6 @@
 #include "PR/os_internal.h"
 #include "PRinternal/controller.h"
-#include "controller_gbpak.h"
+#include "PRinternal/controller_gbpak.h"
 
 s32 osGbpakPower(OSPfs* pfs, s32 flag) {
     s32 i;
