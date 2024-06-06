@@ -1,8 +1,8 @@
 #include "PR/os_internal.h"
-#include "PR/controller.h"
+#include "PRinternal/controller.h"
 #include "PR/os_voice.h"
 #include "voiceinternal.h"
-#include "PR/siint.h"
+#include "PRinternal/siint.h"
 
 s32 __osVoiceGetStatus(OSMesgQueue* mq, s32 port, u8* status) {
     __OSContRequesFormatShort header;

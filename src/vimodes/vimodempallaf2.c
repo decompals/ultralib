@@ -1,6 +1,6 @@
 #include "PR/os.h"
 #include "PR/rcp.h"
-#include "PR/viint.h"
+#include "PRinternal/viint.h"
 
 OSViMode osViModeMpalLaf2 = {
     OS_VI_MPAL_LAF2, // type

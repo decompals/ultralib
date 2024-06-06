@@ -1,5 +1,5 @@
 #include "os.h"
-#include "PR/osint.h"
+#include "PRinternal/osint.h"
 #include "osint_debug.h"
 
 void __assertBreak(void);

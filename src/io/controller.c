@@ -1,7 +1,7 @@
 #include "macros.h"
 #include "PR/os_internal.h"
-#include "PR/controller.h"
-#include "PR/siint.h"
+#include "PRinternal/controller.h"
+#include "PRinternal/siint.h"
 
 OSPifRam __osContPifRam ALIGNED(16);
 u8 __osContLastCmd;

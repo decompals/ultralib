@@ -1,5 +1,5 @@
 #include "PR/os_internal.h"
-#include "PR/controller.h"
+#include "PRinternal/controller.h"
 #include "PR/os_voice.h"
 #include "voiceinternal.h"
 

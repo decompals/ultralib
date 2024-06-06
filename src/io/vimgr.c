@@ -2,8 +2,8 @@
 #include "PR/os_internal.h"
 #include "PR/ultraerror.h"
 #include "PR/rcp.h"
-#include "PR/viint.h"
-#include "PR/osint.h"
+#include "PRinternal/viint.h"
+#include "PRinternal/osint.h"
 
 OSDevMgr __osViDevMgr = { 0 };
 #if BUILD_VERSION >= VERSION_J

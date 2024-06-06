@@ -1,6 +1,6 @@
 #include "PR/os.h"
 #include "PR/rcp.h"
-#include "PR/viint.h"
+#include "PRinternal/viint.h"
 
 OSViMode osViModeNtscHpn1 = {
     OS_VI_NTSC_HPN1, // type

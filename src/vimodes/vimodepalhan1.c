@@ -1,6 +1,6 @@
 #include "PR/os.h"
 #include "PR/rcp.h"
-#include "PR/viint.h"
+#include "PRinternal/viint.h"
 
 OSViMode osViModePalHan1 = {
     OS_VI_PAL_HAN1, // type

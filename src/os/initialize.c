@@ -1,7 +1,7 @@
 #include "PR/os_internal.h"
 #include "PR/rcp.h"
 #include "PR/os_version.h"
-#include "PR/piint.h"
+#include "PRinternal/piint.h"
 
 typedef struct {
     /* 0x0 */ unsigned int inst1;

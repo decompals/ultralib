@@ -1,6 +1,6 @@
 #include "PR/rcp.h"
 #include "PR/ultraerror.h"
-#include "PR/osint.h"
+#include "PRinternal/osint.h"
 // TODO: not sure if this should be here
 extern s32 osViClock;
 

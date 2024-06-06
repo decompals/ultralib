@@ -1,6 +1,6 @@
 #include "PR/os_internal.h"
 #include "PR/rcp.h"
-#include "PR/piint.h"
+#include "PRinternal/piint.h"
 
 void __osDevMgrMain(void* args) {
     OSIoMesg* mb;

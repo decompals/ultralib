@@ -2,7 +2,7 @@
 #include "PR/ultraerror.h"
 #include "PR/sptask.h"
 #include "PR/rcp.h"
-#include "PR/osint.h"
+#include "PRinternal/osint.h"
 
 #if BUILD_VERSION < VERSION_J
 #ident "$Revision: 1.4 $"

@@ -1,5 +1,5 @@
 #include "PR/os_internal.h"
-#include "PR/osint.h"
+#include "PRinternal/osint.h"
 
 void osDestroyThread(OSThread* t) {
     register u32 saveMask;

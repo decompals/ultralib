@@ -1,10 +1,10 @@
 #include "macros.h"
 #include "PR/os_internal.h"
-#include "PR/controller.h"
+#include "PRinternal/controller.h"
 #include "PR/os_voice.h"
 #include "voiceinternal.h"
 #include "io/controller_voice.h"
-#include "PR/siint.h"
+#include "PRinternal/siint.h"
 
 #define READ36FORMAT(ptr) ((__OSVoiceRead36Format*)(ptr))
 

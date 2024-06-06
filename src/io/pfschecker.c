@@ -1,6 +1,6 @@
 #include "macros.h"
 #include "PR/os_internal.h"
-#include "PR/controller.h"
+#include "PRinternal/controller.h"
 
 s32 corrupted_init(OSPfs* pfs, __OSInodeCache* cache);
 s32 corrupted(OSPfs* pfs, __OSInodeUnit fpage, __OSInodeCache* cache);

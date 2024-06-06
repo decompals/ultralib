@@ -1,6 +1,6 @@
 #include "PR/os_internal.h"
-#include "PR/controller.h"
-#include "PR/siint.h"
+#include "PRinternal/controller.h"
+#include "PRinternal/siint.h"
 
 s32 osContStartQuery(OSMesgQueue* mq) {
     s32 ret = 0;

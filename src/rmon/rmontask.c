@@ -2,7 +2,7 @@
 
 #include "dbgproto.h"
 #include "PR/os_internal.h"
-#include "PR/rmonint.h"
+#include "PRinternal/rmonint.h"
 #include "PR/rcp.h"
 #include "PR/sptask.h"
 

@@ -1,6 +1,6 @@
 #include "PR/os_internal.h"
-#include "PR/controller.h"
-#include "PR/siint.h"
+#include "PRinternal/controller.h"
+#include "PRinternal/siint.h"
 
 void __osPackResetData(void);
 

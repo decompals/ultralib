@@ -1,5 +1,5 @@
 #include "PR/os_internal.h"
-#include "PR/osint.h"
+#include "PRinternal/osint.h"
 
 OSThread* __osGetNextFaultedThread(OSThread* lastFault) {
     register int saveMask = __osDisableInt();
