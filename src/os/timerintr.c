@@ -1,6 +1,6 @@
 #include "macros.h"
 #include "PR/os_internal.h"
-#include "osint.h"
+#include "PRinternal/osint.h"
 
 OSTime __osCurrentTime;
 u32 __osBaseCounter;

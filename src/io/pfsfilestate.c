@@ -1,5 +1,6 @@
+#include "macros.h"
 #include "PR/os_internal.h"
-#include "controller.h"
+#include "PRinternal/controller.h"
 
 s32 osPfsFileState(OSPfs* pfs, s32 file_no, OSPfsState* state) {
     s32 ret;

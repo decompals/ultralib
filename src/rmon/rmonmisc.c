@@ -3,7 +3,7 @@
 #include "dbgproto.h"
 #include "PR/os_internal.h"
 #include "PR/sptask.h"
-#include "rmonint.h"
+#include "PRinternal/rmonint.h"
 
 #include "macros.h"
 

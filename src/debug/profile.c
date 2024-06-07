@@ -4,7 +4,7 @@
 #include "PR/ultraerror.h"
 #include "PR/ultralog.h"
 #include "PR/sptask.h"
-#include "../os/osint.h"
+#include "PRinternal/osint.h"
 #include "macros.h"
 #include "osint_debug.h"
 

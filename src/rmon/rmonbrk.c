@@ -4,7 +4,7 @@
 #include "dbgproto.h"
 #include "PR/rcp.h"
 #include "PR/sptask.h"
-#include "rmonint.h"
+#include "PRinternal/rmonint.h"
 
 #include "macros.h"
 

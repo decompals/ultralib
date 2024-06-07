@@ -1,7 +1,7 @@
 #include "macros.h"
 #include "PR/os_internal.h"
 #include "PR/ultraerror.h"
-#include "osint.h"
+#include "PRinternal/osint.h"
 
 __OSEventState __osEventStateTab[OS_NUM_EVENTS] ALIGNED(8);
 #if BUILD_VERSION >= VERSION_J

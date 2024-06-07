@@ -1,7 +1,8 @@
+#include "macros.h"
 #include "PR/os_internal.h"
 #include "PR/rcp.h"
-#include "controller.h"
-#include "siint.h"
+#include "PRinternal/controller.h"
+#include "PRinternal/siint.h"
 
 extern s32 __osPfsLastChannel;
 

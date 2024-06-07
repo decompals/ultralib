@@ -1,6 +1,6 @@
 #include "PR/os_internal.h"
-#include "controller.h"
-#include "siint.h"
+#include "PRinternal/controller.h"
+#include "PRinternal/siint.h"
 
 s32 osContSetCh(u8 ch) {
     s32 ret = 0;

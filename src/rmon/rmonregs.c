@@ -4,7 +4,7 @@
 #include "PR/os_internal.h"
 #include "PR/rcp.h"
 #include "PR/sptask.h"
-#include "rmonint.h"
+#include "PRinternal/rmonint.h"
 #include "PR/rdb.h"
 #include "PR/os_version.h"
 

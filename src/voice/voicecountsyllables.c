@@ -1,5 +1,5 @@
 #include "PR/os_internal.h"
-#include "io/controller.h"
+#include "PRinternal/controller.h"
 #include "PR/os_voice.h"
 
 // The VRU can store only 880 semisyllables of words in its dictionary.

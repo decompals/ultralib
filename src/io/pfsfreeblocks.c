@@ -1,5 +1,6 @@
+#include "macros.h"
 #include "PR/os_internal.h"
-#include "controller.h"
+#include "PRinternal/controller.h"
 
 s32 osPfsFreeBlocks(OSPfs* pfs, s32* bytes_not_used) {
     int j;
