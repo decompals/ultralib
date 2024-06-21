@@ -2,6 +2,10 @@
 #include "PR/os_internal.h"
 #include "PRinternal/controller.h"
 
+#define CHECK_IPAGE(p)                                                                                        \
+    (((p).ipage >= pfs->inode_start_page) && ((p).inode_t.bank < pfs->banks) && ((p).inode_t.page >= 0x01) && \
+     ((p).inode_t.page < 0x80))
+
 static s32 __osPfsGetNextPage(OSPfs* pfs, u8* bank, __OSInode* inode, __OSInodeUnit* page) {
     s32 ret;
 
@@ -12,10 +16,8 @@ static s32 __osPfsGetNextPage(OSPfs* pfs, u8* bank, __OSInode* inode, __OSInodeU
 
     *page = inode->inode_page[page->inode_t.page];
 
-    if (page->ipage < pfs->inode_start_page || page->inode_t.bank >= pfs->banks || page->inode_t.page <= 0 ||
-        page->inode_t.page >= ARRLEN(inode->inode_page)) {
-
-        if (page->ipage == 1) {
+    if (!CHECK_IPAGE(*page)) {
+        if (page->ipage == PFS_EOF) {
             return PFS_ERR_INVALID;
         }
 
@@ -55,9 +57,8 @@ s32 osPfsReadWriteFile(OSPfs* pfs, s32 file_no, u8 flag, int offset, int size_in
         return PFS_ERR_INVALID;
     }
 
-    if (dir.start_page.ipage < pfs->inode_start_page || dir.start_page.inode_t.bank >= pfs->banks ||
-        dir.start_page.inode_t.page <= 0 || dir.start_page.inode_t.page >= ARRLEN(inode.inode_page)) {
-        if ((dir.start_page.ipage == 1)) {
+    if (!CHECK_IPAGE(dir.start_page)) {
+        if ((dir.start_page.ipage == PFS_EOF)) {
             return PFS_ERR_INVALID;
         }
 
