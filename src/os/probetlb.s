@@ -45,7 +45,7 @@ LEAF(__osProbeTLB)
     nop
     /* Calculate page size = (page mask + 0x2000) >> 1 */
     mfc0 t3, C0_PAGEMASK
-    addi t3, t3, DCACHE_SIZE
+    addi t3, t3, 0x2000
     srl t3, t3, 0x1
     /* & with vaddr */
     and ta0, t3, a0

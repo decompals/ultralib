@@ -198,7 +198,7 @@ STAY2(mtc0  k1, C0_SR)
     sd      $10, THREAD_GP10(k0)
     /* Mark FPU as unused */
     sw      zero, THREAD_FP(k0)
-    /* this instruction is useless, leftover because of bad placement of an ifdef for the debug version */
+    /* This instruction is useless, leftover because of bad placement of an ifdef for the debug version */
 STAY2(mfc0  t0, C0_CAUSE)
 #ifndef _FINALROM
     lw      t2, __kmc_pt_mode
@@ -818,8 +818,8 @@ pi:
 /**
  *  Display Processor (DP) Interrupt
  */
-    /* Test for dp interrupt */
 dp:
+    /* Test for dp interrupt */
     andi    t1, s1, MI_INTR_DP
     beqz    t1, NoMoreRcpInts
 
