@@ -11,7 +11,7 @@ static s32 __osPfsGetNextPage(OSPfs* pfs, u8* bank, __OSInode* inode, __OSInodeU
 
     if (page->inode_t.bank != *bank) {
         *bank = page->inode_t.bank;
-        ERRCK(__osPfsRWInode(pfs, inode, 0, *bank));
+        ERRCK(__osPfsRWInode(pfs, inode, PFS_READ, *bank));
     }
 
     *page = inode->inode_page[page->inode_t.page];

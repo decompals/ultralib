@@ -241,7 +241,7 @@ s32 osPfsAllocateFile(OSPfs* pfs, u16 company_code, u32 game_code, u8* game_name
         
         backup_inode.inode_page[old_last_page].inode_t.bank = bank;
         backup_inode.inode_page[old_last_page].inode_t.page = start_page;
-        ERRCK(__osPfsRWInode(pfs, &backup_inode, OS_WRITE, old_bank));
+        ERRCK(__osPfsRWInode(pfs, &backup_inode, PFS_WRITE, old_bank));
 
         dir.start_page = fpage;
         dir.company_code = company_code;
