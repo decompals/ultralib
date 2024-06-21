@@ -1,4 +1,5 @@
 #include "PR/R4300.h"
+#include "PR/rdb.h"
 #include "sys/asm.h"
 #include "sys/regdef.h"
 
@@ -12,7 +13,7 @@ LEAF(osMapTLBRdb)
     li t2, TLBLO_UNCACHED | TLBLO_D | TLBLO_V | TLBLO_G
     li t1, K2BASE
     mtc0 t1, C0_ENTRYHI
-    li t1, KUSIZE
+    li t1, RDB_BASE_VIRTUAL_ADDR
     srl t3, t1,TLBLO_PFNSHIFT
     or t3, t3,t2
     mtc0 t3, C0_ENTRYLO0

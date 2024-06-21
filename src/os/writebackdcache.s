@@ -41,7 +41,7 @@ LEAF(osWritebackDCache)
 
 /* same as osWritebackDCacheAll in operation */
 3:
-    li t0, KUSIZE
+    li t0, K0BASE
     addu t1, t0,t3
     addiu t1, t1, -DCACHE_LINESIZE
 4:

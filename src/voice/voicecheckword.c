@@ -12,7 +12,7 @@ s32 osVoiceCheckWord(u8* word) {
     s32 k;
     s32 ret = 0;
     u16 sjis;
-    u16 old = 0;
+    u16 old = '\0';
 
     for (k = 0; word[k] != 0; k += 2) {
         sjis = (word[k] << 8) + word[k + 1];

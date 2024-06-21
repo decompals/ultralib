@@ -36,7 +36,7 @@ LEAF(osInvalICache)
 	jr ra
 
 3:
-	li t0, KUSIZE
+	li t0, K0BASE
 	addu t1, t0, t3
 	addiu t1, t1, -ICACHE_LINESIZE
 4:
