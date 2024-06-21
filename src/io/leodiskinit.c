@@ -7,7 +7,7 @@
 OSPiHandle LeoDiskHandle ALIGNED(8);
 OSPiHandle *__osDiskHandle;
 
-OSPiHandle *osLeoDiskInit() {
+OSPiHandle *osLeoDiskInit(void) {
     u32 saveMask;
 
     LeoDiskHandle.type = DEVICE_TYPE_64DD;

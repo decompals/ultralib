@@ -184,17 +184,17 @@ void INITIALIZE_FUNC() {
 }
 
 #if !defined(_FINALROM) && BUILD_VERSION < VERSION_J
-void ptstart() {
+void ptstart(void) {
 
 }
 #elif !defined(_FINALROM) && BUILD_VERSION < VERSION_K
-static void ptstart() {
+static void ptstart(void) {
 
 }
 #endif
 
 #if BUILD_VERSION >= VERSION_K
-void __osInitialize_autodetect() {
+void __osInitialize_autodetect(void) {
 #ifndef _FINALROM
     if (__checkHardware_msp()) {
         __osInitialize_msp();

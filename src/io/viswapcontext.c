@@ -5,7 +5,7 @@
 // TODO: this comes from a header
 #ident "$Revision: 1.17 $"
 
-void __osViSwapContext() {
+void __osViSwapContext(void) {
     register OSViMode* vm;
     register __OSViContext* vc;
     u32 origin;
