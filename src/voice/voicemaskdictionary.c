@@ -1,3 +1,9 @@
+/**
+ * File: voicemaskdictionary.c
+ *
+ * Mask words registered in the voice recognition system
+ */
+
 #include "macros.h"
 #include "PR/os_internal.h"
 #include "PRinternal/controller.h"
