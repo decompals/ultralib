@@ -6,7 +6,7 @@
 .set noreorder
 LEAF(osMapTLBRdb)
     mfc0 t0, C0_ENTRYHI
-    li t1, 31
+    li t1, NTLBENTRIES
     mtc0 t1, C0_INX
     mtc0 zero, C0_PAGEMASK /*4k*/
     li t2, TLBLO_UNCACHED | TLBLO_D | TLBLO_V | TLBLO_G
