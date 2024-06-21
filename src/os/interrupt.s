@@ -8,9 +8,9 @@
 .set noreorder
 LEAF(__osDisableInt)
 #if BUILD_VERSION >= VERSION_J
-	la    t2, __OSGlobalIntMask
-	lw    t3, (t2)
-	andi  t3, SR_IMASK
+    la    t2, __OSGlobalIntMask
+    lw    t3, (t2)
+    andi  t3, SR_IMASK
     mfc0  t0, C0_SR
     and   t1, t0, ~SR_IE
     mtc0  t1, C0_SR
@@ -26,8 +26,8 @@ LEAF(__osDisableInt)
     or    t1, t2
     and   t1, ~SR_IE
     mtc0  t1, C0_SR
-	nop
-	nop
+    nop
+    nop
 No_Change_Global_Int:
     jr ra
      nop
@@ -41,7 +41,7 @@ No_Change_Global_Int:
      nop
 #endif
 END(__osDisableInt)
-	
+
 LEAF(__osRestoreInt)
     mfc0  t0, C0_SR
     or    t0, t0, a0
