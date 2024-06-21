@@ -11,7 +11,7 @@ OSTimer __osEepromTimer;
 OSMesgQueue __osEepromTimerQ ALIGNED(8);
 OSMesg __osEepromTimerMsg;
 
-s32 __osContinitialized = 0;
+s32 __osContinitialized = FALSE;
 
 s32 osContInit(OSMesgQueue* mq, u8* bitpattern, OSContStatus* data) {
     OSMesg dummy;
@@ -20,11 +20,11 @@ s32 osContInit(OSMesgQueue* mq, u8* bitpattern, OSContStatus* data) {
     OSTimer mytimer;
     OSMesgQueue timerMesgQueue;
 
-    if (__osContinitialized != 0) {
+    if (__osContinitialized) {
         return 0;
     }
 
-    __osContinitialized = 1;
+    __osContinitialized = TRUE;
 
     t = osGetTime();
     if (t < OS_USEC_TO_CYCLES(500000)) {
