@@ -1,8 +1,8 @@
 COMPILER := ido
-COMPILER_DIR := tools/ido/
-AS := $(COMPILER_DIR)cc
-CC := $(COMPILER_DIR)cc
-AR_OLD := tools/ar.py
+COMPILER_DIR := $(WORKING_DIR)/tools/ido
+AS := $(COMPILER_DIR)/cc
+CC := $(COMPILER_DIR)/cc
+AR_OLD := $(WORKING_DIR)/tools/ar.py
 PATCH_AR_FLAGS := 40001 110 100644
 STRIP =
 
