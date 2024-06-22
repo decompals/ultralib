@@ -109,6 +109,27 @@ extern "C" {
         cache op, reg  ;\
     .set reorder
 
+#define MFC0(reg, op)  \
+    .set noreorder     ;\
+        mfc0 reg, op  ;\
+    .set reorder
+
+#define MTC0(reg, op)  \
+    .set noreorder     ;\
+        mtc0 reg, op  ;\
+    .set reorder
+
+#define CFC1(reg, op)  \
+    .set noreorder     ;\
+        cfc1 reg, op  ;\
+    .set reorder
+
+#define CTC1(reg, op)  \
+    .set noreorder     ;\
+        ctc1 reg, op  ;\
+    .set reorder
+
+
 #ifdef __cplusplus
 }
 #endif

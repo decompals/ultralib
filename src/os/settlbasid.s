@@ -27,6 +27,6 @@ LEAF(osSetTLBASID)
 3:
 .set reorder
 #endif
-    STAY2(mtc0 a0, C0_ENTRYHI)
+    MTC0(a0, C0_ENTRYHI)
     jr ra
 END(osSetTLBASID)
