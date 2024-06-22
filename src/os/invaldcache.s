@@ -61,7 +61,7 @@ LEAF(osInvalDCache)
     subu t1, t1, t2
 
     /* Hit-Writeback-Invalidate unaligned part */
-    CACHE((C_HWBINV|CACH_PD), 0x10(t1))
+    CACHE((C_HWBINV|CACH_PD), DCACHE_LINESIZE(t1))
     bltu t1, t0, 3f
 
 2:
