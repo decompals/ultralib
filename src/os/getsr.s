@@ -4,6 +4,6 @@
 
 .text
 LEAF(__osGetSR)
-    MFC0(v0, C0_SR)
-    jr ra
+    MFC0(   v0, C0_SR)
+    jr      ra
 END(__osGetSR)

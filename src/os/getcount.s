@@ -4,6 +4,6 @@
 
 .text
 LEAF(osGetCount)
-    MFC0(v0, C0_COUNT)
-    jr ra
+    MFC0(   v0, C0_COUNT)
+    jr      ra
 END(osGetCount)

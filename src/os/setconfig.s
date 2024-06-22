@@ -4,6 +4,6 @@
 
 .text
 LEAF(__osSetConfig)
-    MTC0(a0, C0_CONFIG)
-    jr ra
+    MTC0(   a0, C0_CONFIG)
+    jr      ra
 END(__osSetConfig)

@@ -4,6 +4,6 @@
 
 .text
 LEAF(__osGetConfig)
-    MFC0(v0, C0_CONFIG)
-    jr ra
+    MFC0(   v0, C0_CONFIG)
+    jr      ra
 END(__osGetConfig)
