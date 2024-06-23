@@ -12,6 +12,14 @@ TARGET ?= libgultra_rom
 VERSION ?= L
 CROSS ?= mips-linux-gnu-
 
+ifeq ($(findstring libgultra,$(TARGET)),libgultra)
+COMPILER := gcc
+else ifeq ($(findstring libultra,$(TARGET)),libultra)
+COMPILER := ido
+else
+$(error Invalid Target)
+endif
+
 BASE_DIR := extracted/$(VERSION)/$(TARGET)
 BASE_AR := base/$(VERSION)/$(TARGET).a
 BUILD_ROOT := build
@@ -41,12 +49,12 @@ else
 DEBUGFLAG := -DNDEBUG
 endif
 
-ifeq ($(findstring libgultra,$(TARGET)),libgultra)
+ifeq ($(COMPILER),gcc)
 -include makefiles/Makefile.gcc
-else ifeq ($(findstring libultra,$(TARGET)),libultra)
+else ifeq ($(COMPILER),ido)
 -include makefiles/Makefile.ido
 else
-$(error Invalid Target)
+$(error Invalid Compiler)
 endif
 
 export COMPILER_PATH := $(COMPILER_DIR)

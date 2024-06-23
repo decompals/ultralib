@@ -1,4 +1,3 @@
-COMPILER := ido
 COMPILER_DIR := $(WORKING_DIR)/tools/ido
 AS := $(COMPILER_DIR)/cc
 CC := $(COMPILER_DIR)/cc
