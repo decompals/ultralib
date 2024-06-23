@@ -70,3 +70,9 @@ If building for use with modern linkers, than you can use `FIXUPS=1` like the th
 - `make VERSION=L TARGET=libgultra_rom FIXUPS=1`
 
 note that running with `FIXUPS=1` will automatically set `COMPARE=0`.
+
+It is also possible to build archives using modern gcc by using `MODERN_GCC=1` like the following:
+
+- `make VERSION=L TARGET=libgultra_rom MODERN_GCC=1`
+
+note that running with `MODERN_GCC=1` will automatically set `COMPARE=0` and `FIXUPS=0`.

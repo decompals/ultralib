@@ -1,5 +1,6 @@
 COMPARE ?= 1
 FIXUPS ?= 0
+MODERN_GCC ?= 0
 
 ifneq ($(FIXUPS),0)
 COMPARE := 0
@@ -18,6 +19,12 @@ else ifeq ($(findstring libultra,$(TARGET)),libultra)
 COMPILER := ido
 else
 $(error Invalid Target)
+endif
+
+ifneq ($(MODERN_GCC),0)
+COMPILER := modern_gcc
+COMPARE := 0
+FIXUPS := 0
 endif
 
 BASE_DIR := extracted/$(VERSION)/$(TARGET)
@@ -43,6 +50,8 @@ ifeq ($(COMPILER),gcc)
 -include makefiles/gcc.mk
 else ifeq ($(COMPILER),ido)
 -include makefiles/ido.mk
+else ifeq ($(COMPILER),modern_gcc)
+-include makefiles/modern_gcc.mk
 else
 $(error Invalid Compiler)
 endif
