@@ -42,9 +42,9 @@ DEBUGFLAG := -DNDEBUG
 endif
 
 ifeq ($(findstring libgultra,$(TARGET)),libgultra)
--include Makefile.gcc
+-include makefiles/Makefile.gcc
 else ifeq ($(findstring libultra,$(TARGET)),libultra)
--include Makefile.ido
+-include makefiles/Makefile.ido
 else
 $(error Invalid Target)
 endif
