@@ -22,7 +22,7 @@ static OSLog errorLog = {
 static void __commonErrorHandler(s16 code, s16 numArgs, ...);
 OSErrorHandler __osCommonHandler = __commonErrorHandler;
 
-char NULSTR[] = { '\0' };
+char NULSTR[] = "";
 
 const char* __os_error_message[] = {
     NULSTR,

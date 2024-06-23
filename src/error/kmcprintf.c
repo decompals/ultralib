@@ -81,7 +81,7 @@ static void* kmc_proutSyncPrintf(void* str, const char* buf, int n) {
     return (void*)1;
 }
 
-char NULSTR[] = { '\0' };
+char NULSTR[] = "";
 
 const char* __os_error_message[] = {
     NULSTR,
