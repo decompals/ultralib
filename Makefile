@@ -50,9 +50,9 @@ DEBUGFLAG := -DNDEBUG
 endif
 
 ifeq ($(COMPILER),gcc)
--include makefiles/Makefile.gcc
+-include makefiles/gcc.mk
 else ifeq ($(COMPILER),ido)
--include makefiles/Makefile.ido
+-include makefiles/ido.mk
 else
 $(error Invalid Compiler)
 endif
