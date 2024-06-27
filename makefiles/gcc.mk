@@ -1,12 +1,12 @@
 COMPILER_DIR := $(WORKING_DIR)/tools/gcc
-AS := $(COMPILER_DIR)/as
+AS := $(COMPILER_DIR)/gcc -x assembler-with-cpp
 CC := $(COMPILER_DIR)/gcc
 AR_OLD := $(COMPILER_DIR)/ar
 PATCH_AR_FLAGS := 0 0 37777700
 STRIP =
 
 CFLAGS := -w -nostdinc -c -G 0 -mgp32 -mfp32 -D_LANGUAGE_C
-ASFLAGS := -w -nostdinc -c -G 0 -mgp32 -mfp32 -DMIPSEB -D_LANGUAGE_ASSEMBLY -D_MIPS_SIM=1 -D_ULTRA64 -x assembler-with-cpp
+ASFLAGS := -w -nostdinc -c -G 0 -mgp32 -mfp32 -DMIPSEB -D_LANGUAGE_ASSEMBLY -D_MIPS_SIM=1 -D_ULTRA64
 CPPFLAGS = -D_MIPS_SZLONG=32 -D__USE_ISOC99 $(GBIDEFINE) $(VERSION_DEFINE) $(DEBUGFLAG)
 IINC = -I . -I $(WORKING_DIR)/include -I $(WORKING_DIR)/include/gcc -I $(WORKING_DIR)/include/PR
 MIPS_VERSION := -mips3
@@ -62,5 +62,5 @@ $(BUILD_DIR)/src/host/host_ptn64.marker: CFLAGS += -fno-builtin # Probably a bet
 
 MDEBUG_FILES := $(BUILD_DIR)/src/monutil.marker
 MDEBUG_COMPILER_DIR := $(WORKING_DIR)/tools/ido
-$(MDEBUG_FILES): CC := $(MDEBUG_COMPILER_DIR)/cc
+$(MDEBUG_FILES): AS := $(MDEBUG_COMPILER_DIR)/cc
 $(MDEBUG_FILES): ASFLAGS := -non_shared -mips2 -fullwarn -verbose -Xcpluscomm -G 0 -woff 516,649,838,712 -Wab,-r4300_mul -nostdinc -o32 -c
