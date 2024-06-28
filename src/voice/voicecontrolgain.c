@@ -1,3 +1,9 @@
+/**
+ * File: voicecontrolgain.c
+ *
+ * Adjusts the input gain of the Voice Recognition System
+ */
+
 #include "macros.h"
 #include "PR/os_internal.h"
 #include "PRinternal/controller.h"

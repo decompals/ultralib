@@ -4,6 +4,6 @@
 // TODO: this comes from a header
 #ident "$Revision: 1.17 $"
 
-u32 __osSiGetStatus() {
+u32 __osSiGetStatus(void) {
     return IO_READ(SI_STATUS_REG);
 }

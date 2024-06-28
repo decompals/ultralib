@@ -7,7 +7,7 @@
 LEAF(osUnmapTLBAll)
     mfc0 t0, C0_ENTRYHI
     li t1, NTLBENTRIES-1 /* last reserved for rdb */
-    li t2, KUSIZE
+    li t2, (K0BASE & TLBHI_VPN2MASK)
     mtc0 t2, C0_ENTRYHI
     mtc0 zero, C0_ENTRYLO0
     mtc0 zero, C0_ENTRYLO1

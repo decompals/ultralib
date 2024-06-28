@@ -1,3 +1,9 @@
+/**
+ * File: voicesetword.c
+ *
+ * Registers words to the Voice Recognition System dictionary
+ */
+
 #include "macros.h"
 #include "PR/os_internal.h"
 #include "PRinternal/controller.h"

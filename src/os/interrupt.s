@@ -2,31 +2,32 @@
 #include "sys/asm.h"
 #include "sys/regdef.h"
 #include "PR/os_version.h"
+#include "threadasm.h"
 
 .text
 .set noreorder
 LEAF(__osDisableInt)
 #if BUILD_VERSION >= VERSION_J
-	la    t2, __OSGlobalIntMask
-	lw    t3, (t2)
-	andi  t3, 0xFF00
+    la    t2, __OSGlobalIntMask
+    lw    t3, (t2)
+    andi  t3, SR_IMASK
     mfc0  t0, C0_SR
     and   t1, t0, ~SR_IE
     mtc0  t1, C0_SR
     andi  v0, t0, SR_IE
     lw    t0, (t2)
-    andi  t0, 0xFF00
+    andi  t0, SR_IMASK
     beq   t0, t3, No_Change_Global_Int
      la   t2, __osRunningThread # this is intentionally a macro in the branch delay slot
-    lw    t1, 280(t2)
-    andi  t2, t1, 0xFF00
+    lw    t1, THREAD_SR(t2)
+    andi  t2, t1, SR_IMASK
     and   t2, t0
-    and   t1, 0xFFFF00FF
+    and   t1, ~SR_IMASK
     or    t1, t2
-    and   t1, -2
-    mtc0  t1, $12
-	nop
-	nop
+    and   t1, ~SR_IE
+    mtc0  t1, C0_SR
+    nop
+    nop
 No_Change_Global_Int:
     jr ra
      nop
@@ -40,7 +41,7 @@ No_Change_Global_Int:
      nop
 #endif
 END(__osDisableInt)
-	
+
 LEAF(__osRestoreInt)
     mfc0  t0, C0_SR
     or    t0, t0, a0

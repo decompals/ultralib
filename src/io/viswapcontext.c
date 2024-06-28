@@ -5,7 +5,7 @@
 // TODO: this comes from a header
 #ident "$Revision: 1.17 $"
 
-void __osViSwapContext() {
+void __osViSwapContext(void) {
     register OSViMode* vm;
     register __OSViContext* vc;
     u32 origin;
@@ -38,7 +38,7 @@ void __osViSwapContext() {
     }
 
 #if BUILD_VERSION >= VERSION_J
-    vStart = (vm->fldRegs[field].vStart - (__additional_scanline << 0x10)) + __additional_scanline;
+    vStart = (vm->fldRegs[field].vStart - (__additional_scanline << VI_SUBPIXEL_SH)) + __additional_scanline;
 #endif
     hStart = vm->comRegs.hStart;
 
