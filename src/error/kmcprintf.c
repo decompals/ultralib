@@ -1,26 +1,85 @@
-#include "PR/os.h"
-#include "PR/os_internal.h"
-#include "PR/sptask.h"
-#include "PR/ultraerror.h"
-#include "PR/ultralog.h"
-#include "macros.h"
+// This file was added in 2.0J and removed in 2.0K
 #include "stdarg.h"
+#include "PR/os.h"
+#include "PR/rcp.h"
+#include "PR/rdb.h"
+#include "ultraerror.h"
+#include "../libc/xstdio.h"
 
-#ifndef _FINALROM
+extern u32 __kmc_pt_mode;
 
-void __osSyncVPrintf(const char* fmt, va_list args);
+static void* proutSyncPrintf(void* str, const char* buf, size_t n) {
+    size_t sent = 0;
 
-static u32 errorLogData[19] ALIGNED(8);
-static OSLog errorLog = {
-    OS_ERROR_MAGIC, // magic
-    sizeof(errorLogData), // len
-    errorLogData, // base
-    0, //startCount
-    0, //writeOffset
-};
+    while (sent < n) {
+        sent += __osRdbSend(buf + sent, n - sent, RDB_TYPE_GtoH_PRINT);
+    }
+    return 1;
+}
 
-static void __commonErrorHandler(s16 code, s16 numArgs, ...);
-OSErrorHandler __osCommonHandler = __commonErrorHandler;
+static volatile unsigned int* stat = (unsigned*)0xbff08004;
+static volatile unsigned int* wport = (unsigned*)0xbff08000;
+static volatile unsigned int* piok = (unsigned*)PHYS_TO_K1(PI_STATUS_REG);
+
+static void rmonPutchar(char c) {
+    while (*piok & (PI_STATUS_DMA_BUSY | PI_STATUS_IO_BUSY)) {
+    }
+
+    while (!(*stat & 4)) {
+    }
+    
+    *wport = c;
+}
+
+static void* kmc_proutSyncPrintf(void* str, const char* buf, int n) {
+    int i;
+    char c;
+    char* p;
+    char* q;
+    char xbuf[128];
+    static int column = 0;
+
+    p = &xbuf;
+
+    for (i = 0; i < n; i++) {
+        c = *buf++;
+
+        switch (c) {
+            case '\n':
+                *p++ = '\n';
+                column = 0;
+                break;
+            case '\t':
+                do {
+                    *p++ = ' ';
+                } while (++column % 8);
+                break;
+            default:
+                column++;
+                *p++ = c;
+                break;
+        }
+
+        if (c == '\n' || (p - xbuf) > 100) {
+            rmonPutchar((p - xbuf) - 1);
+
+            q = xbuf;
+            while (q != p) {
+                rmonPutchar(*q++);
+            }
+            p = xbuf;
+        }
+    }
+    if (p != xbuf) {
+        rmonPutchar((p - xbuf) - 1);
+
+        q = xbuf;
+        while (q != p) {
+            rmonPutchar(*q++);
+        }
+    }
+    return (void*)1;
+}
 
 char NULSTR[] = "";
 
@@ -161,33 +220,27 @@ const char* __os_error_message[] = {
     "_loadOutputBuffer: Modulated delay greater than total delay by %d samples",
     "osViExtendVStart: VI Manager not yet begun by osCreateViManager",
     "osViExtendVStart: value not in range [0-48] %d",
-    "osThreadProfileStart: thread profiler is not initialized",
-    "osThreadProfileStart: profiling has already been started",
-    "osThreadProfileStop: thread profiler is not initialized",
-    "osThreadProfileReadCount: thread profiler is not initialized",
-    "osThreadProfileReadCountTh: thread profiler is not initialized",
-    "osThreadProfileReadTime: thread profiler is not initialized",
-    "osThreadProfileReadTimeTh: thread profiler is not initialized",
-    "osThreadProfileReadCount: thread ID is too large(%d)",
-    "osThreadProfileReadTime: thread ID is too large(%d)",
-    "osThreadProfileReadCountTh: thread ID is too large(%d)",
-    "osThreadProfileReadTimeTh: thread ID is too large(%d)",
-    "osThreadProfileStop: current thread ID is too large(%d)",
     NULSTR,
 };
 
-void __commonErrorHandler(s16 code, s16 numArgs, ...) {
-    va_list argPtr;
-    const char* fmt;
+static void kmcErrorHandler(s16 code, s16 numArgs, ...);
+OSErrorHandler __kmcErrorHandler = kmcErrorHandler;
+
+static void kmcErrorHandler(s16 code, s16 numArgs, ...) {
+    int ans;
+    va_list ap;
+    char* fmt;
 
     fmt = __os_error_message[code];
-    va_start(argPtr, numArgs);
+    va_start(ap, numArgs);
 
-    osSyncPrintf("0x%08X (%04d):", osGetCount(), code);
-    __osSyncVPrintf(fmt, argPtr);
+    if (__kmc_pt_mode) {
+        ans = _Printf(kmc_proutSyncPrintf, NULL, fmt, ap);
+    } else {
+        ans = _Printf(proutSyncPrintf, NULL, fmt, ap);
+    }
+
     osSyncPrintf("\n");
 
-    va_end(argPtr);
+    va_end(ap);
 }
-
-#endif
