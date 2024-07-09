@@ -3,7 +3,7 @@
 #include "PRinternal/osint.h"
 #include "PRinternal/viint.h"
 
-OSTime osGetTime() {
+OSTime osGetTime(void) {
     u32 tmptime;
     u32 elapseCount;
     OSTime currentCount;
