@@ -52,7 +52,7 @@ LEAF(__osProbeTLB)
     /* Select C0_ENTRYLO0 or C0_ENTRYLO1 */
     bnez    ta0, 1f
     /* make bitmask out of page size */
-     addi   t3, t3,-1
+     addi   t3, t3, -1
     mfc0    v0, C0_ENTRYLO0
     b       2f
      nop
@@ -60,7 +60,7 @@ LEAF(__osProbeTLB)
     mfc0    v0, C0_ENTRYLO1
 2:
     /* Check valid bit and branch if not valid */
-    andi    ta1, v0,TLBLO_V
+    andi    ta1, v0, TLBLO_V
     beqz    ta1, 3f
      nop
     /* Extract the Page Frame Number from the entry */

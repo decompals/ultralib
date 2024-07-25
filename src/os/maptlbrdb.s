@@ -14,8 +14,8 @@ LEAF(osMapTLBRdb)
     li      t1, K2BASE
     mtc0    t1, C0_ENTRYHI
     li      t1, RDB_BASE_VIRTUAL_ADDR
-    srl     t3, t1,TLBLO_PFNSHIFT
-    or      t3, t3,t2
+    srl     t3, t1, TLBLO_PFNSHIFT
+    or      t3, t3, t2
     mtc0    t3, C0_ENTRYLO0
     li      t1, TLBLO_G
     mtc0    t1, C0_ENTRYLO1

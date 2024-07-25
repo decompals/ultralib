@@ -17,7 +17,7 @@ LEAF(osUnmapTLBAll)
     tlbwi
     nop
     nop
-    addi    t1, t1,-1
+    addi    t1, t1, -1
     bgez    t1, 1b
      nop
     mtc0    t0, C0_ENTRYHI

@@ -24,7 +24,7 @@ goforwards:
     
     andi    v0, a0, 0x3
     andi    v1, a1, 0x3
-    beq     v0, v1,forwalignable
+    beq     v0, v1, forwalignable
     
 
 forwards_bytecopy:
@@ -119,25 +119,25 @@ forwards_4:
     b       forwards_4
     
 gobackwards:
-    add     a0, a0,a2
-    add     a1, a1,a2
+    add     a0, a0, a2
+    add     a1, a1, a2
     blt     a2, 16, backwards_bytecopy
 
     andi    v0, a0, 0x3
     andi    v1, a1, 0x3
-    beq     v0, v1,backalignable
+    beq     v0, v1, backalignable
     
 backwards_bytecopy:
     beqz    a2, ret
     addiu   a0, a0, -1
     addiu   a1, a1, -1
-    subu    v1, a0,a2
+    subu    v1, a0, a2
 99:
     lb      v0, 0(a0)
     addiu   a0, a0, -1
     sb      v0, 0(a1)
     addiu   a1, a1, -1
-    bne     a0, v1,99b
+    bne     a0, v1, 99b
 
     move    v0, a3
     jr      ra

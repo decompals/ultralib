@@ -48,41 +48,41 @@ LEAF(osSetIntMask)
 
     /* Bitwise-OR in the disabled CPU bits of __OSGlobalIntMask */
     xor     t0, t3, ~0
-    andi    t0, t0,(SR_IMASK)
-    or      v0, v0,t0
+    andi    t0, t0, SR_IMASK
+    or      v0, v0, t0
 
     /* Fetch MI_INTR_MASK_REG */
     lw      t2, PHYS_TO_K1(MI_INTR_MASK_REG)
     /* If there are RCP interrupts masked */
     beqz    t2, 1f
-     srl    t1, t3,0x10
+     srl    t1, t3, 0x10
 
     /* Bitwise-OR in the disabled RCP bits of __OSGlobalIntMask */
     xor     t1, t1, ~0
     andi    t1, t1, (RCP_IMASK >> RCP_IMASKSHIFT)
-    or      t2, t2,t1
+    or      t2, t2, t1
 1:
     /* Shift the RCP bits to not conflict with the CPU bits */
     sll     t2, t2, RCP_IMASKSHIFT
     /* OR the CPU and RCP bits together */
-    or      v0, v0,t2
+    or      v0, v0, t2
 
     /* Extract RCP interrupt enable bits from requested mask and mask with __OSGlobalIntMask */
     and     t0, a0, RCP_IMASK
-    and     t0, t0,t3
+    and     t0, t0, t3
     /* Convert to a value for MI_INTR_MASK_REG and set it */
-    srl     t0, t0,(RCP_IMASKSHIFT - 1)
+    srl     t0, t0, (RCP_IMASKSHIFT - 1)
     lhu     t2, __osRcpImTable(t0)
     sw      t2, PHYS_TO_K1(MI_INTR_MASK_REG)
 
     /* Extract CPU interrupt enable bits from requested mask and mask with __OSGlobalIntMask */
     andi    t0, a0, OS_IM_CPU
     andi    t1, t3, SR_IMASK
-    and     t0, t0,t1
+    and     t0, t0, t1
 
     and     ta0, ta0, ~SR_IMASK
     /* Bitwise OR in the remaining bits of SR and set new SR */
-    or      ta0, ta0,t0
+    or      ta0, ta0, t0
 
     mtc0    ta0, C0_SR
     nop

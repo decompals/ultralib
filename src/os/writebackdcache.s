@@ -18,18 +18,18 @@ LEAF(osWritebackDCache)
      * the data cache size, write back all
      */
     li      t3, DCACHE_SIZE
-    bgeu    a1,t3, 3f
+    bgeu    a1, t3, 3f
     /*
      * ensure end address does not wrap around and end up smaller
      * than the start address
      */
     move    t0, a0
-    addu    t1, a0,a1
+    addu    t1, a0, a1
     bgeu    t0, t1, 2f
     /* Mask and subtract to align to cache line */
     addiu   t1, t1, -DCACHE_LINESIZE
     andi    t2, t0, DCACHE_LINEMASK
-    subu    t0, t0,t2
+    subu    t0, t0, t2
 1:
     .set noreorder
     cache   (C_HWB | CACH_PD), (t0)
@@ -42,7 +42,7 @@ LEAF(osWritebackDCache)
 /* same as osWritebackDCacheAll in operation */
 3:
     li      t0, K0BASE
-    addu    t1, t0,t3
+    addu    t1, t0, t3
     addiu   t1, t1, -DCACHE_LINESIZE
 4:
     .set noreorder
