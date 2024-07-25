@@ -187,11 +187,11 @@ LEAF(__osException)
     sd      $1, THREAD_GP1(k0);
 .set at
     /* Save SR */
-STAY2(mfc0  k1, C0_SR)
+    MFC0(   k1, C0_SR)
     sw      k1, THREAD_SR(k0)
     /* Disable interrupts */
     and     k1, k1, ~(SR_IE | SR_EXL)
-STAY2(mtc0  k1, C0_SR)
+    MTC0(   k1, C0_SR)
     /* Save some temp registers for use in the following */
     sd      $8, THREAD_GP8(k0)
     sd      $9, THREAD_GP9(k0)
@@ -199,7 +199,7 @@ STAY2(mtc0  k1, C0_SR)
     /* Mark FPU as unused */
     sw      zero, THREAD_FP(k0)
     /* This instruction is useless, leftover because of bad placement of an ifdef for the debug version */
-STAY2(mfc0  t0, C0_CAUSE)
+    MFC0(   t0, C0_CAUSE)
 #ifndef _FINALROM
     lw      t2, __kmc_pt_mode
     bnez    t2, skip_kmc_mode
@@ -213,7 +213,7 @@ STAY2(mfc0  t0, C0_CAUSE)
     la      t1, RDB_WRITE_INTR_REG
     sw      zero, (t1)
 IP7check:
-STAY2(mfc0  t0, C0_CAUSE)
+    MFC0(   t0, C0_CAUSE)
     andi    t0, t0, CAUSE_IP7
     bne     zero, t0, IP7check
     la      t2, RDB_BASE_REG
@@ -370,7 +370,7 @@ notIP7:
 5:
     sw      t1, __osRdb_IP6_CurSend
 checkIP6:
-STAY2(mfc0  t0, C0_CAUSE)
+    MFC0(   t0, C0_CAUSE)
     andi    t0, t0, CAUSE_IP6
     bne     zero, t0, checkIP6
     la      t0, RDB_BASE_REG
@@ -383,7 +383,7 @@ rdbout:
     ld      $1, THREAD_GP1(k0)
 .set at
     lw      k1, THREAD_SR(k0)
-STAY2(mtc0  k1, C0_SR)
+    MTC0(   k1, C0_SR)
 .set noreorder
     nop
     nop
@@ -487,12 +487,12 @@ savercp:
     or      t1, t1, t0
 endrcp:
     sw      t1, THREAD_RCP(k0)
-STAY2(mfc0  t0, C0_EPC)
+    MFC0(   t0, C0_EPC)
     sw      t0, THREAD_PC(k0)
     lw      t0, THREAD_FP(k0)
     beqz    t0, 1f
     /* Save FP Registers if FPU was used by the thread */
-STAY2(cfc1  t0, fcr31)
+    CFC1(   t0, fcr31)
     NOP
     sw      t0, THREAD_FPCSR(k0)
     sdc1    $f0, THREAD_FP0(k0)
@@ -516,7 +516,7 @@ STAY2(cfc1  t0, fcr31)
      * Determine the cause of the exception or interrupt and
      *  enter appropriate handling routine
      */
-STAY2(mfc0  t0, C0_CAUSE)
+    MFC0(   t0, C0_CAUSE)
     sw      t0, THREAD_CAUSE(k0)
 
 .set noreorder
@@ -595,8 +595,8 @@ IP7_Hdlr:
  *  cop0 compare register, this interrupt is triggered
  */
 counter:
-STAY2(mfc0  t1, C0_COMPARE)
-STAY2(mtc0  t1, C0_COMPARE)
+    MFC0(   t1, C0_COMPARE)
+    MTC0(   t1, C0_COMPARE)
     li      a0, MESG(OS_EVENT_COUNTER)
     /* Post counter message */
     jal     send_mesg
@@ -878,7 +878,7 @@ firstnmi:
 sw2:
     /* Mask out interrupt */
     and     t0, t0, ~CAUSE_SW2
-STAY2(mtc0  t0, C0_CAUSE)
+    MTC0(   t0, C0_CAUSE)
 
     /* Post sw2 event message */
     li      a0, MESG(OS_EVENT_SW2)
@@ -891,7 +891,7 @@ STAY2(mtc0  t0, C0_CAUSE)
 sw1:
     /* Mask out interrupt */
     and     t0, t0, ~CAUSE_SW1
-STAY2(mtc0  t0, C0_CAUSE)
+    MTC0(   t0, C0_CAUSE)
 
     /* Post sw1 event message */
     li      a0, MESG(OS_EVENT_SW1)
@@ -956,7 +956,7 @@ panic:
     sh      t1, THREAD_FLAGS(k0)
 
     /* Save C0_BADVADDR */
-STAY2(mfc0  t2, C0_BADVADDR)
+    MFC0(   t2, C0_BADVADDR)
 
     sw      t2, THREAD_BADVADDR(k0)
 
@@ -1058,7 +1058,7 @@ LEAF(__osEnqueueAndYield)
     sw      a1, __osPreviousThread
 #endif
     /* Save SR */
-STAY2(mfc0  t0, C0_SR)
+    MFC0(   t0, C0_SR)
     ori     t0, t0, SR_EXL
     sw      t0, THREAD_SR(a1)
 
@@ -1229,7 +1229,7 @@ __osDispatchThreadSave:
     and     t1, t1, t0
     and     k1, k1, ~SR_IMASK
     or      k1, k1, t1
-STAY2(mtc0  k1, C0_SR)
+    MTC0(   k1, C0_SR)
 /* Restore GPRs */
 .set noat
     ld      $1, THREAD_GP1(k0)
@@ -1268,14 +1268,14 @@ STAY2(mtc0  k1, C0_SR)
     mthi    k1
     /* Move thread pc to EPC so that eret will return execution to where the thread left off */
     lw      k1, THREAD_PC(k0)
-STAY2(mtc0  k1, C0_EPC)
+    MTC0(   k1, C0_EPC)
 
     /* Check if the FPU was used by this thread and if so also restore the FPU registers */
     lw      k1, THREAD_FP(k0)
     beqz    k1, 1f
 
     lw      k1, THREAD_FPCSR(k0)
-STAY2(ctc1  k1, fcr31)
+    CTC1(   k1, fcr31)
     ldc1    $f0, THREAD_FP0(k0)
     ldc1    $f2, THREAD_FP2(k0)
     ldc1    $f4, THREAD_FP4(k0)
