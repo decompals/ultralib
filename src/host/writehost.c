@@ -4,7 +4,7 @@
 #include "PR/rdb.h"
 #include "PR/ultraerror.h"
 
-#include "macros.h"
+#include "PRinternal/macros.h"
 
 static int writeHostInitialized = FALSE;
 static OSMesgQueue writeHostMesgQueue ALIGNED(8);

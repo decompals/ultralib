@@ -18,7 +18,7 @@
 
 #include <ultra64.h>
 #include <gt.h>
-#include "macros.h"
+#include "PRinternal/macros.h"
 
 #if BUILD_VERSION < VERSION_J
 #ident "$Revision: 1.4 $"

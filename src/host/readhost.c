@@ -3,7 +3,7 @@
 #include "PR/os_internal.h"
 #include "PR/rdb.h"
 
-#include "macros.h"
+#include "PRinternal/macros.h"
 
 static int readHostInitialized = FALSE;
 static OSMesgQueue readHostMesgQueue ALIGNED(8);

@@ -4,7 +4,7 @@
 #include "PR/os_internal.h"
 #include "PR/ultraerror.h"
 #include "PR/ultralog.h"
-#include "macros.h"
+#include "PRinternal/macros.h"
 
 #ifndef _FINALROM
 

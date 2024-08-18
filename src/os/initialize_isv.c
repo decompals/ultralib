@@ -4,7 +4,7 @@
 #include "PR/rcp.h"
 #include "PRinternal/osint.h"
 
-#include "macros.h"
+#include "PRinternal/macros.h"
 
 typedef struct {
     /* 0x0 */ unsigned int inst1;

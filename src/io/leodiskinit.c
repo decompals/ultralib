@@ -2,7 +2,7 @@
 #include "PR/os_internal.h"
 #include "PR/os_libc.h"
 #include "PR/rcp.h"
-#include "macros.h"
+#include "PRinternal/macros.h"
 
 OSPiHandle LeoDiskHandle ALIGNED(8);
 OSPiHandle *__osDiskHandle;

@@ -8,7 +8,7 @@
 #include "PR/rdb.h"
 #include "PR/os_version.h"
 
-#include "macros.h"
+#include "PRinternal/macros.h"
 
 // TODO: these come from headers
 #if BUILD_VERSION >= VERSION_K

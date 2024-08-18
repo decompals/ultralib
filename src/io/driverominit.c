@@ -1,6 +1,6 @@
 #include "PR/os_internal.h"
 #include "PR/rcp.h"
-#include "macros.h"
+#include "PRinternal/macros.h"
 
 OSPiHandle DriveRomHandle ALIGNED(8);
 

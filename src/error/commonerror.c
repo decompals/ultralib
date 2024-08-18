@@ -3,7 +3,7 @@
 #include "PR/sptask.h"
 #include "PR/ultraerror.h"
 #include "PR/ultralog.h"
-#include "macros.h"
+#include "PRinternal/macros.h"
 #include "stdarg.h"
 
 #ifndef _FINALROM

@@ -17,7 +17,7 @@
 #include "PRinternal/rmonint.h"
 #include "PR/rdb.h"
 
-#include "macros.h"
+#include "PRinternal/macros.h"
 
 // TODO: this comes from a header
 #if BUILD_VERSION >= VERSION_J

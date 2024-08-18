@@ -1,4 +1,4 @@
-#include "macros.h"
+#include "PRinternal/macros.h"
 #include "PR/rcp.h"
 #include "PRinternal/controller.h"
 #include "PRinternal/siint.h"

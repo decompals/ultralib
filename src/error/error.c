@@ -3,7 +3,7 @@
 #include "PR/os_internal.h"
 #include "PR/ultralog.h"
 #include "PR/ultraerror.h"
-#include "macros.h"
+#include "PRinternal/macros.h"
 
 void __osLogWrite(OSLog* log, s16 code, s16 numArgs, va_list argPtr);
 static void __osDefaultHandler(s16 code, s16 numArgs, ...);

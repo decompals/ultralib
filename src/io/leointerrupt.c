@@ -2,7 +2,7 @@
 #include "PR/rcp.h"
 #include "PRinternal/osint.h"
 #include "PRinternal/piint.h"
-#include "macros.h"
+#include "PRinternal/macros.h"
 
 extern OSPiHandle *__osDiskHandle;
 

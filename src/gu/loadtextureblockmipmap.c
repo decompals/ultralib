@@ -16,7 +16,7 @@
 #include "guint.h"
 #include <stdio.h>
 #include "ultra64.h"
-#include "macros.h"
+#include "PRinternal/macros.h"
 
 // TODO: this comes from a header
 #ident "$Revision: 1.49 $"

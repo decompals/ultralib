@@ -1,6 +1,6 @@
 #include "ultra64.h"
 #include "PR/os_internal_flash.h"
-#include "macros.h"
+#include "PRinternal/macros.h"
 
 u32 __osFlashID[4] ALIGNED(8);
 OSIoMesg __osFlashMsg ALIGNED(8);

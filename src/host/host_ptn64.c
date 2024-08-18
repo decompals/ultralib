@@ -3,7 +3,7 @@
 #include "PR/rcp.h"
 #include "memory.h"
 
-#include "macros.h"
+#include "PRinternal/macros.h"
 
 #if BUILD_VERSION >= VERSION_J || !defined(_FINALROM)
 

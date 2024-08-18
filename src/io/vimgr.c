@@ -1,4 +1,4 @@
-#include "macros.h"
+#include "PRinternal/macros.h"
 #include "PR/os_internal.h"
 #include "PR/ultraerror.h"
 #include "PR/rcp.h"

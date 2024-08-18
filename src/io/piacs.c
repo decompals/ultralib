@@ -1,4 +1,4 @@
-#include "macros.h"
+#include "PRinternal/macros.h"
 #include "PR/os_internal.h"
 
 #define PI_Q_BUF_LEN 1
