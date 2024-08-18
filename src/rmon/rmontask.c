@@ -1,6 +1,6 @@
 #ifndef _FINALROM
 
-#include "dbgproto.h"
+#include "PRinternal/dbgproto.h"
 #include "PR/os_internal.h"
 #include "PRinternal/rmonint.h"
 #include "PR/rcp.h"

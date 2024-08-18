@@ -14,7 +14,7 @@
 #include "PR/ultraerror.h"
 #include "PR/ultralog.h"
 #include "PR/sptask.h"
-#include "dbgproto.h"
+#include "PRinternal/dbgproto.h"
 #include "PRinternal/rmonint.h"
 #include "PR/ramrom.h"
 #include "PR/rdb.h"
