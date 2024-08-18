@@ -5,13 +5,15 @@
 #include "PR/os_version.h"
 #include "PR/rcp.h"
 
+#include "PRinternal/macros.h"
+
 #define CHNL_ERR(format) (((format).rxsize & CHNL_ERR_MASK) >> 4)
 
 typedef struct
 {
     /* 0x0 */ u32 ramarray[15];
     /* 0x3C */ u32 pifstatus;
-} OSPifRam;
+} OSPifRam ALIGNED(0x10);
 
 typedef struct
 {

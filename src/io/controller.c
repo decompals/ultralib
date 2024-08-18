@@ -3,7 +3,7 @@
 #include "PRinternal/controller.h"
 #include "PRinternal/siint.h"
 
-OSPifRam __osContPifRam ALIGNED(16);
+OSPifRam __osContPifRam;
 u8 __osContLastCmd;
 u8 __osMaxControllers;
 

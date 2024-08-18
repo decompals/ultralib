@@ -3,7 +3,7 @@
 #include "PRinternal/controller.h"
 #include "PRinternal/siint.h"
 
-OSPifRam __osEepPifRam ALIGNED(16);
+OSPifRam __osEepPifRam;
 #if BUILD_VERSION >= VERSION_L
 s32 __osEepromRead16K;
 #endif

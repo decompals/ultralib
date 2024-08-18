@@ -3,7 +3,7 @@
 #include "PRinternal/controller.h"
 #include "PRinternal/siint.h"
 
-OSPifRam __osPfsPifRam ALIGNED(16);
+OSPifRam __osPfsPifRam;
 
 s32 osPfsIsPlug(OSMesgQueue* mq, u8* pattern) {
     s32 ret = 0;
