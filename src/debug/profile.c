@@ -130,7 +130,7 @@ void osProfileInit(OSProf* profp, u32 profcnt) {
         osSetEventMesg(OS_EVENT_RDB_FLUSH_PROF, &__osProfFlushMQ, 0);
         osCreateMesgQueue(&__osProfAckMQ, &__osProfAckMesg, 1);
         osSetEventMesg(OS_EVENT_RDB_ACK_PROF, &__osProfAckMQ, 0);
-        osCreateThread(&__osProfileIOThread, 0, __osProfileIO, NULL, STACK_TOP(__osProfileIOStack), 0x81);
+        osCreateThread(&__osProfileIOThread, 0, __osProfileIO, NULL, STACK_START(__osProfileIOStack), 0x81);
         osStartThread(&__osProfileIOThread);
         __osProfileIOActive = TRUE;
     }

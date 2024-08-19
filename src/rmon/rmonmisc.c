@@ -45,7 +45,7 @@ void __rmonInit(void) {
     osSetEventMesg(OS_EVENT_SP_BREAK, &__rmonMQ, (OSMesg)RMON_MESG_SP_BREAK);
     osSetEventMesg(OS_EVENT_FAULT, &__rmonMQ, (OSMesg)RMON_MESG_FAULT);
     osSetEventMesg(OS_EVENT_THREADSTATUS, &__rmonMQ, NULL);
-    osCreateThread(&rmonIOThread, 0, (void (*)(void*))__rmonIOhandler, NULL, STACK_TOP(rmonIOStack),
+    osCreateThread(&rmonIOThread, 0, (void (*)(void*))__rmonIOhandler, NULL, STACK_START(rmonIOStack),
                    OS_PRIORITY_MAX);
     osCreatePiManager(OS_PRIORITY_PIMGR, &rmonPiMQ, rmonPiMsgs, ARRLEN(rmonPiMsgs));
     osStartThread(&rmonIOThread);

@@ -71,11 +71,11 @@ void osCreatePiManager(OSPri pri, OSMesgQueue* cmdQ, OSMesg* cmdBuf, s32 cmdMsgC
     __osPiDevMgr.acsQueue = &__osPiAccessQueue;
     __osPiDevMgr.dma = __osPiRawStartDma;
     __osPiDevMgr.edma = __osEPiRawStartDma;
-    osCreateThread(&piThread, 0, __osDevMgrMain, &__osPiDevMgr, STACK_TOP(piThreadStack), pri);
+    osCreateThread(&piThread, 0, __osDevMgrMain, &__osPiDevMgr, STACK_START(piThreadStack), pri);
     osStartThread(&piThread);
 
 #ifndef _FINALROM
-    osCreateThread(&ramromThread, 0, ramromMain, NULL, STACK_TOP(ramromThreadStack), (OSPri)pri - 1);
+    osCreateThread(&ramromThread, 0, ramromMain, NULL, STACK_START(ramromThreadStack), (OSPri)pri - 1);
     osStartThread(&ramromThread);
 #endif
     __osRestoreInt(savedMask);

@@ -61,7 +61,7 @@ void osCreateViManager(OSPri pri) {
     __osViDevMgr.acsQueue = NULL;
     __osViDevMgr.dma = NULL;
     __osViDevMgr.edma = NULL;
-    osCreateThread(&viThread, 0, viMgrMain, &__osViDevMgr, STACK_TOP(viThreadStack), pri);
+    osCreateThread(&viThread, 0, viMgrMain, &__osViDevMgr, STACK_START(viThreadStack), pri);
     __osViInit();
     osStartThread(&viThread);
     __osRestoreInt(savedMask);
