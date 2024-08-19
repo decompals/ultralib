@@ -29,7 +29,7 @@ BUILD_AR := $(BUILD_DIR)/$(TARGET).a
 WORKING_DIR := $(shell pwd)
 
 CPP := cpp -P
-AR := ar
+AR := $(CROSS)ar
 
 VERSION_D := 1
 VERSION_E := 2
