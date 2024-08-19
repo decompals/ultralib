@@ -10,7 +10,7 @@ OSDevMgr __osViDevMgr = { 0 };
 u32 __additional_scanline = 0;
 #endif
 static OSThread viThread;
-static unsigned char viThreadStack[OS_VIM_STACKSIZE] ALIGNED(16);
+static STACK(viThreadStack, OS_VIM_STACKSIZE) ALIGNED(0x10);
 static OSMesgQueue viEventQueue ALIGNED(8);
 static OSMesg viEventBuf[5] ALIGNED(8);
 static OSIoMesg viRetraceMsg ALIGNED(8);
@@ -61,7 +61,7 @@ void osCreateViManager(OSPri pri) {
     __osViDevMgr.acsQueue = NULL;
     __osViDevMgr.dma = NULL;
     __osViDevMgr.edma = NULL;
-    osCreateThread(&viThread, 0, viMgrMain, &__osViDevMgr, &viThreadStack[OS_VIM_STACKSIZE], pri);
+    osCreateThread(&viThread, 0, viMgrMain, &__osViDevMgr, STACK_TOP(viThreadStack), pri);
     __osViInit();
     osStartThread(&viThread);
     __osRestoreInt(savedMask);

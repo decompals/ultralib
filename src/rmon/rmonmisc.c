@@ -35,7 +35,7 @@ int __rmonSetFault(KKHeader* req) {
 OSMesgQueue __rmonMQ ALIGNED(8);
 static OSThread rmonIOThread ALIGNED(8);
 static OSMesg rmonMsgs[8] ALIGNED(8);
-static u64 rmonIOStack[2048] ALIGNED(16);
+static STACK(rmonIOStack, 0x4000) ALIGNED(0x10);
 static OSMesg rmonPiMsgs[8] ALIGNED(8);
 static OSMesgQueue rmonPiMQ ALIGNED(8);
 
@@ -45,7 +45,7 @@ void __rmonInit(void) {
     osSetEventMesg(OS_EVENT_SP_BREAK, &__rmonMQ, (OSMesg)RMON_MESG_SP_BREAK);
     osSetEventMesg(OS_EVENT_FAULT, &__rmonMQ, (OSMesg)RMON_MESG_FAULT);
     osSetEventMesg(OS_EVENT_THREADSTATUS, &__rmonMQ, NULL);
-    osCreateThread(&rmonIOThread, 0, (void (*)(void*))__rmonIOhandler, NULL, rmonIOStack + ARRLEN(rmonIOStack),
+    osCreateThread(&rmonIOThread, 0, (void (*)(void*))__rmonIOhandler, NULL, STACK_TOP(rmonIOStack),
                    OS_PRIORITY_MAX);
     osCreatePiManager(OS_PRIORITY_PIMGR, &rmonPiMQ, rmonPiMsgs, ARRLEN(rmonPiMsgs));
     osStartThread(&rmonIOThread);

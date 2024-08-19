@@ -5,11 +5,11 @@
 #include "PR/rdb.h"
 
 static OSThread piThread ALIGNED(8);
-static char piThreadStack[OS_PIM_STACKSIZE] ALIGNED(16);
+static STACK(piThreadStack, OS_PIM_STACKSIZE) ALIGNED(0x10);
 
 #ifndef _FINALROM
 static OSThread ramromThread ALIGNED(8);
-static char ramromThreadStack[1024] ALIGNED(16);
+static STACK(ramromThreadStack, 0x400) ALIGNED(0x10);
 static OSMesgQueue getRamromQ ALIGNED(8);
 static OSMesg getRamromBuf[1];
 static OSMesgQueue freeRamromQ ALIGNED(8);
@@ -71,11 +71,11 @@ void osCreatePiManager(OSPri pri, OSMesgQueue* cmdQ, OSMesg* cmdBuf, s32 cmdMsgC
     __osPiDevMgr.acsQueue = &__osPiAccessQueue;
     __osPiDevMgr.dma = __osPiRawStartDma;
     __osPiDevMgr.edma = __osEPiRawStartDma;
-    osCreateThread(&piThread, 0, __osDevMgrMain, &__osPiDevMgr, &piThreadStack[OS_PIM_STACKSIZE], pri);
+    osCreateThread(&piThread, 0, __osDevMgrMain, &__osPiDevMgr, STACK_TOP(piThreadStack), pri);
     osStartThread(&piThread);
 
 #ifndef _FINALROM
-    osCreateThread(&ramromThread, 0, ramromMain, NULL, ramromThreadStack + 1024, (OSPri)pri - 1);
+    osCreateThread(&ramromThread, 0, ramromMain, NULL, STACK_TOP(ramromThreadStack), (OSPri)pri - 1);
     osStartThread(&ramromThread);
 #endif
     __osRestoreInt(savedMask);
