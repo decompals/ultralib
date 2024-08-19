@@ -1,3 +1,13 @@
+/**
+ * @file vimodentsclpf1.c
+ *
+ * NTSC LPF1 Video Mode
+ *
+ * L = Low Resolution
+ * P = Point Sampled
+ * F = Interlaced
+ * 1 = 16-bit Framebuffer
+ */
 #include "PR/os.h"
 #include "PR/rcp.h"
 #include "PRinternal/viint.h"

@@ -1,3 +1,13 @@
+/**
+ * @file vimodepalhpf2.c
+ *
+ * PAL HPF2 Video Mode
+ *
+ * H = High Resolution
+ * P = Point Sampled
+ * F = Deflickered Interlaced
+ * 2 = 32-bit Framebuffer
+ */
 #include "PR/os.h"
 #include "PR/rcp.h"
 #include "PRinternal/viint.h"
