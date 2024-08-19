@@ -32,7 +32,7 @@ void osCreateThread(OSThread* t, OSId id, void (*entry)(void*), void* arg, void*
     mask = OS_IM_ALL;
     t->context.sr = (mask & (SR_IMASK | SR_IE)) | SR_EXL;
     t->context.rcp = (mask & RCP_IMASK) >> RCP_IMASKSHIFT;
-    t->context.fpcsr = FPCSR_FS | FPCSR_EV;
+    t->context.fpcsr = FPCSR_FS | FPCSR_EV | FPCSR_RM_RN;
     t->fp = 0;
     t->state = OS_STATE_STOPPED;
     t->flags = 0;

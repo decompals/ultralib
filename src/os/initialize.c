@@ -70,7 +70,7 @@ void INITIALIZE_FUNC() {
 #endif
 
     __osSetSR(__osGetSR() | SR_CU1);    // enable fpu
-    __osSetFpcCsr(FPCSR_FS | FPCSR_EV); // flush denorm to zero, enable invalid operation
+    __osSetFpcCsr(FPCSR_FS | FPCSR_EV | FPCSR_RM_RN); // flush denorm to zero, enable invalid operation
 #if BUILD_VERSION >= VERSION_K
     __osSetWatchLo(0x4900000);
 #endif
