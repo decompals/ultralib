@@ -10,7 +10,7 @@
 
 void __osSyncVPrintf(const char* fmt, va_list args);
 
-static u32 errorLogData[19] ALIGNED(8);
+static u32 errorLogData[19] ALIGNED(0x8);
 static OSLog errorLog = {
     OS_ERROR_MAGIC, // magic
     sizeof(errorLogData), // len

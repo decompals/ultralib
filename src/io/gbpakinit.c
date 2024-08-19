@@ -4,7 +4,7 @@
 #include "PRinternal/controller_gbpak.h"
 
 OSTimer __osGbpakTimer;
-OSMesgQueue __osGbpakTimerQ ALIGNED(8);
+OSMesgQueue __osGbpakTimerQ ALIGNED(0x8);
 OSMesg __osGbpakTimerMsg;
 
 s32 osGbpakInit(OSMesgQueue* mq, OSPfs* pfs, int channel) {

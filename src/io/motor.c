@@ -134,10 +134,10 @@ s32 osMotorInit(OSMesgQueue* mq, OSPfs* pfs, int channel) {
 
 #else
 
-OSPifRam _MotorStopData[MAXCONTROLLERS] ALIGNED(8);
-OSPifRam _MotorStartData[MAXCONTROLLERS] ALIGNED(8);
-u8 _motorstopbuf[32] ALIGNED(8);
-u8 _motorstartbuf[32] ALIGNED(8);
+OSPifRam _MotorStopData[MAXCONTROLLERS] ALIGNED(0x8);
+OSPifRam _MotorStartData[MAXCONTROLLERS] ALIGNED(0x8);
+u8 _motorstopbuf[32] ALIGNED(0x8);
+u8 _motorstartbuf[32] ALIGNED(0x8);
 u32 __osMotorinitialized[MAXCONTROLLERS] = {0, 0, 0, 0};
 
 s32 osMotorStop(OSPfs *pfs) {

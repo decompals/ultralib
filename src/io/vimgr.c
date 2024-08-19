@@ -11,10 +11,10 @@ u32 __additional_scanline = 0;
 #endif
 static OSThread viThread;
 static STACK(viThreadStack, OS_VIM_STACKSIZE) ALIGNED(0x10);
-static OSMesgQueue viEventQueue ALIGNED(8);
-static OSMesg viEventBuf[5] ALIGNED(8);
-static OSIoMesg viRetraceMsg ALIGNED(8);
-static OSIoMesg viCounterMsg ALIGNED(8);
+static OSMesgQueue viEventQueue ALIGNED(0x8);
+static OSMesg viEventBuf[5] ALIGNED(0x8);
+static OSIoMesg viRetraceMsg ALIGNED(0x8);
+static OSIoMesg viCounterMsg ALIGNED(0x8);
 
 static void viMgrMain(void* arg);
 void osCreateViManager(OSPri pri) {

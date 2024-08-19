@@ -13,10 +13,10 @@
 OSTimer __osProfTimer;
 OSMesg __osProfTimerMsg;
 
-OSMesgQueue __osProfFlushMQ ALIGNED(8);
+OSMesgQueue __osProfFlushMQ ALIGNED(0x8);
 OSMesg __osProfFlushMesg;
 
-OSMesgQueue __osProfAckMQ ALIGNED(8);
+OSMesgQueue __osProfAckMQ ALIGNED(0x8);
 OSMesg __osProfAckMesg;
 
 u32 __osProfTimerPeriod;

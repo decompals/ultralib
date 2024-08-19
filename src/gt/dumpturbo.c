@@ -29,7 +29,7 @@
 
 
 #define TX_MAX		100
-static u32	textures[TX_MAX] ALIGNED(8);
+static u32	textures[TX_MAX] ALIGNED(0x8);
 static u32	numtextures;
 
 #define UNSEG_ADDR(sa)	((u32 *) (((globp)?				   \

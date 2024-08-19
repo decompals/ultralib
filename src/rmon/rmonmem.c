@@ -24,7 +24,7 @@
 #ident "$Revision: 1.4 $"
 #endif
 
-u8 __rmonUtilityBuffer[256] ALIGNED(8);
+u8 __rmonUtilityBuffer[256] ALIGNED(0x8);
 
 void __rmonWriteWordTo(u32* addr, u32 val) {
     while (__osSpRawWriteIo((u32)addr, val) != 0) {

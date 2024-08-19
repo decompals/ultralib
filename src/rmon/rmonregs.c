@@ -34,7 +34,7 @@
 
 static u32 RCPpc;
 static u32 oldIMEMvalue;
-static u32 DMEMbuffer[4] ALIGNED(8);
+static u32 DMEMbuffer[4] ALIGNED(0x8);
 
 typedef union {
     u32 everything;

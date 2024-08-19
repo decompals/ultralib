@@ -8,8 +8,8 @@
 void __osLogWrite(OSLog* log, s16 code, s16 numArgs, va_list argPtr);
 static void __osDefaultHandler(s16 code, s16 numArgs, ...);
 
-static u32 errorLogData[19] ALIGNED(8);
-static OSLog errorLog ALIGNED(8) = {
+static u32 errorLogData[19] ALIGNED(0x8);
+static OSLog errorLog ALIGNED(0x8) = {
     OS_ERROR_MAGIC, // magic
     sizeof(errorLogData), // len
     errorLogData, // base

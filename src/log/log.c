@@ -11,7 +11,7 @@
 static u32 __osLogOKtoWrite = TRUE;
 static u32 __osLogInitialized = FALSE;
 
-static OSMesgQueue __osLogDoneMsgQ ALIGNED(8);
+static OSMesgQueue __osLogDoneMsgQ ALIGNED(0x8);
 static OSMesg __osLogMsgBuf;
 
 void __osLogWrite(OSLog* log, s16 code, s16 numArgs, va_list argPtr);

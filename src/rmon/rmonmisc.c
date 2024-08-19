@@ -32,12 +32,12 @@ int __rmonSetFault(KKHeader* req) {
     return TV_ERROR_NO_ERROR;
 }
 
-OSMesgQueue __rmonMQ ALIGNED(8);
-static OSThread rmonIOThread ALIGNED(8);
-static OSMesg rmonMsgs[8] ALIGNED(8);
+OSMesgQueue __rmonMQ ALIGNED(0x8);
+static OSThread rmonIOThread ALIGNED(0x8);
+static OSMesg rmonMsgs[8] ALIGNED(0x8);
 static STACK(rmonIOStack, 0x4000) ALIGNED(0x10);
-static OSMesg rmonPiMsgs[8] ALIGNED(8);
-static OSMesgQueue rmonPiMQ ALIGNED(8);
+static OSMesg rmonPiMsgs[8] ALIGNED(0x8);
+static OSMesgQueue rmonPiMQ ALIGNED(0x8);
 
 void __rmonInit(void) {
     osCreateMesgQueue(&__rmonMQ, rmonMsgs, ARRLEN(rmonMsgs));

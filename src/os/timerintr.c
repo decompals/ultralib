@@ -10,7 +10,7 @@ OSTimer __osBaseTimer;
 OSTimer* __osTimerList = &__osBaseTimer;
 
 #ifndef _FINALROM
-OSMesgQueue __osProfTimerQ ALIGNED(8);
+OSMesgQueue __osProfTimerQ ALIGNED(0x8);
 OSProf* __osProfileList;
 OSProf* __osProfileListEnd;
 u32 __osProfileOverflowBin;

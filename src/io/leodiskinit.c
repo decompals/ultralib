@@ -4,7 +4,7 @@
 #include "PR/rcp.h"
 #include "PRinternal/macros.h"
 
-OSPiHandle LeoDiskHandle ALIGNED(8);
+OSPiHandle LeoDiskHandle ALIGNED(0x8);
 OSPiHandle *__osDiskHandle;
 
 OSPiHandle *osLeoDiskInit(void) {
