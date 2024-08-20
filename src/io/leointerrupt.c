@@ -2,11 +2,11 @@
 #include "PR/rcp.h"
 #include "PRinternal/osint.h"
 #include "PRinternal/piint.h"
-#include "macros.h"
+#include "PRinternal/macros.h"
 
 extern OSPiHandle *__osDiskHandle;
 
-u8 leoDiskStack[OS_PIM_STACKSIZE] ALIGNED(16);
+u8 leoDiskStack[OS_PIM_STACKSIZE] ALIGNED(0x10);
 
 static void __osLeoAbnormalResume(void);
 static void __osLeoResume(void);

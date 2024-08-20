@@ -1,4 +1,4 @@
-#include "macros.h"
+#include "PRinternal/macros.h"
 #include "PR/os_internal.h"
 #include "PR/R4300.h"
 #include "PR/rcp.h"
@@ -7,7 +7,7 @@
 // TODO: this comes from a header
 #ident "$Revision: 1.17 $"
 
-static __OSViContext vi[2] ALIGNED(8) = { 0 };
+static __OSViContext vi[2] ALIGNED(0x8) = { 0 };
 __OSViContext* __osViCurr = &vi[0];
 __OSViContext* __osViNext = &vi[1];
 

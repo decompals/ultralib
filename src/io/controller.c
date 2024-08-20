@@ -1,14 +1,14 @@
-#include "macros.h"
+#include "PRinternal/macros.h"
 #include "PR/os_internal.h"
 #include "PRinternal/controller.h"
 #include "PRinternal/siint.h"
 
-OSPifRam __osContPifRam ALIGNED(16);
+OSPifRam __osContPifRam;
 u8 __osContLastCmd;
 u8 __osMaxControllers;
 
 OSTimer __osEepromTimer;
-OSMesgQueue __osEepromTimerQ ALIGNED(8);
+OSMesgQueue __osEepromTimerQ ALIGNED(0x8);
 OSMesg __osEepromTimerMsg;
 
 s32 __osContinitialized = FALSE;

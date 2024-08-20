@@ -18,6 +18,8 @@ LEAF(__osDisableInt)
     lw      t0, (t2)
     andi    t0, SR_IMASK
     beq     t0, t3, No_Change_Global_Int
+    # @bug this la should be lw, it may never come up in practice as to reach this code
+    # the CPU bits of __OSGlobalIntMask must have changed while this function is running.
      la     t2, __osRunningThread # this is intentionally a macro in the branch delay slot
     lw      t1, THREAD_SR(t2)
     andi    t2, t1, SR_IMASK

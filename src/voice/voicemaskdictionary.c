@@ -4,7 +4,7 @@
  * Mask words registered in the voice recognition system
  */
 
-#include "macros.h"
+#include "PRinternal/macros.h"
 #include "PR/os_internal.h"
 #include "PRinternal/controller.h"
 #include "PR/os_voice.h"

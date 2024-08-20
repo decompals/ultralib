@@ -4,7 +4,7 @@
 #include "PR/rcp.h"
 #include "PRinternal/osint.h"
 
-#include "macros.h"
+#include "PRinternal/macros.h"
 
 typedef struct {
     /* 0x0 */ unsigned int inst1;
@@ -27,7 +27,7 @@ void MonitorInitBreak(void);
 
 #define IS64_MAGIC 'IS64'
 
-__osExceptionVector ramOldVector ALIGNED(8);
+__osExceptionVector ramOldVector ALIGNED(0x8);
 u32 gISVFlag;
 u16 gISVChk;
 u32 gISVDbgPrnAdrs;
