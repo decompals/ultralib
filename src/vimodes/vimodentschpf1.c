@@ -1,3 +1,13 @@
+/**
+ * @file vimodentschpf1.c
+ *
+ * NTSC HPF1 Video Mode
+ *
+ * H = High Resolution
+ * P = Point Sampled
+ * F = Deflickered Interlaced
+ * 1 = 16-bit Framebuffer
+ */
 #include "PR/os.h"
 #include "PR/rcp.h"
 #include "PRinternal/viint.h"

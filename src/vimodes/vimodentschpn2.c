@@ -1,3 +1,13 @@
+/**
+ * @file vimodentschpn2.c
+ *
+ * NTSC HPN2 Video Mode
+ *
+ * H = High Resolution
+ * P = Point Sampled
+ * N = Normal Interlaced
+ * 2 = 32-bit Framebuffer
+ */
 #include "PR/os.h"
 #include "PR/rcp.h"
 #include "PRinternal/viint.h"

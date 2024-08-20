@@ -1,3 +1,13 @@
+/**
+ * @file vimodepalhan1.c
+ *
+ * PAL HAN1 Video Mode
+ *
+ * H = High Resolution
+ * A = Anti-Aliased
+ * N = Normal Interlaced
+ * 1 = 16-bit Framebuffer
+ */
 #include "PR/os.h"
 #include "PR/rcp.h"
 #include "PRinternal/viint.h"

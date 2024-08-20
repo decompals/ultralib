@@ -1,3 +1,13 @@
+/**
+ * @file vimodentschpf2.c
+ *
+ * NTSC HPF2 Video Mode
+ *
+ * H = High Resolution
+ * P = Point Sampled
+ * F = Deflickered Interlaced
+ * 2 = 32-bit Framebuffer
+ */
 #include "PR/os.h"
 #include "PR/rcp.h"
 #include "PRinternal/viint.h"

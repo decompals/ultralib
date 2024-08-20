@@ -1,3 +1,13 @@
+/**
+ * @file vimodempallan2.c
+ *
+ * MPAL LAN2 Video Mode
+ *
+ * L = Low Resolution
+ * A = Anti-Aliased
+ * N = Non-Interlaced
+ * 2 = 32-bit Framebuffer
+ */
 #include "PR/os.h"
 #include "PR/rcp.h"
 #include "PRinternal/viint.h"

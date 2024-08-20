@@ -1,3 +1,13 @@
+/**
+ * @file vimodepalhaf1.c
+ *
+ * PAL HAF1 Video Mode
+ *
+ * H = High Resolution
+ * A = Anti-Aliased
+ * F = Deflickered Interlaced
+ * 1 = 16-bit Framebuffer
+ */
 #include "PR/os.h"
 #include "PR/rcp.h"
 #include "PRinternal/viint.h"

@@ -1,3 +1,13 @@
+/**
+ * @file vimodepallpn1.c
+ *
+ * PAL LPN1 Video Mode
+ *
+ * L = Low Resolution
+ * P = Point Sampled
+ * N = Non-Interlaced
+ * 1 = 16-bit Framebuffer
+ */
 #include "PR/os.h"
 #include "PR/rcp.h"
 #include "PRinternal/viint.h"
