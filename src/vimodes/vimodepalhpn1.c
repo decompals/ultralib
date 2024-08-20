@@ -1,3 +1,13 @@
+/**
+ * @file vimodepalhpn1.c
+ *
+ * PAL HPN1 Video Mode
+ *
+ * H = High Resolution
+ * P = Point Sampled
+ * N = Normal Interlaced
+ * 1 = 16-bit Framebuffer
+ */
 #include "PR/os.h"
 #include "PR/rcp.h"
 #include "PRinternal/viint.h"
