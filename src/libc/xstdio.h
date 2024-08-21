@@ -31,6 +31,6 @@ typedef struct {
 
 int _Printf(void* pfn(void*,const char*,size_t), void *arg, const char *fmt, va_list ap);
 void _Litob(_Pft *px, char code);
-void _Ldtob(_Pft* args, char type);
+void _Ldtob(_Pft* px, char code);
 
 #endif
