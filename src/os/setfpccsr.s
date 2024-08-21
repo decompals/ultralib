@@ -7,7 +7,7 @@ LEAF(__osSetFpcCsr)
     CFC1(   v0, fcr31)
     CTC1(   a0, fcr31)
     jr      ra
-#ifndef MODERN
+#ifndef MODERN_CC
 END(__osSetSR) # @bug: Should be __osSetFpcCsr
 #else
 END(__osSetFpcCsr)

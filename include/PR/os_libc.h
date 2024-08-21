@@ -80,7 +80,7 @@ extern "C" {
 
 /* byte string operations */
 
-#ifndef MODERN
+#ifndef MODERN_CC
 extern void     bcopy(const void *, void *, int);
 extern int      bcmp(const void *, const void *, int);
 extern void     bzero(void *, int);

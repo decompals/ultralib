@@ -6,7 +6,7 @@
 LEAF(__osGetFpcCsr)
     CFC1(   v0, fcr31)
     jr      ra
-#ifndef MODERN
+#ifndef MODERN_CC
 END(__osGetSR) # @bug: Should be __osGetFpcCsr
 #else
 END(__osGetFpcCsr)

@@ -1,4 +1,4 @@
-#ifdef MODERN
+#ifdef MODERN_CC
 .set gp=64
 #endif
 
