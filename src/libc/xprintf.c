@@ -47,7 +47,7 @@ int _Printf(void* pfn(void*,const char*,size_t), void *arg, const char *fmt, va_
     
     x.nchar = 0;
 
-    while (TRUE) {
+    while (1) {
         const char *s;
         char c;
         const char *t;
@@ -150,15 +150,15 @@ static void _Putfld(_Pft *px, va_list *pap, char code, char *ac) {
         case 'd':
         case 'i':
             if (px->qual == 'l') {
-                px->v.ll = va_arg(*pap, int);
+                px->v.ll = va_arg(*pap, long);
             } else if (px->qual == 'L') {
-                px->v.ll = va_arg(*pap, s64);
+                px->v.ll = va_arg(*pap, long long);
             } else {
                 px->v.ll = va_arg(*pap, int);
             }
 
             if (px->qual == 'h') {
-                px->v.ll = (s16)px->v.ll;
+                px->v.ll = (short)px->v.ll;
             }
 
             if (px->v.ll < 0) {
@@ -178,15 +178,15 @@ static void _Putfld(_Pft *px, va_list *pap, char code, char *ac) {
         case 'u':
         case 'o':
             if (px->qual == 'l') {
-                px->v.ll = va_arg(*pap, int);
+                px->v.ll = va_arg(*pap, long);
             } else if (px->qual == 'L') {
-                px->v.ll = va_arg(*pap, s64);
+                px->v.ll = va_arg(*pap, long long);
             } else {
                 px->v.ll = va_arg(*pap, int);
             }
 
             if (px->qual == 'h') {
-                px->v.ll = (u16)px->v.ll;
+                px->v.ll = (unsigned short)px->v.ll;
             } else if (px->qual == 0) {
                 px->v.ll = (unsigned int)px->v.ll;
             }
@@ -207,8 +207,7 @@ static void _Putfld(_Pft *px, va_list *pap, char code, char *ac) {
         case 'g':
         case 'E':
         case 'G':
-            //... okay?
-            px->v.ld = px->qual == 'L' ? va_arg(*pap, f64) : va_arg(*pap, f64);
+            px->v.ld = px->qual == 'L' ? va_arg(*pap, ldouble) : va_arg(*pap, double);
 
             if (LDSIGN(px->v.ld))
                 ac[px->n0++] = '-';
@@ -223,11 +222,11 @@ static void _Putfld(_Pft *px, va_list *pap, char code, char *ac) {
 
         case 'n':
             if (px->qual == 'h') {
-                *(va_arg(*pap, u16 *)) = px->nchar;
+                *va_arg(*pap, unsigned short *) = px->nchar;
             } else if (px->qual == 'l') {
-                *va_arg(*pap, unsigned int *) = px->nchar;
+                *va_arg(*pap, unsigned long *) = px->nchar;
             } else if (px->qual == 'L') {
-                *va_arg(*pap, u64 *) = px->nchar;
+                *va_arg(*pap, unsigned long long *) = px->nchar;
             } else {
                 *va_arg(*pap, unsigned int *) = px->nchar;
             }

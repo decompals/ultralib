@@ -9,10 +9,10 @@
 
 #define BUFF_LEN 0x20
 
-static short _Ldunscale(short* pex, double* px);
+static short _Ldunscale(short* pex, ldouble* px);
 static void _Genld(_Pft* px, char code, unsigned char* p, short nsig, short xexp);
 
-static const double pows[] = {10e0L, 10e1L, 10e3L, 10e7L, 10e15L, 10e31L, 10e63L, 10e127L, 10e255L};
+static const ldouble pows[] = {10e0L, 10e1L, 10e3L, 10e7L, 10e15L, 10e31L, 10e63L, 10e127L, 10e255L};
 
 // float properties
 #define _D0 0
@@ -41,12 +41,12 @@ static const double pows[] = {10e0L, 10e1L, 10e3L, 10e7L, 10e15L, 10e31L, 10e63L
 #define _D2 2
 #define _D3 3
 
-#define ALIGN(s, align) (((u32)(s) + ((align)-1)) & ~((align)-1))
+#define ALIGN(s, align) (((unsigned int)(s) + ((align)-1)) & ~((align)-1))
 
 void _Ldtob(_Pft* px, char code) {
     char buff[BUFF_LEN];
     char *p;
-    double ldval;
+    ldouble ldval;
     short err;
     short nsig;
     short xexp;
@@ -86,7 +86,7 @@ void _Ldtob(_Pft* px, char code) {
                     }
                 }
             } else if (xexp > 0) {
-                double factor = 1;
+                ldouble factor = 1;
                 
                 xexp &= ~3;
                 
@@ -159,7 +159,7 @@ void _Ldtob(_Pft* px, char code) {
     _Genld(px, code, p, nsig, xexp);
 }
 
-short _Ldunscale(short* pex, double* px) {
+short _Ldunscale(short* pex, ldouble* px) {
     unsigned short* ps = (unsigned short*)px;
     short xchar = (ps[_D0] & _DMASK) >> _DOFF;
 
