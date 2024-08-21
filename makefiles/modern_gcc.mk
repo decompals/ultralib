@@ -12,4 +12,9 @@ CPPFLAGS = -DMODERN_CC -D_MIPS_SZLONG=32 -D__USE_ISOC99 $(GBIDEFINE) $(VERSION_D
 IINC = -I . -I $(WORKING_DIR)/include -I $(WORKING_DIR)/include/modern_gcc -I $(WORKING_DIR)/include/PR
 MIPS_VERSION := -mips3
 ASOPTFLAGS :=
-OPTFLAGS := -Os -ffast-math -fno-unsafe-math-optimizations
+
+ifeq ($(findstring _d,$(TARGET)),_d)
+OPTFLAGS := -Og -ggdb3 -ffast-math -fno-unsafe-math-optimizations
+else
+OPTFLAGS := -Os -ggdb3 -ffast-math -fno-unsafe-math-optimizations
+endif
