@@ -4,8 +4,8 @@
 #include "stdlib.h"
 #include "stdarg.h"
 
-#ifndef MODERN_CC
-typedef double ldouble;
+#ifdef __sgi
+typedef double ldouble; // IDO does not support long doubles
 #else
 typedef long double ldouble;
 #endif
