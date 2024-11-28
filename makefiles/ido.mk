@@ -8,7 +8,7 @@ STRIP =
 CFLAGS := -c -Wab,-r4300_mul -G 0 -nostdinc -Xcpluscomm -fullwarn -woff 516,649,838,712
 ASFLAGS := -c -Wab,-r4300_mul -G 0 -nostdinc -woff 516,649,838,712
 CPPFLAGS = -D_MIPS_SZLONG=32 $(GBIDEFINE) $(VERSION_DEFINE) $(PICFLAGS) $(DEBUGFLAG)
-IINC = -I $(WORKING_DIR)/include -I $(WORKING_DIR)/include/ido -I $(WORKING_DIR)/include/PR
+IINC = -I $(WORKING_DIR)/include -I $(WORKING_DIR)/include/compiler/ido -I $(WORKING_DIR)/include/PR
 MIPS_VERSION := -mips2 -o32
 PICFLAGS := -non_shared
 

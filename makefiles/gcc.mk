@@ -8,7 +8,7 @@ STRIP =
 CFLAGS := -w -nostdinc -c -G 0 -mgp32 -mfp32 -D_LANGUAGE_C
 ASFLAGS := -w -nostdinc -c -G 0 -mgp32 -mfp32 -DMIPSEB -D_LANGUAGE_ASSEMBLY -D_MIPS_SIM=1 -D_ULTRA64
 CPPFLAGS = -D_MIPS_SZLONG=32 -D__USE_ISOC99 $(GBIDEFINE) $(VERSION_DEFINE) $(DEBUGFLAG)
-IINC = -I . -I $(WORKING_DIR)/include -I $(WORKING_DIR)/include/gcc -I $(WORKING_DIR)/include/PR
+IINC = -I . -I $(WORKING_DIR)/include -I $(WORKING_DIR)/include/compiler/gcc -I $(WORKING_DIR)/include/PR
 MIPS_VERSION := -mips3
 ASOPTFLAGS :=
 
