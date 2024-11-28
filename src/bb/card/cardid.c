@@ -1,12 +1,6 @@
 #include "PR/os_internal.h"
 #include "PR/bcp.h"
-
-s32 __osBbCardGetAccess(void);
-void __osBbCardRelAccess(void);
-
-s32 __osBbCardWaitEvent(void);
-
-extern s8 __osBbCardMultiplane;
+#include "PR/bbcard.h"
 
 s32 osBbCardReadId(u32 dev, u32* mfg, u32* type) {
     u32 status;
@@ -18,13 +12,13 @@ s32 osBbCardReadId(u32 dev, u32* mfg, u32* type) {
     }
 
     IO_WRITE(PI_70_REG, 0);
-    IO_WRITE(PI_48_REG, (dev << 12) | 0xD1900004);
+    IO_WRITE(PI_48_REG, NAND_READ_ID(0, dev, TRUE));
 
     rv = __osBbCardWaitEvent();
-    status = IO_READ(PI_10000_REG(0));
-    *mfg = status >> 0x18;
-    *type = (status >> 0x10) & 0xFF;
-    __osBbCardMultiplane = (status & 0xFF) == 0xC0;
+    status = IO_READ(PI_NAND_DATA_BUFFER(0, 0));
+    *mfg = NAND_ID_GET_MFG(status);
+    *type = NAND_ID_GET_TYPE(status);
+    __osBbCardMultiplane = NAND_ID_IS_MULTIPLANE(status);
 
     __osBbCardRelAccess();
     return rv;
