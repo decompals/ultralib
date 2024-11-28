@@ -1,8 +1,8 @@
 COMPARE ?= 1
-FIXUPS ?= 0
+MODERN_LD ?= 0
 MODERN_GCC ?= 0
 
-ifneq ($(FIXUPS),0)
+ifneq ($(MODERN_LD),0)
 COMPARE := 0
 endif
 
@@ -24,7 +24,7 @@ endif
 ifneq ($(MODERN_GCC),0)
 COMPILER := modern_gcc
 COMPARE := 0
-FIXUPS := 0
+MODERN_LD := 0
 endif
 
 BASE_DIR := extracted/$(VERSION)/$(TARGET)
@@ -188,7 +188,7 @@ ifneq ($(COMPARE),0)
 	 echo "Object file $(@F:.marker=.o) is not in the current archive" \
 	)
 endif
-ifneq ($(FIXUPS),0)
+ifneq ($(MODERN_LD),0)
 	tools/set_o32abi_bit.py $(WORKING_DIR)/$(@:.marker=.o)
 	$(CROSS)strip $(WORKING_DIR)/$(@:.marker=.o) -N asdasdasdasd
 	$(CROSS)objcopy --remove-section .mdebug $(WORKING_DIR)/$(@:.marker=.o)
@@ -207,7 +207,7 @@ ifneq ($(COMPARE),0)
 	 echo "Object file $(@F:.marker=.o) is not in the current archive" \
 	)
 endif
-ifneq ($(FIXUPS),0)
+ifneq ($(MODERN_LD),0)
 	tools/set_o32abi_bit.py $(WORKING_DIR)/$(@:.marker=.o)
 	$(CROSS)strip $(WORKING_DIR)/$(@:.marker=.o) -N asdasdasdasd
 	$(CROSS)objcopy --remove-section .mdebug $(WORKING_DIR)/$(@:.marker=.o)
@@ -230,7 +230,7 @@ ifneq ($(COMPARE),0)
 	 echo "Object file $(@F:.marker=.o) is not in the current archive" \
 	)
 endif
-ifneq ($(FIXUPS),0)
+ifneq ($(MODERN_LD),0)
 	tools/set_o32abi_bit.py $(WORKING_DIR)/$(@:.marker=.o)
 	$(CROSS)strip $(WORKING_DIR)/$(@:.marker=.o) -N asdasdasdasd
 	$(CROSS)objcopy --remove-section .mdebug $(WORKING_DIR)/$(@:.marker=.o)
