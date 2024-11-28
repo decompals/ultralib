@@ -1,4 +1,5 @@
 #include "PR/os_internal.h"
+#include "os_bbfs_export.h"
 #include "PR/bbfs.h"
 
 s32 osBbFStat(s32 fd, OSBbStatBuf* sb, u16* blockList, u32 listLen) {

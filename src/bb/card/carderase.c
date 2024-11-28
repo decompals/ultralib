@@ -1,4 +1,5 @@
 #include "PR/os_internal.h"
+#include "PR/os_bbcard.h"
 #include "bcp.h"
 
 void __osBbCardRelAccess(void);
@@ -48,15 +49,15 @@ s32 osBbCardEraseBlock(u32 dev, u16 block) {
     erase_block(dev, block);
     rv = __osBbCardWaitEvent();
     if ((rv < 0) || __osBbCardStatus(dev, &tmp, 0) != 0) {
-        rv = -4;
+        rv = BBCARD_ERR_CHANGED;
     } else if (tmp != 0xC0) {
-        rv = -2;
+        rv = BBCARD_ERR_FAIL;
     }
     __osBbCardRelAccess();
     return rv;
 }
 
-s32 osBbCardEraseBlocks(u32 dev, u16* block, u32 n) {
+s32 osBbCardEraseBlocks(u32 dev, const u16 block[], u32 n) {
     u32 i = 0;
     s32 rv;
     u8 tmp;
@@ -80,7 +81,7 @@ s32 osBbCardEraseBlocks(u32 dev, u16* block, u32 n) {
             plane |= p;
             j++;
         }
-    
+
         erase_blocks(dev, &block[i], j - i);
 
         rv = __osBbCardWaitEvent();
@@ -91,9 +92,9 @@ s32 osBbCardEraseBlocks(u32 dev, u16* block, u32 n) {
     }
 
     if (__osBbCardStatus(dev, &tmp, 0) != 0) {
-        rv = -4;
+        rv = BBCARD_ERR_CHANGED;
     } else if (tmp != 0xC0) {
-        rv = -2;
+        rv =BBCARD_ERR_FAIL;
     }
 err:
     __osBbCardRelAccess();
