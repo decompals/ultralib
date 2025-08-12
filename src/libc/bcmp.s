@@ -93,4 +93,4 @@ cmpne:
     li      v0, 1
     jr      ra
 
-.end _bcmp
+END(_bcmp)

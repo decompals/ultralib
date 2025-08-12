@@ -98,6 +98,6 @@ label_loop_j:
 	addu	sp , FRAME_SIZE
 	j	ra
 
-	.end	guMtxCatF
+	END(guMtxCatF)
 
 /* end of file */

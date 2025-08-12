@@ -217,4 +217,4 @@ backwards_4:
     addiu   a2, a2, -4
     b       backwards_4
 
-.end _bcopy
+END(_bcopy)
