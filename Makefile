@@ -63,7 +63,7 @@ CPPFLAGS += -D_FINALROM
 endif
 
 ifneq ($(COMPILER),ido)
-	ifneq ($(COMPARE),0)
+	ifeq ($(COMPARE),0)
 	CPPFLAGS += -D ASM_FIXUPS=1
 	endif
 endif
