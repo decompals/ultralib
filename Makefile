@@ -62,10 +62,10 @@ ifeq ($(findstring _rom,$(TARGET)),_rom)
 CPPFLAGS += -D_FINALROM
 endif
 
-ifeq ($(COMPARE),0)
-CPPFLAGS += -D COMPARE=0
-else
-CPPFLAGS += -D COMPARE=1
+ifneq ($(COMPILER),ido)
+	ifneq ($(COMPARE),0)
+	CPPFLAGS += -D ASM_FIXUPS=1
+	endif
 endif
 
 SRC_DIRS := $(shell find src -type d)
