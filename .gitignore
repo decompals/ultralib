@@ -18,6 +18,8 @@ build/
 expected/
 notes/
 tools/gcc
+tools/egcs
+tools/egcs_original
 tools/ido
 *.elf
 *.o
@@ -25,5 +27,6 @@ tools/ido
 
 # Tool artifacts
 ctx.c
+ctx.c.m2c
 
 libultra_collection/
