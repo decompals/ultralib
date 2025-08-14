@@ -32,7 +32,7 @@ extern "C" {
 		/* NABI32 is 64bit calling convention but 32bit type sizes) */
 #define _MIPS_SIM_ABI64		3	/* MIPS 64 calling convention */
 
-#if defined(MODERN_CC) || (defined(ASM_FIXUPS) && !defined(__sgi))
+#if (defined(ASM_FIXUPS) && !defined(__sgi))
 #define ASM_TYPE_FUNC(x)    .type   x, @function
 #else
 #define ASM_TYPE_FUNC(x)
@@ -45,7 +45,7 @@ extern "C" {
 x:;							\
 	.frame	sp,0,ra
 
-#if defined(MODERN_CC) || (defined(ASM_FIXUPS) && !defined(__sgi))
+#if (defined(ASM_FIXUPS) && !defined(__sgi))
 #define END(proc)           \
     .end    proc           ;\
     .size   proc, . - proc
