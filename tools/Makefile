@@ -1,6 +1,15 @@
 
 .PHONY: all clean distclean
 
+UNAME_S := $(shell uname -s)
+ifeq ($(UNAME_S),Darwin)
+	GNU_SUFFIX := mac
+	IDO_SUFFIX := macos
+else
+	GNU_SUFFIX := linux
+	IDO_SUFFIX := linux
+endif
+
 # GCC
 GCC_DIR   := gcc
 AR        := $(GCC_DIR)/ar
@@ -14,14 +23,14 @@ IDO-5.3   := $(IDO_DIR)/cc
 all: $(AR) $(GCC-2.7.2) $(STRIP-2.7) $(IDO-5.3)
 
 $(AR): | $(GCC_DIR)
-	wget https://github.com/decompals/mips-binutils-2.6/releases/download/main/binutils-2.6-linux.tar.gz
-	tar xf binutils-2.6-linux.tar.gz -C $(GCC_DIR)
-	$(RM) binutils-2.6-linux.tar.gz
+	wget https://github.com/decompals/mips-binutils-2.6/releases/download/main/binutils-2.6-$(GNU_SUFFIX).tar.gz
+	tar xf binutils-2.6-$(GNU_SUFFIX).tar.gz -C $(GCC_DIR)
+	$(RM) binutils-2.6-$(GNU_SUFFIX).tar.gz
 
 $(GCC-2.7.2): | $(GCC_DIR)
-	wget https://github.com/decompals/mips-gcc-2.7.2/releases/download/main/gcc-2.7.2-linux.tar.gz
-	tar xf gcc-2.7.2-linux.tar.gz -C $(GCC_DIR)
-	$(RM) gcc-2.7.2-linux.tar.gz
+	wget https://github.com/decompals/mips-gcc-2.7.2/releases/download/main/gcc-2.7.2-$(GNU_SUFFIX).tar.gz
+	tar xf gcc-2.7.2-$(GNU_SUFFIX).tar.gz -C $(GCC_DIR)
+	$(RM) gcc-2.7.2-$(GNU_SUFFIX).tar.gz
 
 $(STRIP-2.7): | $(GCC_DIR)
 	wget https://github.com/decompals/mips-binutils-2.7/releases/download/release/binutils-2.7.tar.gz
@@ -32,9 +41,9 @@ $(GCC_DIR):
 	mkdir -p $@
 
 $(IDO-5.3): | $(IDO_DIR)
-	wget https://github.com/decompals/ido-static-recomp/releases/latest/download/ido-5.3-recomp-linux.tar.gz
-	tar xf ido-5.3-recomp-linux.tar.gz -C $(IDO_DIR)
-	$(RM) ido-5.3-recomp-linux.tar.gz
+	wget https://github.com/decompals/ido-static-recomp/releases/latest/download/ido-5.3-recomp-$(IDO_SUFFIX).tar.gz
+	tar xf ido-5.3-recomp-$(IDO_SUFFIX).tar.gz -C $(IDO_DIR)
+	$(RM) ido-5.3-recomp-$(IDO_SUFFIX).tar.gz
 
 $(IDO_DIR):
 	mkdir -p $@
