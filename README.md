@@ -76,4 +76,4 @@ It is also possible to build archives using modern gcc by using `MODERN_GCC=1` l
 
 - `make VERSION=L TARGET=libgultra_rom MODERN_GCC=1`
 
-note that running with `MODERN_GCC=1` will automatically set `COMPARE=0` and `MODERN_LD=0`.
+note that running with `MODERN_GCC=1` will automatically set `COMPARE=0` and `MODERN_LD=0`. 
