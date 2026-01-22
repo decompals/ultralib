@@ -34,7 +34,7 @@ extern "C" {
 
 
 /* libgultra doesn't match with the .type directive but iQue sdk asm.h uses it */
-#ifdef BBPLAYER
+#if defined(BBPLAYER) || (defined(ASM_FIXUPS) && !defined(__sgi))
 #define ASM_TYPE_FUNC(x)    .type   x, @function
 #else
 #define ASM_TYPE_FUNC(x)
@@ -48,7 +48,7 @@ extern "C" {
     x:                     ;\
     .frame  sp,0,ra
 
-#if defined(BBPLAYER) || defined(__sgi)
+#if defined(BBPLAYER) || defined(__sgi) || defined(ASM_FIXUPS)
 #define XLEAF(x)    \
     .globl  x      ;\
     .aent   x,0    ;\
@@ -58,12 +58,24 @@ extern "C" {
     .globl  x
 #endif
 
-#ifdef BBPLAYER
+#if defined(BBPLAYER) || (defined(ASM_FIXUPS) && !defined(__sgi))
 #define END(proc)           \
     .end    proc           ;\
     .size   proc, . - proc
 #else
 #define END(proc)   \
+    .end    proc
+#endif
+
+/* Some specific asm functions (guMtxCatF, _bcmp, _bcopy, _bzero) do not use a .size directive
+   in any known libultra version, so this macro is used to allow using said directive on those
+   functions without breaking matching the archives. */
+#if (defined(ASM_FIXUPS) && !defined(__sgi))
+#define END2(proc)           \
+    .end    proc           ;\
+    .size   proc, . - proc
+#else
+#define END2(proc)   \
     .end    proc
 #endif
 
@@ -75,7 +87,7 @@ extern "C" {
     .globl  x      ;\
     x:
 
-#if defined(BBPLAYER) || defined(__sgi)
+#if defined(BBPLAYER) || defined(__sgi) || defined(ASM_FIXUPS)
 #define WEAK(x, y)      \
     .weakext    x,  y
 #else

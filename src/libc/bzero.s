@@ -69,4 +69,4 @@ bytezero:
 zerodone:
     jr      ra
 
-.end _bzero
+END2(_bzero)
