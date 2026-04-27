@@ -14,7 +14,7 @@ void osInitRdb(u8* sendBuf, u32 sendSize) {
     sendSize /= 4;
 
     if (((u32)sendBuf & 3) != 0) {
-        sendBuf = ((u32)sendBuf & 3) + 4;
+        sendBuf = (u8*)(((u32)sendBuf & 3) + 4);
         sendSize--;
     }
     mask = __osDisableInt();
