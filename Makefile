@@ -62,6 +62,12 @@ ifeq ($(findstring _rom,$(TARGET)),_rom)
 CPPFLAGS += -D_FINALROM
 endif
 
+ifneq ($(COMPILER),ido)
+	ifeq ($(COMPARE),0)
+	CPPFLAGS += -D ASM_FIXUPS=1
+	endif
+endif
+
 SRC_DIRS := $(shell find src -type d)
 C_FILES  := $(foreach dir,$(SRC_DIRS),$(wildcard $(dir)/*.c))
 S_FILES  := $(foreach dir,$(SRC_DIRS),$(wildcard $(dir)/*.s))
