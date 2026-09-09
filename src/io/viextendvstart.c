@@ -2,6 +2,10 @@
 #include "PR/ultraerror.h"
 #include "PRinternal/viint.h"
 
+#if defined(_DEBUG) && BUILD_VERSION <= VERSION_G
+extern u32 __additional_scanline;
+#endif
+
 void osViExtendVStart(u32 value) {
 #ifdef _DEBUG
     if (!__osViDevMgr.active) {

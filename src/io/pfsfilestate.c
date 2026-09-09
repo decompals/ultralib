@@ -70,9 +70,13 @@ s32 osPfsFileState(OSPfs* pfs, s32 file_no, OSPfsState* state) {
 
     pages = 0;
     start_page = dir.start_page.inode_t.page;
+#if defined(_DEBUG) && BUILD_VERSION <= VERSION_G
+    for (bank = dir.start_page.inode_t.bank; bank < pfs->banks;) {
+#else
     bank = dir.start_page.inode_t.bank;
 
     while (bank < pfs->banks) {
+#endif
         ERRCK(__osPfsRWInode(pfs, &inode, PFS_READ, bank));
         next_page = inode.inode_page[start_page];
         pages++;

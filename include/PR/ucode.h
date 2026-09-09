@@ -117,6 +117,16 @@ extern long long int	gspLine3D_dramDataStart[], gspLine3D_dramDataEnd[];
 extern long long int	gspLine3D_fifoTextStart[], gspLine3D_fifoTextEnd[];
 extern long long int	gspLine3D_fifoDataStart[], gspLine3D_fifoDataEnd[];
 
+#if defined(_DEBUG) && BUILD_VERSION <= VERSION_G
+/* Super3D was present in the 2.0G ucode header. */
+extern long long int gspSuper3DTextStart[], gspSuper3DTextEnd[];
+extern long long int gspSuper3DDataStart[], gspSuper3DDataEnd[];
+extern long long int gspSuper3D_dramTextStart[], gspSuper3D_dramTextEnd[];
+extern long long int gspSuper3D_dramDataStart[], gspSuper3D_dramDataEnd[];
+extern long long int gspSuper3D_fifoTextStart[], gspSuper3D_fifoTextEnd[];
+extern long long int gspSuper3D_fifoDataStart[], gspSuper3D_fifoDataEnd[];
+#endif
+
 /* 2D sprite ucode: */
 extern long long int	gspSprite2DTextStart[], gspSprite2DTextEnd[];
 extern long long int	gspSprite2DDataStart[], gspSprite2DDataEnd[];
@@ -133,6 +143,7 @@ extern long long int	gspSprite2D_fifoDataStart[], gspSprite2D_fifoDataEnd[];
 extern long long int 	aspMainTextStart[], aspMainTextEnd[];
 extern long long int 	aspMainDataStart[], aspMainDataEnd[];
 
+#if !defined(_DEBUG) || BUILD_VERSION > VERSION_G
 /*========== F3DEX/F3DLX/F3DLP/L3DEX ==========*/
 /* FIFO version only */
 extern long long int  gspF3DEX_fifoTextStart[],     gspF3DEX_fifoTextEnd[];
@@ -176,6 +187,7 @@ extern long long int gspF3DLX2_Rej_xbusTextStart[],gspF3DLX2_Rej_xbusTextEnd[];
 extern long long int gspF3DLX2_Rej_xbusDataStart[],gspF3DLX2_Rej_xbusDataEnd[];
 extern long long int gspL3DEX2_xbusTextStart[],    gspL3DEX2_xbusTextEnd[];
 extern long long int gspL3DEX2_xbusDataStart[],    gspL3DEX2_xbusDataEnd[];
+#endif
 
 /**************************************************************************
  *

@@ -22,6 +22,9 @@
 #include <assert.h>
 // TODO: this comes from a header
 #ident "$Revision: 1.17 $"
+#if defined(_DEBUG) && BUILD_VERSION <= VERSION_G
+#line 24 "../audio/seqpdelete.c"
+#endif
 
 void alSeqpDelete(ALSeqPlayer *seqp)
 {
@@ -36,4 +39,3 @@ void alSeqpDelete(ALSeqPlayer *seqp)
 
     alSynRemovePlayer(seqp->drvr, &seqp->node);
 }
-

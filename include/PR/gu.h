@@ -36,9 +36,15 @@
 #define M_PI		3.14159265358979323846
 #define M_DTOR		(3.14159265358979323846/180.0)
 
+#if BUILD_VERSION < VERSION_I
+#define	FTOFIX32(x)	((x) * 0x10000)
+#define	FIX32TOF(x)	((float)(((float)x) / (float)(0x10000)))
+#define	FTOFRAC8(x)	((int) MIN(((x) * (128.0)),127.0) & 0xff)
+#else
 #define	FTOFIX32(x)	(long)((x) * (float)0x00010000)
 #define	FIX32TOF(x)	((float)(x) * (1.0f / (float)0x00010000))
 #define	FTOFRAC8(x)	((int) MIN(((x) * (128.0f)), 127.0f) & 0xff)
+#endif
 
 #define  FILTER_WRAP 0
 #define  FILTER_CLAMP 1
@@ -264,7 +270,18 @@ void guSprite2DInit(uSprite *SpritePointer,
 		    int SubImageHeight,
 		    int SourceImageType,
 		    int SourceImageBitSize,
+#if BUILD_VERSION < VERSION_I
+		    int ScaleX,
+		    int ScaleY,
+		    int FlipTextureX,
+		    int FlipTextureY,
+#endif
 		    int SourceImageOffsetS,
-		    int SourceImageOffsetT);
+		    int SourceImageOffsetT
+#if BUILD_VERSION < VERSION_I
+		    , int PScreenX,
+		    int PScreenY
+#endif
+		    );
 
 #endif /* !_GU_H_ */

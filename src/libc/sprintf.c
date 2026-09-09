@@ -1,6 +1,11 @@
 #include "xstdio.h"
 #include "string.h"
+#include "PR/os_version.h"
+#if defined(_DEBUG) && BUILD_VERSION <= VERSION_G
+#include "G/os_globals.h"
+#else
 #include "os.h"
+#endif
 
 // TODO: this comes from a header
 #ident "$Revision: 1.23 $"

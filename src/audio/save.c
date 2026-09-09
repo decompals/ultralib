@@ -22,6 +22,9 @@
 #include <assert.h>
 // TODO: this comes from a header
 #ident "$Revision: 1.17 $"
+#if defined(_DEBUG) && BUILD_VERSION <= VERSION_G
+#line 24 "../audio/save.c"
+#endif
 
 Acmd *alSavePull(void *filter, s16 *outp, s32 outCount, s32 sampleOffset,
                  Acmd *p) 
@@ -29,7 +32,9 @@ Acmd *alSavePull(void *filter, s16 *outp, s32 outCount, s32 sampleOffset,
     Acmd        *ptr = p;
     ALSave *f = (ALSave *)filter;
     ALFilter    *source = f->filter.source;
-#if BUILD_VERSION < VERSION_J
+#if defined(_DEBUG) && BUILD_VERSION <= VERSION_G
+#line 32
+#elif BUILD_VERSION < VERSION_J
 #line 33
 #endif
     assert(f->filter.source);
@@ -65,6 +70,5 @@ s32 alSaveParam(void *filter, s32 paramID, void *param)
     return 0;
             
 }
-
 
 

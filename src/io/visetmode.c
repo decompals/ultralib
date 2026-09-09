@@ -1,4 +1,9 @@
+#include "PR/os_version.h"
+#if defined(_DEBUG) && BUILD_VERSION <= VERSION_G
+#include "G/os_internal_compat.h"
+#else
 #include "PR/os_internal.h"
+#endif
 #include "PR/ultraerror.h"
 #include "assert.h"
 #include "PRinternal/viint.h"
@@ -55,6 +60,9 @@ void osViSetMode(OSViMode* modep) {
         return;
     }
 
+#if BUILD_VERSION <= VERSION_G
+#line 57 "../io/visetmode.c"
+#endif
     assert(modep != NULL);
 #endif
 

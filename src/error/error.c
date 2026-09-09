@@ -1,6 +1,11 @@
 // This file was removed in 2.0J
 #include "stdarg.h"
+#include "PR/os_version.h"
+#if defined(_DEBUG) && BUILD_VERSION <= VERSION_G
+#include "G/os_internal_compat.h"
+#else
 #include "PR/os_internal.h"
+#endif
 #include "PR/ultralog.h"
 #include "PR/ultraerror.h"
 #include "PRinternal/macros.h"

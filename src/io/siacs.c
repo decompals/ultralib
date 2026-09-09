@@ -1,5 +1,10 @@
 #include "PRinternal/macros.h"
+#include "PR/os_version.h"
+#if defined(_DEBUG) && BUILD_VERSION <= VERSION_G
+#include "G/os_internal_compat.h"
+#else
 #include "PR/os_internal.h"
+#endif
 
 #define SI_Q_BUF_LEN 1
 static OSMesg siAccessBuf[SI_Q_BUF_LEN] ALIGNED(0x8);

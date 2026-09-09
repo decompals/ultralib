@@ -231,6 +231,16 @@ u8 __osContAddressCrc(u16 addr);
 u8 __osContDataCrc(u8 *data);
 s32 __osPfsGetStatus(OSMesgQueue *queue, int channel);
 
+#if defined(_DEBUG) && BUILD_VERSION <= VERSION_G
+extern OSPifRam __osContPifRam;
+extern OSPifRam __osPfsPifRam;
+extern OSPifRam __osEepPifRam;
+extern u8 __osContLastCmd;
+extern u8 __osMaxControllers;
+extern OSTimer __osEepromTimer;
+extern OSMesgQueue __osEepromTimerQ;
+extern OSMesg __osEepromTimerMsg;
+#else
 extern u8 __osContLastCmd;
 extern OSTimer __osEepromTimer;
 extern OSMesg __osEepromTimerMsg;
@@ -239,6 +249,7 @@ extern OSPifRam __osEepPifRam;
 extern OSPifRam __osContPifRam;
 extern OSPifRam __osPfsPifRam;
 extern u8 __osMaxControllers;
+#endif
 
 //some version of this almost certainly existed since there's plenty of times where it's used right before a return 0
 #define ERRCK(fn) \

@@ -45,6 +45,9 @@
 #include "cseq.h"
 // TODO: this comes from a header
 #ident "$Revision: 1.17 $"
+#if defined(_DEBUG) && BUILD_VERSION <= VERSION_G
+#line 47 "../audio/csplayer.c"
+#endif
 static ALMicroTime      __CSPVoiceHandler(void *node);
 static void		__CSPHandleNextSeqEvent(ALCSPlayer *seqp);
 static void             __CSPHandleMIDIMsg(ALCSPlayer *seqp, ALEvent *event);
@@ -879,4 +882,3 @@ static void __setUsptFromTempo (ALCSPlayer *seqp, f32 tempo)
     else
 	seqp->uspt = 488;		/* This is the initial value set by alSeqpNew. */
 }
-

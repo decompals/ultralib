@@ -1,6 +1,11 @@
 #ifndef _VIINT_H
 #define _VIINT_H
+#include "PR/os_version.h"
+#if defined(_DEBUG) && BUILD_VERSION <= VERSION_G
+#include "PR/os.h"
+#else
 #include "PR/os_internal.h"
+#endif
 
 #define OS_TV_TYPE_PAL 0
 #define OS_TV_TYPE_NTSC 1
@@ -25,6 +30,15 @@
 #define VSYNC(v) (v)
 #define HSYNC(duration, leap) (((u32)(leap) << 16) | ((u32)(duration) & 0xFFFF))
 #define LEAP(upper, lower) (((u32)(upper) << 16) | ((u32)(lower) & 0xFFFF))
+#if BUILD_VERSION < VERSION_I
+#define PAL_BURST BURST(58, 35, 4, 64)
+#define PAL_HSYNC HSYNC(3177, 21)
+#define PAL_LEAP LEAP(3183, 3182)
+#else
+#define PAL_BURST BURST(58, 30, 4, 69)
+#define PAL_HSYNC HSYNC(3177, 23)
+#define PAL_LEAP LEAP(3183, 3181)
+#endif
 #define START(start, end) (((u32)(start) << 16) | ((u32)(end) & 0xFFFF))
 
 #define FTOFIX(val, i, f) ((u32)((val) * (f32)(1 << (f))) & ((1 << ((i) + (f))) - 1))
@@ -58,10 +72,18 @@ typedef struct
 } __OSViContext; // 0x30 bytes
 
 void __osViSwapContext(void);
+#if defined(_DEBUG) && BUILD_VERSION <= VERSION_G
+extern OSDevMgr __osViDevMgr;
+extern __OSViContext *__osViCurr;
+extern __OSViContext *__osViNext;
+#else
 extern __OSViContext *__osViCurr;
 extern __OSViContext *__osViNext;
 extern u32 __additional_scanline;
+#endif
 __OSViContext *__osViGetCurrentContext(void);
 void __osViInit(void);
+#if !defined(_DEBUG) || BUILD_VERSION > VERSION_G
 extern OSDevMgr __osViDevMgr;
+#endif
 #endif

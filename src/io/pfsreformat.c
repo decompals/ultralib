@@ -14,7 +14,9 @@ s32 osPfsReFormat(OSPfs* pfs, OSMesgQueue* queue, int channel) {
     ret = __osPfsGetStatus(queue, channel);
 
     if (ret != 0) {
+#if BUILD_VERSION >= VERSION_I
         __osSiRelAccess();
+#endif
         return ret;
     }
 

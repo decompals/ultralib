@@ -1,11 +1,51 @@
 #include "stdarg.h"
+#include "PR/os_version.h"
+#if defined(_DEBUG) && BUILD_VERSION <= VERSION_G
+#include "PR/ultratypes.h"
+#include "G/os_globals.h"
+#include "PR/rdb.h"
+extern u32 __osRdbSend(u8* buf, u32 size, u32 type);
+#else
 #include "PR/os.h"
 #include "PR/os_internal.h"
 #include "PR/rdb.h"
+#endif
 #include "xstdio.h"
+#if defined(_DEBUG) && BUILD_VERSION <= VERSION_G
+#define _ULTRALIB_G_NO_OS_INTERNAL_DECLS
+#endif
 #include "PR/rcp.h"
+#if defined(_DEBUG) && BUILD_VERSION <= VERSION_G
+#undef _ULTRALIB_G_NO_OS_INTERNAL_DECLS
+#endif
 
+#if BUILD_VERSION >= VERSION_I
 extern void* __printfunc;
+#endif
+
+#if BUILD_VERSION < VERSION_I
+
+static void* proutSyncPrintf(void* str, const char* buf, size_t n) {
+#ifndef _FINALROM
+    u32 sent = 0;
+
+    while (sent < n) {
+        sent += __osRdbSend(buf + sent, n - sent, RDB_TYPE_GtoH_PRINT);
+    }
+#endif
+    return (void*)1;
+}
+
+void osSyncPrintf(const char* fmt, ...) {
+    int ans;
+    va_list ap;
+
+    va_start(ap, fmt);
+    ans = _Printf(proutSyncPrintf, NULL, fmt, ap);
+    va_end(ap);
+}
+
+#else
 
 #if BUILD_VERSION <= VERSION_J
 
@@ -149,5 +189,7 @@ void rmonPrintf(const char* fmt, ...) {
     va_end(ap);
 #endif
 }
+
+#endif
 
 #endif

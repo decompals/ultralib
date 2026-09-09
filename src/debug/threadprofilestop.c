@@ -1,3 +1,6 @@
+#include "PR/os_version.h"
+
+#if BUILD_VERSION >= VERSION_K
 #include "osint_debug.h"
 
 void osThreadProfileStop(void) {
@@ -45,3 +48,4 @@ void osThreadProfileStop(void) {
     }
     __osRestoreInt(saveMask);
 }
+#endif

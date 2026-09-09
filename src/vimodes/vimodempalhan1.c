@@ -8,9 +8,14 @@
  * N = Normal Interlaced
  * 1 = 16-bit Framebuffer
  */
+#include "PR/os_version.h"
+#if defined(_DEBUG) && BUILD_VERSION <= VERSION_G
+#include "G/vimode.h"
+#else
 #include "PR/os.h"
 #include "PR/rcp.h"
 #include "PRinternal/viint.h"
+#endif
 
 OSViMode osViModeMpalHan1 = {
     OS_VI_MPAL_HAN1, // type

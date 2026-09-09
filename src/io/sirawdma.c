@@ -1,6 +1,9 @@
 #include "PR/os_internal.h"
 #include "assert.h"
 #include "PRinternal/siint.h"
+#if defined(_DEBUG) && BUILD_VERSION <= VERSION_G
+#include "PRinternal/controller.h"
+#endif
 
 
 
@@ -43,7 +46,9 @@
 
 
 // Adjust line numbers to match assert
-#if BUILD_VERSION < VERSION_J
+#if defined(_DEBUG) && BUILD_VERSION <= VERSION_G
+#line 45 "../io/sirawdma.c"
+#elif BUILD_VERSION < VERSION_J
 #line 47
 #endif
 

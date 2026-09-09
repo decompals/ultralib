@@ -1,6 +1,10 @@
 #include "PR/region.h"
 #include "PR/ultraerror.h"
+#if defined(_DEBUG) && BUILD_VERSION <= VERSION_G
+#include "PR/os.h"
+#else
 #include "PR/os_internal.h"
+#endif
 #include "assert.h"
 
 
@@ -53,6 +57,9 @@ void* osMalloc(void* region) {
     char* addr;
 
 #ifdef _DEBUG
+#if BUILD_VERSION <= VERSION_G
+#line 55 "../rg/malloc.c"
+#endif
     assert(rp != NULL);
     if (((char*)rp + ALIGN(sizeof(OSRegion), rp->r_alignSize)) != rp->r_startBufferAddress) {
         __osError(ERR_OSMALLOC, 1, region);

@@ -24,6 +24,12 @@
 #include "initfx.h"
 // TODO: this comes from a header
 #ident "$Revision: 1.49 $"
+/* Preserve the source location embedded in debug heap allocation calls. */
+#if defined(_DEBUG) && BUILD_VERSION == VERSION_G
+#line 25 "../audio/drvrNew.c"
+#else
+#line 26
+#endif
 /*
  * WARNING: THE FOLLOWING CONSTANT MUST BE KEPT IN SYNC
  * WITH SCALING IN MICROCODE!!!

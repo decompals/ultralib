@@ -8,9 +8,14 @@
  * N = Normal Interlaced
  * 1 = 16-bit Framebuffer
  */
+#include "PR/os_version.h"
+#if defined(_DEBUG) && BUILD_VERSION <= VERSION_G
+#include "G/vimode.h"
+#else
 #include "PR/os.h"
 #include "PR/rcp.h"
 #include "PRinternal/viint.h"
+#endif
 
 OSViMode osViModePalHpn1 = {
     OS_VI_PAL_HPN1, // type
@@ -19,10 +24,10 @@ OSViMode osViModePalHpn1 = {
         VI_CTRL_TYPE_16 | VI_CTRL_GAMMA_DITHER_ON | VI_CTRL_GAMMA_ON | VI_CTRL_SERRATE_ON | VI_CTRL_ANTIALIAS_MODE_2 |
             VI_CTRL_PIXEL_ADV_3, // ctrl
         WIDTH(1280),             // width
-        BURST(58, 30, 4, 69),    // burst
+        PAL_BURST,    // burst
         VSYNC(624),              // vSync
-        HSYNC(3177, 23),         // hSync
-        LEAP(3183, 3181),        // leap
+        PAL_HSYNC,         // hSync
+        PAL_LEAP,        // leap
         HSTART(128, 768),        // hStart
         SCALE(1, 0),             // xScale
         VCURRENT(0),             // vCurrent

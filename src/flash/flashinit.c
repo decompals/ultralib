@@ -25,7 +25,9 @@ OSPiHandle* osFlashInit(void) {
     __osFlashHandler.pulse = FLASH_PULSE;
     __osFlashHandler.pageSize = FLASH_PAGE_SIZE;
     __osFlashHandler.relDuration = FLASH_REL_DURATION;
+#if !defined(_DEBUG) || BUILD_VERSION > VERSION_G
     __osFlashHandler.domain = PI_DOMAIN2;
+#endif
     __osFlashHandler.speed = 0;
 
     bzero(&__osFlashHandler.transferInfo, sizeof(__OSTranxInfo));

@@ -20,6 +20,9 @@
 #include <PR/os_version.h>
 // TODO: this comes from a header
 #ident "$Revision: 1.17 $"
+#if defined(_DEBUG) && BUILD_VERSION <= VERSION_G
+#line 22 "../audio/synthesizer.c"
+#endif
 
 #ifdef AUD_PROFILE
 #include <os.h>
@@ -318,6 +321,5 @@ static s32 __nextSampleTime(ALSynth *drvr, ALPlayer **client)
 
     return (*client)->samplesLeft;
 }
-
 
 

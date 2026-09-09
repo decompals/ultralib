@@ -17,7 +17,9 @@ OSPiHandle *osDriveRomInit(void) {
     DriveRomHandle.pulse = 7;
     DriveRomHandle.pageSize = 7;
     DriveRomHandle.relDuration = 2;
+#if BUILD_VERSION >= VERSION_I
     DriveRomHandle.domain = PI_DOMAIN1;
+#endif
     DriveRomHandle.speed = 0;
 
     bzero(&DriveRomHandle.transferInfo, sizeof(__OSTranxInfo));

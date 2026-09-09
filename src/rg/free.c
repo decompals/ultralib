@@ -1,7 +1,11 @@
 #include "PR/region.h"
 #include "PR/R4300.h"
 #include "PR/ultraerror.h"
+#if defined(_DEBUG) && BUILD_VERSION <= VERSION_G
+#include "PR/os.h"
+#else
 #include "PR/os_internal.h"
+#endif
 #include "assert.h"
 
 
@@ -48,6 +52,9 @@ void osFree(void* region, void* addr) {
     int i;
 
 #ifdef _DEBUG
+#if BUILD_VERSION <= VERSION_G
+#line 50 "../rg/free.c"
+#endif
     assert((region != NULL) && (addr != NULL));
     if (((char*)rp + ALIGN(sizeof(OSRegion), rp->r_alignSize)) != rp->r_startBufferAddress) {
         __osError(ERR_OSFREE_REGION, 1, region);

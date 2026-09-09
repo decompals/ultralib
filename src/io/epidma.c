@@ -1,6 +1,10 @@
 #include "PRinternal/piint.h"
 #include "PR/ultraerror.h"
 
+#if defined(_DEBUG) && BUILD_VERSION <= VERSION_G
+extern OSDevMgr __osPiDevMgr;
+#endif
+
 s32 osEPiStartDma(OSPiHandle* pihandle, OSIoMesg* mb, s32 direction) {
     register s32 ret;
 

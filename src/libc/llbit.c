@@ -1,4 +1,9 @@
 #include "PR/ultratypes.h"
+#include "PR/os_version.h"
+
+#if defined(_DEBUG) && BUILD_VERSION <= VERSION_G
+#include "G/os_globals.h"
+#endif
 
 s64 __ll_bit_extract(u64* addr, unsigned int start_bit, unsigned int length) {
     unsigned int words;

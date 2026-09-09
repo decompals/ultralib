@@ -1,6 +1,12 @@
 #ifndef _FINALROM
+#include "PR/os_version.h"
+#if defined(_DEBUG) && BUILD_VERSION <= VERSION_G
+#include "PR/os_internal.h"
+#include "PR/rdb.h"
+#else
 #include "PR/rdb.h"
 #include "PR/os_internal.h"
+#endif
 
 rdbPacket* __osRdb_IP6_Data;
 u32 __osRdb_IP6_Size;

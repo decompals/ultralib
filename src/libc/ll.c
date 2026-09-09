@@ -1,3 +1,9 @@
+#include "PR/os_version.h"
+
+#if defined(_DEBUG) && BUILD_VERSION <= VERSION_G
+#include "G/os_globals.h"
+#endif
+
 unsigned long long __ull_rshift(unsigned long long a0, unsigned long long a1) {
     return a0 >> a1;
 }

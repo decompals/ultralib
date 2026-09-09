@@ -65,7 +65,7 @@ __osIntOffTable:
 __osIntTable:
     .word redispatch, sw1, sw2, rcp, cart, prenmi, IP6_Hdlr, IP7_Hdlr, counter
 
-#ifndef _FINALROM
+#if !defined(_FINALROM) && BUILD_VERSION >= VERSION_I
 EXPORT(__osCauseTable_pt)
     .byte 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0
     .byte 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0
@@ -119,7 +119,7 @@ LEAF(__osExceptionPreamble)
     jr      k0
 END(__osExceptionPreamble)
 
-#ifndef _FINALROM
+#if !defined(_FINALROM) && BUILD_VERSION >= VERSION_I
 LEAF(__ptExceptionPreamble)
 .set noreorder
     sw      k0, -0x10(sp)
@@ -205,8 +205,10 @@ LEAF(__osException)
     /* This instruction is useless, leftover because of bad placement of an ifdef for the debug version */
     MFC0(   t0, C0_CAUSE)
 #ifndef _FINALROM
+#if BUILD_VERSION >= VERSION_I
     lw      t2, __kmc_pt_mode
     bnez    t2, skip_kmc_mode
+#endif
     andi    t1, t0, 0x7c
     li      t2, 0
     bne     t1, t2, savecontext
@@ -396,7 +398,9 @@ rdbout:
     eret
 .set reorder
 
+#if BUILD_VERSION >= VERSION_I
 skip_kmc_mode:
+#endif
 #endif
 
 savecontext:
@@ -444,8 +448,16 @@ savecontext:
     sd      $31, THREAD_GP31(k0)
 
     mflo    t0
+#if defined(_DEBUG) && BUILD_VERSION <= VERSION_G
+    nop
+    nop
+#endif
     sd      t0, THREAD_LO(k0)
     mfhi    t0
+#if defined(_DEBUG) && BUILD_VERSION <= VERSION_G
+    nop
+    nop
+#endif
     sd      t0, THREAD_HI(k0)
 
     lw      k1, THREAD_SR(k0)
@@ -460,6 +472,14 @@ savecontext:
      */
     la      t0, __OSGlobalIntMask
     lw      t0, 0(t0)
+#if BUILD_VERSION < VERSION_I
+    xor     t0, t0, ~0
+    andi    t0, t0, SR_IMASK
+    or      t1, t1, t0
+    and     k1, k1, ~SR_IMASK
+    or      k1, k1, t1
+    sw      k1, THREAD_SR(k0)
+#else
     xor     t2, t0, ~0 /* not except not using not */
     andi    t2, t2, SR_IMASK
     or      ta0, t1, t2
@@ -470,6 +490,7 @@ savecontext:
     and     t1, t1, t0
     and     k1, k1, ~SR_IMASK
     or      k1, k1, t1
+#endif
 savercp:
 
     /* Save the currently masked RCP interrupts. */
@@ -653,7 +674,9 @@ cart:
 
     /* Set up a stack and run the callback */
     jalr    t2
+#if BUILD_VERSION >= VERSION_I
     li      a0, MESG(OS_EVENT_CART)
+#endif
 
     beqz    v0, 1f
     /* Redispatch immediately if the callback returned nonzero */
@@ -697,7 +720,11 @@ rcp:
     /* Mask out SP interrupt */
     andi    s1, s1, (MI_INTR_SI | MI_INTR_AI | MI_INTR_VI | MI_INTR_PI | MI_INTR_DP)
     lw      ta0, PHYS_TO_K1(SP_STATUS_REG)
+#if BUILD_VERSION < VERSION_I
+    li      t1, SP_CLR_INTR
+#else
     li      t1, (SP_CLR_INTR | SP_CLR_SIG3)
+#endif
 
     /* Clear interrupt and signal 3 */
     sw      t1, PHYS_TO_K1(SP_STATUS_REG)
@@ -998,6 +1025,10 @@ LEAF(send_mesg)
     addu    ta1, ta1, t3
 
     rem     ta1, ta1, ta0
+#if defined(_DEBUG) && BUILD_VERSION <= VERSION_G
+    nop
+    nop
+#endif
     lw      ta0, MQ_MSG(t1)
     mul     ta1, ta1, 4
     addu    ta0, ta0, ta1
@@ -1181,6 +1212,9 @@ LEAF(__osPopThread)
     lw      v0, 0(a0) /* a0 is OSThread** */
     lw      t9, THREAD_NEXT(v0)
     sw      t9, 0(a0)
+#if defined(_DEBUG) && BUILD_VERSION <= VERSION_G
+    sw      zero, THREAD_NEXT(v0)
+#endif
     jr      ra
 END(__osPopThread)
 

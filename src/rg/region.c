@@ -187,7 +187,12 @@ void* osCreateRegion(void* startAddress, u32 length, u32 bufferSize, u32 alignSi
     register int i;
     register char* addr;
 
+#if defined(_DEBUG) && BUILD_VERSION <= VERSION_G
+#line 190 "../rg/region.c"
+    assert(startAddress != (void *)NULL);
+#else
     assert(startAddress != NULL);
+#endif
 
 #ifdef _DEBUG
     if ((alignSize != 0) && (alignSize != OS_RG_ALIGN_2B) && (alignSize != OS_RG_ALIGN_4B) &&

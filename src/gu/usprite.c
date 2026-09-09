@@ -21,8 +21,19 @@ void guSprite2DInit(uSprite *SpritePointer,
 		    short SubImageHeight,
 		    char  SourceImageType,
 		    char  SourceImageBitSize,
+#if BUILD_VERSION < VERSION_I
+		    short ScaleX,
+		    short ScaleY,
+		    char  FlipTextureX,
+		    char  FlipTextureY,
+#endif
 		    short SourceImageOffsetS,
-		    short SourceImageOffsetT)
+		    short SourceImageOffsetT
+#if BUILD_VERSION < VERSION_I
+		    , short PScreenX,
+		    short PScreenY
+#endif
+		    )
 {
   SpritePointer->s.SourceImagePointer = SourceImagePointer;
   SpritePointer->s.TlutPointer        = TlutPointer;
@@ -31,9 +42,19 @@ void guSprite2DInit(uSprite *SpritePointer,
   SpritePointer->s.SubImageHeight     = SubImageHeight;
   SpritePointer->s.SourceImageType    = SourceImageType;
   SpritePointer->s.SourceImageBitSize = SourceImageBitSize;
+#if BUILD_VERSION < VERSION_I
+  SpritePointer->s.ScaleX             = ScaleX;
+  SpritePointer->s.ScaleY             = ScaleY;
+  SpritePointer->s.FlipTextureX       = FlipTextureX;
+  SpritePointer->s.FlipTextureY       = FlipTextureY;
+#endif
   SpritePointer->s.SourceImageOffsetS = SourceImageOffsetS;
   SpritePointer->s.SourceImageOffsetT = SourceImageOffsetT;
-}		 
+#if BUILD_VERSION < VERSION_I
+  SpritePointer->s.PScreenX           = PScreenX;
+  SpritePointer->s.PScreenY           = PScreenY;
+#endif
+}
 		 
 		 
 		

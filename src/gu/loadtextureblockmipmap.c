@@ -14,8 +14,14 @@
  * NOTE: To view this file correctly, set tabstop=3
 *****************************************************************************/												
 #include "guint.h"
+#include "PR/os_version.h"
+#if defined(_DEBUG) && BUILD_VERSION <= VERSION_G
+#include "G/stdio.h"
+#include "G/ultra64.h"
+#else
 #include <stdio.h>
 #include "ultra64.h"
+#endif
 #include "PRinternal/macros.h"
 
 // TODO: this comes from a header
@@ -44,7 +50,11 @@ struct Tile
 };
 
 /* tram mipmaps */
+#if defined(_DEBUG) && BUILD_VERSION <= VERSION_G
+static struct Tile mipmap[MM_MAX_LEVEL+1];
+#else
 static struct Tile mipmap[MM_MAX_LEVEL+1] ALIGNED(0x8);
+#endif
 static struct texelSizeParams sizeParams[4] =
 					{ 16, 3, 1, 0,
 					   8, 2, 2, 1,

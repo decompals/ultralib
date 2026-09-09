@@ -70,6 +70,9 @@
  * ](http://www.sunshine2k.de/articles/coding/crc/understanding_crc.html)
  */
 #include "PR/os_internal.h"
+#if defined(_DEBUG) && BUILD_VERSION <= VERSION_G
+#include "PRinternal/controller.h"
+#endif
 
 #if BUILD_VERSION >= VERSION_J
 

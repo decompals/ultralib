@@ -1,6 +1,15 @@
+#include "os_version.h"
 #include "stdlib.h"
 #include "string.h"
 #include "xstdio.h"
+
+#if defined(_DEBUG) && BUILD_VERSION <= VERSION_G
+extern unsigned char __ctype[];
+extern char* optarg;
+extern int opterr;
+extern int optind;
+extern int optopt;
+#endif
 
 // TODO: these come from headers
 #ident "$Revision: 1.34 $"
@@ -50,9 +59,16 @@ void _Litob(_Pft *px, char code) {
         px->nz0 = px->prec - px->n1;
     }
 
+#if defined(_DEBUG) && BUILD_VERSION <= VERSION_G
+    if (px->prec < 0 && (px->flags & (FLAGS_ZERO | FLAGS_MINUS)) == FLAGS_ZERO &&
+        (i = px->width - px->n0 - px->nz0 - px->n1) > 0) {
+        px->nz0 += i;
+    }
+#else
     if (px->prec < 0 && (px->flags & (FLAGS_ZERO | FLAGS_MINUS)) == FLAGS_ZERO) {
         if ((i = px->width - px->n0 - px->nz0 - px->n1) > 0) {
             px->nz0 += i;
         }
     }
+#endif
 }

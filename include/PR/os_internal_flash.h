@@ -1,7 +1,11 @@
 #ifndef _OS_INTERNAL_FLASH_H_
 #define	_OS_INTERNAL_FLASH_H_
 
+#include "os_version.h"
+
+#if !defined(_DEBUG) || BUILD_VERSION > VERSION_G
 #include "os_message.h"
+#endif
 #include "os_flash.h"
 
 #define FLASH_BLOCK_SIZE 128

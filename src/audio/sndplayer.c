@@ -23,6 +23,9 @@
 
 // TODO: this comes from a header
 #ident "$Revision: 1.17 $"
+#if defined(_DEBUG) && BUILD_VERSION <= VERSION_G
+#line 25 "../audio/sndplayer.c"
+#endif
 
 void alSndpNew(ALSndPlayer *sndp, ALSndpConfig *c) 
 {    

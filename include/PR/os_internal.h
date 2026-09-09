@@ -1,3 +1,9 @@
+#include "os_version.h"
+
+#if defined(_DEBUG) && BUILD_VERSION <= VERSION_G
+#include "G/os_internal.h"
+#else
+
 /**************************************************************************
  *									  *
  *		 Copyright (C) 1995, Silicon Graphics, Inc.		  *
@@ -47,3 +53,5 @@ extern "C" {
 #endif
 
 #endif /* !_OS_INTERNAL_H */
+
+#endif

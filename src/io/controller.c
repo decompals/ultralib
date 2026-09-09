@@ -3,6 +3,12 @@
 #include "PRinternal/controller.h"
 #include "PRinternal/siint.h"
 
+#if BUILD_VERSION < VERSION_I
+#define CONTROLLER_INIT_DELAY_US 500000U
+#define USEC_PER_SEC 1000000U
+#define CONTROLLER_INIT_DELAY_CYCLES (CONTROLLER_INIT_DELAY_US * osClockRate / USEC_PER_SEC)
+#endif
+
 OSPifRam __osContPifRam;
 u8 __osContLastCmd;
 u8 __osMaxControllers;
@@ -27,11 +33,19 @@ s32 osContInit(OSMesgQueue* mq, u8* bitpattern, OSContStatus* data) {
     __osContinitialized = TRUE;
 
     t = osGetTime();
+#if BUILD_VERSION < VERSION_I
+    if (CONTROLLER_INIT_DELAY_CYCLES > t) {
+        osCreateMesgQueue(&timerMesgQueue, &dummy, 1);
+        osSetTimer(&mytimer, CONTROLLER_INIT_DELAY_CYCLES - t, 0, &timerMesgQueue, &dummy);
+        osRecvMesg(&timerMesgQueue, &dummy, OS_MESG_BLOCK);
+    }
+#else
     if (t < OS_USEC_TO_CYCLES(500000)) {
         osCreateMesgQueue(&timerMesgQueue, &dummy, 1);
         osSetTimer(&mytimer, OS_USEC_TO_CYCLES(500000) - t, 0, &timerMesgQueue, &dummy);
         osRecvMesg(&timerMesgQueue, &dummy, OS_MESG_BLOCK);
     }
+#endif
 
     __osMaxControllers = 4;
 
@@ -78,7 +92,11 @@ void __osPackRequestData(u8 cmd) {
     __OSContRequesFormat requestHeader;
     s32 i;
 
+#if BUILD_VERSION < VERSION_I
+    for (i = 0; i < ARRLEN(__osContPifRam.ramarray) + 1; i++) {
+#else
     for (i = 0; i < ARRLEN(__osContPifRam.ramarray); i++) {
+#endif
         __osContPifRam.ramarray[i] = 0;
     }
 

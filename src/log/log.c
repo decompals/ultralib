@@ -1,6 +1,12 @@
 #include "stdarg.h"
+#include "PR/os_version.h"
+#if defined(_DEBUG) && BUILD_VERSION <= VERSION_G
+#include "PR/os.h"
+#include "PR/rdb.h"
+#else
 #include "PR/rdb.h"
 #include "PR/os.h"
+#endif
 #include "PR/os_internal.h"
 #include "PR/ultraerror.h"
 #include "PR/ultralog.h"

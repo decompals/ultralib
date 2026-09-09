@@ -1,9 +1,22 @@
 #ifndef _FINALROM
 
+#include "PR/os_version.h"
+#if defined(_DEBUG) && BUILD_VERSION <= VERSION_G
+#include "G/os.h"
+#include "G/os_internal.h"
+#define _ULTRALIB_G_RMONBRK
+#define _ULTRALIB_G_RMONMISC
+#endif
 #include "PRinternal/dbgproto.h"
+#if !(defined(_DEBUG) && BUILD_VERSION <= VERSION_G)
 #include "PR/os_internal.h"
+#endif
 #include "PR/sptask.h"
 #include "PRinternal/rmonint.h"
+#if defined(_ULTRALIB_G_RMONBRK)
+#undef _ULTRALIB_G_RMONMISC
+#undef _ULTRALIB_G_RMONBRK
+#endif
 
 #include "PRinternal/macros.h"
 
@@ -16,6 +29,20 @@
 #ident "$Revision: 1.2 $"
 #ident "$Revision: 1.4 $"
 #ident "$Revision: 1.3 $"
+#endif
+
+#if defined(_DEBUG) && BUILD_VERSION <= VERSION_G
+static OSThread rmonIOThread ALIGNED(0x8);
+static OSMesg rmonMsgs[8] ALIGNED(0x8);
+static STACK(rmonIOStack, 0x4000) ALIGNED(0x10);
+static OSMesg rmonPiMsgs[8] ALIGNED(0x8);
+static OSMesgQueue rmonPiMQ ALIGNED(0x8);
+OSMesgQueue __rmonMQ ALIGNED(0x8);
+extern OSMesgQueue rmonCalloutMQ;
+extern OSMesgQueue __rmonLogAckMesgQueue;
+extern OSMesgQueue __rmonDataAckMesgQueue;
+extern OSMesgQueue __rmonProfReqMesgQueue;
+extern OSMesgQueue __rmonProfAckMesgQueue;
 #endif
 
 int __rmonSetFault(KKHeader* req) {
@@ -32,12 +59,14 @@ int __rmonSetFault(KKHeader* req) {
     return TV_ERROR_NO_ERROR;
 }
 
+#if !(defined(_DEBUG) && BUILD_VERSION <= VERSION_G)
 OSMesgQueue __rmonMQ ALIGNED(0x8);
 static OSThread rmonIOThread ALIGNED(0x8);
 static OSMesg rmonMsgs[8] ALIGNED(0x8);
 static STACK(rmonIOStack, 0x4000) ALIGNED(0x10);
 static OSMesg rmonPiMsgs[8] ALIGNED(0x8);
 static OSMesgQueue rmonPiMQ ALIGNED(0x8);
+#endif
 
 void __rmonInit(void) {
     osCreateMesgQueue(&__rmonMQ, rmonMsgs, ARRLEN(rmonMsgs));

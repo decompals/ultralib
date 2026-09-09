@@ -725,9 +725,9 @@ spDraw ( Sprite   *s )
     gSPEndDisplayList ( gl++ );
 
 #if BUILD_VERSION >= VERSION_J
-#line 722
+#line 722 "../sp/sprite.c"
 #else
-#line 714
+#line 714 "../sp/sprite.c"
 #endif
     assert((gl - ogl) < s->ndisplist);
     s->rsp_dl_next   = gl;

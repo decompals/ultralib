@@ -1,12 +1,28 @@
 #ifndef _FINALROM
 
+#include "PR/os_version.h"
+#if defined(_DEBUG) && BUILD_VERSION <= VERSION_G
+#include "G/os.h"
+#include "G/os_internal.h"
+#define _ULTRALIB_G_RMONBRK
+#endif
 #include "PRinternal/dbgproto.h"
+#if !(defined(_DEBUG) && BUILD_VERSION <= VERSION_G)
 #include "PR/os_internal.h"
+#endif
+#if defined(_DEBUG) && BUILD_VERSION <= VERSION_G
+#define _ULTRALIB_G_NO_OS_INTERNAL_DECLS
+#endif
 #include "PR/rcp.h"
+#if defined(_DEBUG) && BUILD_VERSION <= VERSION_G
+#undef _ULTRALIB_G_NO_OS_INTERNAL_DECLS
+#endif
 #include "PR/sptask.h"
 #include "PRinternal/rmonint.h"
+#if defined(_ULTRALIB_G_RMONBRK)
+#undef _ULTRALIB_G_RMONBRK
+#endif
 #include "PR/rdb.h"
-#include "PR/os_version.h"
 
 #include "PRinternal/macros.h"
 

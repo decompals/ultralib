@@ -1,3 +1,5 @@
+#include "PR/os_version.h"
+#if BUILD_VERSION >= VERSION_J
 /**
  * @file vimodefpalhpf1.c
  *
@@ -45,3 +47,4 @@ OSViMode osViModeFpalHpf1 = {
           VINTR(2),             // vIntr
       } },
 };
+#endif

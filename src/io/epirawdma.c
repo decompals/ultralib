@@ -5,8 +5,12 @@
 #ident "$Revision: 1.17 $"
 
 s32 __osEPiRawStartDma(OSPiHandle* pihandle, s32 direction, u32 devAddr, void* dramAddr, u32 size) {
+#if BUILD_VERSION < VERSION_I
+    register u32 stat;
+#else
     u32 stat;
     u32 domain;
+#endif
 
 #ifdef _DEBUG
     if ((direction != OS_READ) && (direction != OS_WRITE)) {

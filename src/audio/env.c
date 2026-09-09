@@ -26,6 +26,9 @@
 // TODO: these come from headers
 #ident "$Revision: 1.49 $"
 #ident "$Revision: 1.17 $"
+#if defined(_DEBUG) && BUILD_VERSION <= VERSION_G
+#line 29 "../audio/env.c"
+#endif
 #ifdef AUD_PROFILE
 extern u32 cnt_index, env_num, env_cnt, env_max, env_min, lastCnt[];
 extern u32 rate_num, rate_cnt, rate_max, rate_min;
@@ -99,7 +102,9 @@ Acmd *alEnvmixerPull(void *filter, s16 *outp, s32 outCount, s32 sampleOffset,
         samples    = thisOffset - lastOffset;
         if (samples > outCount)
             break;
-#if BUILD_VERSION < VERSION_J
+#if defined(_DEBUG) && BUILD_VERSION <= VERSION_G
+#line 102
+#elif BUILD_VERSION < VERSION_J
 #line 103
 #endif
         assert(samples >= 0);
@@ -348,7 +353,9 @@ s32 alEnvmixerParam(void *filter, s32 paramID, void *param)
     }
     return 0;
 }
-#if BUILD_VERSION < VERSION_J
+#if defined(_DEBUG) && BUILD_VERSION <= VERSION_G
+#line 349
+#elif BUILD_VERSION < VERSION_J
 #line 350
 #endif
 static Acmd* _pullSubFrame(void *filter, s16 *inp, s16 *outp, s32 outCount,
@@ -582,10 +589,6 @@ f32 _getVol(f32 ivol, s32 samples, s16 ratem, u16 ratel)
 #endif
     return ivol;
 }
-
-
-
-
 
 
 

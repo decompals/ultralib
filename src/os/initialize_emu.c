@@ -1,4 +1,6 @@
-#ifndef _FINALROM
+#include "PR/os_version.h"
+
+#if !defined(_FINALROM) && BUILD_VERSION >= VERSION_K
 
 #include "PR/os_internal.h"
 #include "PR/rdb.h"

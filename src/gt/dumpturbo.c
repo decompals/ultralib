@@ -16,8 +16,13 @@
  *
  */
 
+#include "PR/os_version.h"
+#if defined(_DEBUG) && BUILD_VERSION <= VERSION_G
+#include "G/dumpturbo.h"
+#else
 #include <ultra64.h>
 #include <gt.h>
+#endif
 #include "PRinternal/macros.h"
 
 #if BUILD_VERSION < VERSION_J

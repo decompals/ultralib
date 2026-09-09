@@ -1,3 +1,6 @@
+#include "PR/os_version.h"
+
+#if BUILD_VERSION >= VERSION_K
 #include "osint_debug.h"
 
 #include "PRinternal/macros.h"
@@ -20,3 +23,4 @@ void osThreadProfileCallback(OSThread* osthread) {
     __osThprofCount++;
     __osThprofLastTimer = now_time;
 }
+#endif

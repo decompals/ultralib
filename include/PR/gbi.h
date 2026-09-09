@@ -21,6 +21,7 @@
 #define	_GBI_H_
 
 #include <PR/ultratypes.h>
+#include <PR/os_version.h>
 
 /*
  * To use the F3DEX ucodes, define F3DEX_GBI before include this file.
@@ -1103,12 +1104,29 @@ typedef struct {
   short SubImageHeight;
   char  SourceImageType;
   char  SourceImageBitSize;
+#if BUILD_VERSION < VERSION_I
+  short ScaleX;
+  short ScaleY;
+  char  FlipTextureX;
+  char  FlipTextureY;
+#endif
   short SourceImageOffsetS;
   short SourceImageOffsetT;
+#if BUILD_VERSION < VERSION_I
+  short PScreenX;
+  short PScreenY;
+#endif
+#if BUILD_VERSION < VERSION_I
+  /* 30 bytes for above */
+
+  /* padding to bring structure size to 64 bit allignment */
+  char dummy[2];
+#else
   /* 20 bytes for above */
 
   /* padding to bring structure size to 64 bit allignment */
   char dummy[4]; 
+#endif
 
 } uSprite_t;
 
@@ -1116,7 +1134,11 @@ typedef union {
   uSprite_t  s;
 
   /* Need to make sure this is 64 bit aligned */   
+#if BUILD_VERSION < VERSION_I
+  long long int         force_structure_allignment[4];
+#else
   long long int         force_structure_allignment[3];
+#endif
 } uSprite;
 
 /*

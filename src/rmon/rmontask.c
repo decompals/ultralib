@@ -1,9 +1,26 @@
 #ifndef _FINALROM
 
+#include "PR/os_version.h"
+#if defined(_DEBUG) && BUILD_VERSION <= VERSION_G
+#include "G/os.h"
+#include "G/os_internal.h"
+#define _ULTRALIB_G_RMONBRK
+#endif
 #include "PRinternal/dbgproto.h"
+#if !(defined(_DEBUG) && BUILD_VERSION <= VERSION_G)
 #include "PR/os_internal.h"
+#endif
 #include "PRinternal/rmonint.h"
+#if defined(_ULTRALIB_G_RMONBRK)
+#undef _ULTRALIB_G_RMONBRK
+#endif
+#if defined(_DEBUG) && BUILD_VERSION <= VERSION_G
+#define _ULTRALIB_G_NO_OS_INTERNAL_DECLS
+#endif
 #include "PR/rcp.h"
+#if defined(_DEBUG) && BUILD_VERSION <= VERSION_G
+#undef _ULTRALIB_G_NO_OS_INTERNAL_DECLS
+#endif
 #include "PR/sptask.h"
 
 #include "PRinternal/macros.h"
@@ -289,9 +306,18 @@ int __rmonRunThread(KKHeader* req) {
             if (request->actions.flags & KK_RUN_SETPC) {
                 tptr->context.pc = request->actions.vaddr;
             }
-            if ((request->actions.flags & KK_RUN_SSTEP) && !__rmonSetSingleStep(request->tid, (u32*)tptr->context.pc)) {
+#if defined(_DEBUG) && BUILD_VERSION <= VERSION_G
+            if (request->actions.flags & KK_RUN_SSTEP) {
+                if (!__rmonSetSingleStep(request->tid, (u32*)tptr->context.pc)) {
+                    return TV_ERROR_OPERATIONS_PROTECTED;
+                }
+            }
+#else
+            if ((request->actions.flags & KK_RUN_SSTEP) &&
+                !__rmonSetSingleStep(request->tid, (u32*)tptr->context.pc)) {
                 return TV_ERROR_OPERATIONS_PROTECTED;
             }
+#endif
             runNeeded = TRUE;
             break;
         case RMON_RSP:

@@ -168,6 +168,11 @@ endif
 
 GBIDEFINE := -DF3DEX_GBI
 
+ifeq ($(VERSION):$(TARGET),G:libultra_d)
+# Use the historical umbrella header without changing later include ordering.
+$(BUILD_DIR)/src/gu/guloadtile_bug.marker: IINC := -I $(WORKING_DIR)/include/compiler/ido/G $(IINC)
+endif
+
 $(BUILD_DIR)/src/gu/parse_gbi.marker: GBIDEFINE := -DF3D_GBI
 $(BUILD_DIR)/src/gu/us2dex_emu.marker: GBIDEFINE :=
 $(BUILD_DIR)/src/gu/us2dex2_emu.marker: GBIDEFINE :=

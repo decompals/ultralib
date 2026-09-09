@@ -8,7 +8,9 @@ OSPiHandle* osFlashReInit(u8 latency, u8 pulse, u8 page_size, u8 rel_duration, u
     __osFlashHandler.pulse = pulse;
     __osFlashHandler.pageSize = page_size;
     __osFlashHandler.relDuration = rel_duration;
+#if !defined(_DEBUG) || BUILD_VERSION > VERSION_G
     __osFlashHandler.domain = PI_DOMAIN2;
+#endif
 
     return &__osFlashHandler;
 }

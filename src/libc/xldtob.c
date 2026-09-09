@@ -1,6 +1,15 @@
+#include "os_version.h"
 #include "stdlib.h"
 #include "string.h"
 #include "xstdio.h"
+
+#if defined(_DEBUG) && BUILD_VERSION <= VERSION_G
+extern unsigned char __ctype[];
+extern char* optarg;
+extern int opterr;
+extern int optind;
+extern int optopt;
+#endif
 
 // TODO: these come from headers
 #ident "$Revision: 1.23 $"
@@ -305,4 +314,3 @@ void _Genld(_Pft* px, char code, unsigned char* p, short nsig, short xexp) {
         }
     }
 }
-

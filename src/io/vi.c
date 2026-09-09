@@ -10,6 +10,9 @@
 static __OSViContext vi[2] ALIGNED(0x8) = { 0 };
 __OSViContext* __osViCurr = &vi[0];
 __OSViContext* __osViNext = &vi[1];
+#if BUILD_VERSION < VERSION_I
+s32 osViClock = VI_NTSC_CLOCK;
+#endif
 
 void __osViInit(void) {
     bzero(vi, sizeof(vi));
@@ -17,15 +20,26 @@ void __osViInit(void) {
     __osViNext = &vi[1];
     __osViNext->retraceCount = 1;
     __osViCurr->retraceCount = 1;
+#if BUILD_VERSION >= VERSION_I
     __osViNext->framep = (void*)K0BASE;
     __osViCurr->framep = (void*)K0BASE;
+#endif
 
     if (osTvType == OS_TV_TYPE_PAL) {
         __osViNext->modep = &osViModePalLan1;
+#if BUILD_VERSION < VERSION_I
+        osViClock = VI_PAL_CLOCK;
+#endif
     } else if (osTvType == OS_TV_TYPE_MPAL) {
         __osViNext->modep = &osViModeMpalLan1;
+#if BUILD_VERSION < VERSION_I
+        osViClock = VI_MPAL_CLOCK;
+#endif
     } else {
         __osViNext->modep = &osViModeNtscLan1;
+#if BUILD_VERSION < VERSION_I
+        osViClock = VI_NTSC_CLOCK;
+#endif
     }
 
     __osViNext->state = VI_STATE_BLACK;

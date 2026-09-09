@@ -1,3 +1,6 @@
+#include "PR/os_version.h"
+
+#if BUILD_VERSION >= VERSION_K
 #include "osint_debug.h"
 
 void osThreadProfileClear(OSId id) {
@@ -9,3 +12,4 @@ void osThreadProfileClear(OSId id) {
 
     __osRestoreInt(saveMask);
 }
+#endif

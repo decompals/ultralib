@@ -1,10 +1,24 @@
 #ifndef _FINALROM
 
+#include "PR/os_version.h"
+#if defined(_DEBUG) && BUILD_VERSION <= VERSION_G
+#include "G/os.h"
+#include "G/os_internal.h"
+#else
 #include "PR/os_internal.h"
+#endif
 #include "PRinternal/dbgproto.h"
+#if defined(_DEBUG) && BUILD_VERSION <= VERSION_G
+#define _ULTRALIB_G_NO_OS_INTERNAL_DECLS
+#endif
 #include "PR/rcp.h"
+#if defined(_DEBUG) && BUILD_VERSION <= VERSION_G
+#undef _ULTRALIB_G_NO_OS_INTERNAL_DECLS
+#endif
 #include "PR/sptask.h"
+#if !(defined(_DEBUG) && BUILD_VERSION <= VERSION_G)
 #include "PRinternal/rmonint.h"
+#endif
 
 #include "PRinternal/macros.h"
 
@@ -34,6 +48,10 @@ typedef struct {
     u32 oldInstruction;
 } BREAKINFO;
 
+#if defined(_DEBUG) && BUILD_VERSION <= VERSION_G
+u8 __rmonRcpAtBreak;
+#endif
+
 /* first breakpoint is reserved for implementing single-stepping */
 static BREAKINFO breakpoints[NUM_BREAKPOINTS] ALIGNED(0x8);
 /* breakpoint for alternate branch target */
@@ -41,7 +59,13 @@ static BREAKINFO altBreak;
 
 static BREAKINFO RCPbreakpoints[NUM_BREAKPOINTS] ALIGNED(0x8);
 
+#if defined(_DEBUG) && BUILD_VERSION <= VERSION_G
+#define _ULTRALIB_G_RMONBRK
+#include "PRinternal/rmonint.h"
+#undef _ULTRALIB_G_RMONBRK
+#else
 u8 __rmonRcpAtBreak;
+#endif
 
 static void rmonFindFaultedThreads(void);
 

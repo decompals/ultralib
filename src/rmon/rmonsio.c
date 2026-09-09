@@ -10,12 +10,20 @@
 
 #ifndef _FINALROM
 
+#if defined(_DEBUG) && BUILD_VERSION <= VERSION_G
+#include "G/os_internal_compat.h"
+#define _ULTRALIB_G_RMONBRK
+#else
 #include "PR/os_internal.h"
+#endif
 #include "PR/ultraerror.h"
 #include "PR/ultralog.h"
 #include "PR/sptask.h"
 #include "PRinternal/dbgproto.h"
 #include "PRinternal/rmonint.h"
+#if defined(_ULTRALIB_G_RMONBRK)
+#undef _ULTRALIB_G_RMONBRK
+#endif
 #include "PR/ramrom.h"
 #include "PR/rdb.h"
 #include "PR/rmon.h"
@@ -27,11 +35,18 @@
 #ident "$Revision: 1.4 $"
 #endif
 
+#if defined(_DEBUG) && BUILD_VERSION <= VERSION_G
+static OSMesg IOmsgs;
+void* __osRdb_DbgRead_Buf;
+u8 rmonRdbReadBuf[RMON_DBG_BUF_SIZE];
+static OSMesgQueue IOmq;
+#else
 static OSMesgQueue IOmq ALIGNED(0x8);
 static OSMesg IOmsgs;
 
 void* __osRdb_DbgRead_Buf;
 u8 rmonRdbReadBuf[RMON_DBG_BUF_SIZE] ALIGNED(0x10);
+#endif
 
 void __rmonSendFault(OSThread* thread) {
     volatile float f UNUSED;

@@ -1,6 +1,14 @@
 #include "os_version.h"
 #include "stdlib.h"
 
+#if defined(_DEBUG) && BUILD_VERSION <= VERSION_G
+extern unsigned char __ctype[];
+extern char* optarg;
+extern int opterr;
+extern int optind;
+extern int optopt;
+#endif
+
 // TODO: these come from headers
 #ident "$Revision: 1.34 $"
 #ident "$Revision: 1.5 $"

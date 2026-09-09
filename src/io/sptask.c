@@ -58,9 +58,11 @@ void osSpTaskLoad(OSTask* intp) {
         tp->t.ucode_data = tp->t.yield_data_ptr;
         tp->t.ucode_data_size = tp->t.yield_data_size;
         intp->t.flags &= ~OS_TASK_YIELDED;
+#if BUILD_VERSION >= VERSION_I
         if (tp->t.flags & OS_TASK_LOADABLE) {
             tp->t.ucode = (u64*)IO_READ((u32)intp->t.yield_data_ptr + OS_YIELD_DATA_SIZE - 4);
         }
+#endif
     }
 
     osWritebackDCache(tp, sizeof(OSTask));

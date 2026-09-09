@@ -1,3 +1,6 @@
+#include "PR/os_version.h"
+
+#if BUILD_VERSION >= VERSION_K
 #include "osint_debug.h"
 
 void osThreadProfileInit(void) {
@@ -14,3 +17,4 @@ void osThreadProfileInit(void) {
         osThreadProfileClear(i);
     }
 }
+#endif

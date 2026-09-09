@@ -56,9 +56,18 @@
 #ident "$Revision: 1.17 $"
 
 s32 __osSpRawStartDma(s32 direction, u32 devAddr, void* dramAddr, u32 size) {
+#if defined(_DEBUG) && BUILD_VERSION <= VERSION_G
+#line 58 "../io/sprawdma.c"
+    assert((devAddr & 0x7) == 0);
+#line 59 "../io/sprawdma.c"
+    assert(((u32)dramAddr & 0x7) == 0);
+#line 60 "../io/sprawdma.c"
+    assert((size & 0x7) == 0);
+#else
     assert(((u32)devAddr & 0x7) == 0);
     assert(((u32)dramAddr & 0x7) == 0);
     assert(((u32)size & 0x7) == 0);
+#endif
 
     if (__osSpDeviceBusy()) {
         return -1;

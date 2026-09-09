@@ -42,7 +42,9 @@
 
 
 // Adjust line numbers to match assert
-#if BUILD_VERSION < VERSION_J
+#if defined(_DEBUG) && BUILD_VERSION <= VERSION_G
+#line 43 "../io/sirawread.c"
+#elif BUILD_VERSION < VERSION_J
 #line 45
 #endif
 

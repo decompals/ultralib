@@ -15,9 +15,19 @@
  * DOD or NASA FAR Supplement. Unpublished - rights reserved under the
  * Copyright Laws of the United States.
  *====================================================================*/
+#include <os_version.h>
+#if defined(_DEBUG) && BUILD_VERSION <= VERSION_G
+#define _ULTRALIB_G_NO_OS_INTERNAL_DECLS
+#endif
 #include <ultralog.h>
 #include <assert.h>
 #include <sched.h>
+#if defined(_DEBUG) && BUILD_VERSION <= VERSION_G
+#undef _ULTRALIB_G_NO_OS_INTERNAL_DECLS
+#line 18 "../sched/sched.c"
+#else
+#line 20 "sched.c"
+#endif
 // TODO: this comes from a header
 #ident "$Revision: 1.17 $"
 
@@ -617,4 +627,3 @@ s32 __scSchedule(OSSched *sc, OSScTask **sp, OSScTask **dp, s32 availRCP)
     return avail;
     
 }
-

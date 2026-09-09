@@ -14,7 +14,10 @@ extern "C" {
 #endif
 
 #include "ultratypes.h"
+#include "os_version.h"
+#if !defined(_DEBUG) || BUILD_VERSION > VERSION_G
 #include "os_pi.h"
+#endif
 
 #if defined(_LANGUAGE_C) || defined(_LANGUAGE_C_PLUS_PLUS)
 

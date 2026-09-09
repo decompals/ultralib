@@ -50,12 +50,23 @@ s32 osPfsIsPlug(OSMesgQueue* mq, u8* pattern) {
 }
 
 void __osPfsRequestData(u8 cmd) {
-    u8* ptr = (u8*)&__osPfsPifRam;
+    u8* ptr;
     __OSContRequesFormat requestformat;
     int i;
 
+#if BUILD_VERSION >= VERSION_I
+    ptr = (u8*)&__osPfsPifRam;
+#endif
     __osContLastCmd = cmd;
+#if BUILD_VERSION < VERSION_I
+    for (i = 0; i < ARRLEN(__osPfsPifRam.ramarray) + 1; i++) {
+        __osPfsPifRam.ramarray[i] = 0;
+    }
+#endif
     __osPfsPifRam.pifstatus = CONT_CMD_EXE;
+#if BUILD_VERSION < VERSION_I
+    ptr = (u8*)&__osPfsPifRam;
+#endif
     requestformat.dummy = CONT_CMD_NOP;
     requestformat.txsize = CONT_CMD_REQUEST_STATUS_TX;
     requestformat.rxsize = CONT_CMD_REQUEST_STATUS_RX;

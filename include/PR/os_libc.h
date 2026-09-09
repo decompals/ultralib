@@ -1,3 +1,8 @@
+#include "os_version.h"
+
+#if defined(_DEBUG) && BUILD_VERSION <= VERSION_G
+#include "G/os.h"
+#else
 
 /*====================================================================
  * os_libc.h
@@ -103,3 +108,5 @@ extern void		osSyncPrintf(const char *fmt, ...);
 #endif
 
 #endif /* !_OS_LIBC_H_ */
+
+#endif

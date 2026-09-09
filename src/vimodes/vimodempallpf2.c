@@ -8,9 +8,14 @@
  * F = Interlaced
  * 2 = 32-bit Framebuffer
  */
+#include "PR/os_version.h"
+#if defined(_DEBUG) && BUILD_VERSION <= VERSION_G
+#include "G/vimode.h"
+#else
 #include "PR/os.h"
 #include "PR/rcp.h"
 #include "PRinternal/viint.h"
+#endif
 
 OSViMode osViModeMpalLpf2 = {
     OS_VI_MPAL_LPF2, // type

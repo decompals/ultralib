@@ -70,20 +70,38 @@
 /* Largest serviceable read/write memory request */
 #define RMON_MAX_XFER_SIZE 1024
 
+#ifdef _ULTRALIB_G_RMONBRK
+extern u8 __rmonRcpAtBreak;
+extern int __rmonActive;
+extern u8 __rmonUtilityBuffer[];
+#ifndef _ULTRALIB_G_RMONMISC
+extern OSMesgQueue __rmonMQ;
+extern OSMesgQueue rmonCalloutMQ;
+extern OSMesgQueue __rmonLogAckMesgQueue;
+extern OSMesgQueue __rmonDataAckMesgQueue;
+extern OSMesgQueue __rmonProfReqMesgQueue;
+extern OSMesgQueue __rmonProfAckMesgQueue;
+#endif
+#endif
+
 /* rmonmain */
 
 void __rmonSendHeader(KKHeader* const block, u32 blockSize, u32 type);
 void __rmonSendReply(KKHeader* const block, u32 blockSize, u32 replyType);
 void __rmonSendData(char* const block, unsigned int blockSize);
 
+#ifndef _ULTRALIB_G_RMONBRK
 extern int __rmonActive;
+#endif
 
 /* rmonmisc */
 
 void __rmonInit(void);
 void __rmonPanic(void);
 
+#ifndef _ULTRALIB_G_RMONBRK
 extern OSMesgQueue __rmonMQ;
+#endif
 
 /* rmonmem */
 
@@ -92,7 +110,9 @@ u32 __rmonReadWordAt(u32* addr);
 void __rmonMemcpy(u8* dest, u8* srce, u32 count);
 void __rmonCopyWords(u32* dest, u32* srce, u32 count);
 
+#ifndef _ULTRALIB_G_RMONBRK
 extern u8 __rmonUtilityBuffer[];
+#endif
 
 /* rmonsio */
 
@@ -101,8 +121,10 @@ void __rmonIOflush(void);
 void __rmonIOputw(u32 word);
 void __rmonIOhandler(void);
 
+#ifndef _ULTRALIB_G_RMONBRK
 extern void* __osRdb_DbgRead_Buf;
 extern u8 rmonRdbReadBuf[];
+#endif
 
 /* rmonrcp */
 
@@ -120,7 +142,9 @@ void __rmonHitBreak(void);
 void __rmonHitSpBreak(void);
 void __rmonHitCpuFault(void);
 
+#ifndef _ULTRALIB_G_RMONBRK
 extern u8 __rmonRcpAtBreak;
+#endif
 
 /* rmonregs */
 

@@ -1,6 +1,12 @@
 #ifndef _FINALROM
 
+#include "PR/os_version.h"
+#if defined(_DEBUG) && BUILD_VERSION <= VERSION_G
+#include "G/os.h"
+#include "G/os_internal.h"
+#else
 #include "PR/os_internal.h"
+#endif
 #include "PR/rdb.h"
 
 #include "PRinternal/macros.h"

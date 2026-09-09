@@ -4,7 +4,9 @@
 #include "PRinternal/controller.h"
 #include "PRinternal/siint.h"
 
+#if BUILD_VERSION >= VERSION_J
 extern s32 __osPfsLastChannel;
+#endif
 
 #define READFORMAT(ptr) ((__OSContRamReadFormat*)(ptr))
 
@@ -102,6 +104,12 @@ s32 __osContRamWrite(OSMesgQueue* mq, int channel, u16 address, u8* buffer, int 
     osRecvMesg(mq, NULL, OS_MESG_BLOCK);
 
     do {
+#if BUILD_VERSION < VERSION_I
+        for (i = 0; i < ARRLEN(__osPfsPifRam.ramarray) + 1; i++) {
+            __osPfsPifRam.ramarray[i] = CONT_CMD_NOP;
+        }
+        __osPfsPifRam.pifstatus = CONT_CMD_REQUEST_STATUS;
+#endif
         ret = __osSiRawStartDma(OS_READ, &__osPfsPifRam);
         osRecvMesg(mq, NULL, OS_MESG_BLOCK);
         ptr = (u8*)&__osPfsPifRam;
@@ -126,8 +134,10 @@ s32 __osContRamWrite(OSMesgQueue* mq, int channel, u16 address, u8* buffer, int 
                 
                 ret = PFS_ERR_CONTRFAIL;
             }
+#if BUILD_VERSION >= VERSION_I
         } else {
             ret = PFS_ERR_NOPACK;
+#endif
         }
     } while ((ret == PFS_ERR_CONTRFAIL) && retry-- >= 0);
 
@@ -142,6 +152,11 @@ static void __osPackRamWriteData(int channel, u16 address, u8 *buffer) {
     int i;
 
     ptr = (u8 *)__osPfsPifRam.ramarray;
+#if BUILD_VERSION < VERSION_I
+    for (i = 0; i < ARRLEN(__osPfsPifRam.ramarray) + 1; i++) {
+        __osPfsPifRam.ramarray[i] = 0;
+    }
+#endif
     __osPfsPifRam.pifstatus = CONT_CMD_EXE;
     ramreadformat.dummy = CONT_CMD_NOP;
     ramreadformat.txsize = CONT_CMD_WRITE_PAK_TX;
@@ -155,7 +170,9 @@ static void __osPackRamWriteData(int channel, u16 address, u8 *buffer) {
     }
     
     if (channel != 0) {
-        for (i = 0; i < channel; i++) { *ptr++ = CONT_CMD_REQUEST_STATUS; }
+        for (i = 0; i < channel; i++) {
+            *ptr++ = CONT_CMD_REQUEST_STATUS;
+        }
     }
     
     *(__OSContRamReadFormat *)ptr = ramreadformat;

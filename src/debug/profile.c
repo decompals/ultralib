@@ -150,7 +150,11 @@ void osProfileStart(u32 microseconds) {
 #endif
 
     osCreateMesgQueue(&__osProfTimerQ, &__osProfTimerMsg, 1);
+#if BUILD_VERSION < VERSION_I
+    osSetTimer(&__osProfTimer, 0, microseconds * osClockRate / 1000000, &__osProfTimerQ, NULL);
+#else
     osSetTimer(&__osProfTimer, 0, OS_USEC_TO_CYCLES(microseconds), &__osProfTimerQ, NULL);
+#endif
     __osProfTimerPeriod = microseconds;
     __osProfileActive = TRUE;
 }

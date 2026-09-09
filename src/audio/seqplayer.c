@@ -42,6 +42,9 @@
 
 // TODO: this comes from a header
 #ident "$Revision: 1.17 $"
+#if defined(_DEBUG) && BUILD_VERSION <= VERSION_G
+#line 44 "../audio/seqplayer.c"
+#endif
 
 
 static  ALMicroTime     __seqpVoiceHandler(void *node);

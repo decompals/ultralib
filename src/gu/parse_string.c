@@ -9,7 +9,12 @@
  *  in part, without the prior written consent of Silicon Graphics, Inc.  *
  *                                                                        *
  *************************************************************************/
+#include "PR/os_version.h"
+#if defined(_DEBUG) && BUILD_VERSION <= VERSION_G
+#include "G/ultra64.h"
+#else
 #include <ultra64.h>
+#endif
 #include <ultrahost.h>
 #include <gu.h>
 

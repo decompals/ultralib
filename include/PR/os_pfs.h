@@ -180,6 +180,7 @@ extern s32 osPfsInit(OSMesgQueue *, OSPfs *, int);
 extern s32 osPfsReFormat(OSPfs *, OSMesgQueue *, int);
 extern s32 osPfsChecker(OSPfs *);
 extern s32 osPfsAllocateFile(OSPfs *, u16, u32, u8 *, u8 *, int, s32 *);
+extern s32 osPfsReSizeFile(OSPfs *, u16, u32, u8 *, u8 *, int);
 extern s32 osPfsFindFile(OSPfs *, u16, u32, u8 *, u8 *, s32 *);
 extern s32 osPfsDeleteFile(OSPfs *, u16, u32, u8 *, u8 *);
 extern s32 osPfsReadWriteFile(OSPfs *, s32, u8, int, int, u8 *);

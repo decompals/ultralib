@@ -1,4 +1,10 @@
 
+#include "os_version.h"
+
+#if defined(_DEBUG) && BUILD_VERSION <= VERSION_G
+#include "G/os.h"
+#else
+
 /*====================================================================
  * os.h
  *
@@ -106,3 +112,5 @@ extern "C" {
 #endif
 
 #endif /* !_OS_H */
+
+#endif

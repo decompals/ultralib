@@ -27,6 +27,9 @@
 // TODO: these come from headers
 #ident "$Revision: 1.49 $"
 #ident "$Revision: 1.17 $"
+#if defined(_DEBUG) && BUILD_VERSION <= VERSION_G
+#line 27 "../audio/reverb.c"
+#endif
 #define RANGE 2.0
 extern ALGlobals *alGlobals;
 
@@ -70,7 +73,9 @@ Acmd *alFxPull(void *filter, s16 *outp, s32 outCount, s32 sampleOffset,
 #ifdef AUD_PROFILE
     lastCnt[++cnt_index] = osGetCount();
 #endif
-#if BUILD_VERSION < VERSION_J
+#if defined(_DEBUG) && BUILD_VERSION <= VERSION_G
+#line 73
+#elif BUILD_VERSION < VERSION_J
 #line 74
 #endif
     assert(source);
@@ -447,6 +452,4 @@ f32 _doModFunc(ALDelay *d, s32 count)
 
   return(d->rsgain * val);
 }
-
-
 

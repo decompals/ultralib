@@ -70,8 +70,11 @@ OSPiHandle* osCartRomInit(void) {
     u32 domain = 0;
     u32 saveMask;
 
-    if (CartRomHandle.baseAddress == PHYS_TO_K1(PI_DOM1_ADDR2))
+#if BUILD_VERSION >= VERSION_I
+    if (CartRomHandle.baseAddress == PHYS_TO_K1(PI_DOM1_ADDR2)) {
         return &CartRomHandle;
+    }
+#endif
 
     CartRomHandle.type = DEVICE_TYPE_CART;
     CartRomHandle.baseAddress = PHYS_TO_K1(PI_DOM1_ADDR2);
@@ -80,8 +83,10 @@ OSPiHandle* osCartRomInit(void) {
     CartRomHandle.pulse = (domain >> 8) & 0xff;
     CartRomHandle.pageSize = (domain >> 0x10) & 0xf;
     CartRomHandle.relDuration = (domain >> 0x14) & 0xf;
+#if BUILD_VERSION >= VERSION_I
     CartRomHandle.domain = PI_DOMAIN1;
     CartRomHandle.speed = 0;
+#endif
 
     bzero(&CartRomHandle.transferInfo, sizeof(__OSTranxInfo));
 

@@ -3,7 +3,9 @@
 #include "PR/ultraerror.h"
 #include "PRinternal/osint.h"
 
+#if BUILD_VERSION >= VERSION_K
 extern __OSThreadprofile_s thprof[];
+#endif
 
 void osCreateThread(OSThread* t, OSId id, void (*entry)(void*), void* arg, void* sp, OSPri p) {
     register u32 saveMask;

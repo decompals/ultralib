@@ -846,4 +846,8 @@
 
 #endif
 
+#if defined(_DEBUG) && BUILD_VERSION <= VERSION_G && !defined(_ULTRALIB_G_NO_OS_INTERNAL_DECLS)
+#include "G/os_internal_compat.h"
+#endif
+
 #endif  /* _RCP_H_ */

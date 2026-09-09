@@ -40,7 +40,9 @@
 
 
 // Adjust line numbers to match assert
-#if BUILD_VERSION < VERSION_J
+#if defined(_DEBUG) && BUILD_VERSION <= VERSION_G
+#line 44 "../io/pirawread.c"
+#elif BUILD_VERSION < VERSION_J
 #line 46
 #endif
 

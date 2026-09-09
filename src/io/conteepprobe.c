@@ -3,11 +3,16 @@
 
 s32 osEepromProbe(OSMesgQueue* mq) {
     s32 ret = 0;
+#if BUILD_VERSION >= VERSION_I
     u16 type;
+#endif
     OSContStatus sdata;
 
     __osSiGetAccess();
     ret = __osEepStatus(mq, &sdata);
+#if BUILD_VERSION < VERSION_I
+    ret = (ret == 0 && (sdata.type & CONT_EEPROM) != 0) ? EEPROM_TYPE_4K : 0;
+#else
     type = sdata.type & (CONT_EEPROM | CONT_EEP16K);
 
     if (ret != 0) {
@@ -25,6 +30,7 @@ s32 osEepromProbe(OSMesgQueue* mq) {
                 break;
         }
     }
+#endif
 
 #if BUILD_VERSION >= VERSION_L
     __osEepromRead16K = 0;

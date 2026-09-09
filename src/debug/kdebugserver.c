@@ -1,5 +1,12 @@
 #include "PR/os_internal.h"
+#include "PR/os_version.h"
+#if defined(_DEBUG) && BUILD_VERSION <= VERSION_G
+#define _ULTRALIB_G_NO_OS_INTERNAL_DECLS
+#endif
 #include "PR/rcp.h"
+#if defined(_DEBUG) && BUILD_VERSION <= VERSION_G
+#undef _ULTRALIB_G_NO_OS_INTERNAL_DECLS
+#endif
 #include "PR/rdb.h"
 
 // not included in final rom, but __osThreadSave is here for some reason

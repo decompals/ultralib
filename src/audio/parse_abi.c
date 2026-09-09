@@ -1,4 +1,11 @@
+#include <PR/os_version.h>
+#if defined(_DEBUG) && BUILD_VERSION <= VERSION_G
+#define _ULTRALIB_G_NO_OS_INTERNAL_DECLS
+#endif
 #include <ultra64.h>
+#if defined(_DEBUG) && BUILD_VERSION <= VERSION_G
+#undef _ULTRALIB_G_NO_OS_INTERNAL_DECLS
+#endif
 #include <libaudio.h>
 #include <ultrahost.h>
 #include <gu.h>
@@ -19,7 +26,6 @@ void alParseAbiCL(Acmd *cmdList, u32 nbytes)
 }  
         
 #endif
-
 
 
 

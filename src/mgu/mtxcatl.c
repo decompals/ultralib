@@ -15,7 +15,10 @@ modified versions thereof.
  $Author: doseki $
 ************************************************************************/
 
+#include <PR/os_version.h>
+#if !defined(_DEBUG) || BUILD_VERSION > VERSION_G
 #include <ultra64.h>
+#endif
 #include "../gu/guint.h"
 #include "gu.h"
 
