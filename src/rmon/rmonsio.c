@@ -15,7 +15,9 @@
 #include "PR/ultralog.h"
 #include "PR/sptask.h"
 #include "PRinternal/dbgproto.h"
+#if BUILD_VERSION != VERSION_H
 #include "PRinternal/rmonint.h"
+#endif
 #include "PR/ramrom.h"
 #include "PR/rdb.h"
 #include "PR/rmon.h"
@@ -32,6 +34,10 @@ static OSMesg IOmsgs;
 
 void* __osRdb_DbgRead_Buf;
 u8 rmonRdbReadBuf[RMON_DBG_BUF_SIZE] ALIGNED(0x10);
+
+#if BUILD_VERSION == VERSION_H
+#include "PRinternal/rmonint.h"
+#endif
 
 void __rmonSendFault(OSThread* thread) {
     volatile float f UNUSED;

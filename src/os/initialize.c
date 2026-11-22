@@ -156,6 +156,9 @@ void INITIALIZE_FUNC() {
         *dst++ = *src++;
         *dst++ = *src++;
         *dst++ = *src++;
+#if BUILD_VERSION <= VERSION_H
+        *dst++ = *src++;
+#endif
 
         osWritebackDCache(E_VEC, 0x24);
         osInvalICache(E_VEC, 0x24);

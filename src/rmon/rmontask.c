@@ -289,8 +289,10 @@ int __rmonRunThread(KKHeader* req) {
             if (request->actions.flags & KK_RUN_SETPC) {
                 tptr->context.pc = request->actions.vaddr;
             }
-            if ((request->actions.flags & KK_RUN_SSTEP) && !__rmonSetSingleStep(request->tid, (u32*)tptr->context.pc)) {
-                return TV_ERROR_OPERATIONS_PROTECTED;
+            if (request->actions.flags & KK_RUN_SSTEP) {
+                if (!__rmonSetSingleStep(request->tid, (u32*)tptr->context.pc)) {
+                    return TV_ERROR_OPERATIONS_PROTECTED;
+                }
             }
             runNeeded = TRUE;
             break;

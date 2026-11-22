@@ -6,7 +6,11 @@
 #define assert(EX) ((void)0)
 #else
 extern void __assert(const char *, const char *, int);
+#ifdef __GNUC__
 #define assert(EX)  ((EX)?((void)0):__assert("EX", __FILE__, __LINE__))
+#else
+#define assert(EX)  ((EX)?((void)0):__assert(#EX, __FILE__, __LINE__))
+#endif
 #endif /* NDEBUG */
 
 #endif /* !__ASSERT_H__ */

@@ -15,6 +15,9 @@ static OSMesgQueue viEventQueue ALIGNED(0x8);
 static OSMesg viEventBuf[5] ALIGNED(0x8);
 static OSIoMesg viRetraceMsg ALIGNED(0x8);
 static OSIoMesg viCounterMsg ALIGNED(0x8);
+#if BUILD_VERSION == VERSION_H
+static u16 retrace;
+#endif
 
 static void viMgrMain(void* arg);
 void osCreateViManager(OSPri pri) {
@@ -75,7 +78,9 @@ static void viMgrMain(void* arg) {
     __OSViContext* vc;
     OSDevMgr* dm;
     OSIoMesg* mb;
+#if BUILD_VERSION != VERSION_H
     static u16 retrace;
+#endif
     s32 first;
     u32 count;
 

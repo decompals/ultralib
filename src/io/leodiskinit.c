@@ -4,8 +4,13 @@
 #include "PR/rcp.h"
 #include "PRinternal/macros.h"
 
+#if BUILD_VERSION == VERSION_H && defined(_DEBUG)
+OSPiHandle *__osDiskHandle;
+OSPiHandle LeoDiskHandle ALIGNED(0x8);
+#else
 OSPiHandle LeoDiskHandle ALIGNED(0x8);
 OSPiHandle *__osDiskHandle;
+#endif
 
 OSPiHandle *osLeoDiskInit(void) {
     u32 saveMask;
@@ -22,7 +27,9 @@ OSPiHandle *osLeoDiskInit(void) {
     IO_WRITE(PI_BSD_DOM2_PWD_REG, LeoDiskHandle.pulse);
     IO_WRITE(PI_BSD_DOM2_PGS_REG, LeoDiskHandle.pageSize);
     IO_WRITE(PI_BSD_DOM2_RLS_REG, LeoDiskHandle.relDuration);
+#if BUILD_VERSION >= VERSION_I
     LeoDiskHandle.speed = 0;
+#endif
 
     bzero(&LeoDiskHandle.transferInfo, sizeof(__OSTranxInfo));
 

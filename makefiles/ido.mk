@@ -14,7 +14,7 @@ PICFLAGS := -non_shared
 
 ifeq ($(findstring _d,$(TARGET)),_d)
 OPTFLAGS := -O1 -g2
-ASOPTFLAGS := -O0 -g2
+ASOPTFLAGS := -g2
 else
 ifneq ($(filter $(VERSION),D E F G H I),)
 OPTFLAGS := -O1
@@ -46,7 +46,9 @@ $(BUILD_DIR)/src/os/exceptasm.marker: MIPS_VERSION := -mips3 -32
 $(BUILD_DIR)/src/log/delay.marker: MIPS_VERSION := -mips1 -o32
 $(BUILD_DIR)/src/log/delay.marker: PICFLAGS := -KPIC
 
-ifneq ($(filter $(VERSION),D E F G H I),)
+ifeq ($(VERSION)-$(TARGET),H-libultra_d)
+C_SOURCE_DIR = ../$(notdir $(<D))/
+else ifneq ($(filter $(VERSION),D E F G H I),)
 $(BUILD_DIR)/src/libc/%.marker: OPTFLAGS := -O3
 $(BUILD_DIR)/src/sched/%.marker: OPTFLAGS := -O3
 $(BUILD_DIR)/src/gu/%.marker: OPTFLAGS := -O3

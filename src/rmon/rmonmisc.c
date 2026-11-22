@@ -3,9 +3,19 @@
 #include "PRinternal/dbgproto.h"
 #include "PR/os_internal.h"
 #include "PR/sptask.h"
-#include "PRinternal/rmonint.h"
 
 #include "PRinternal/macros.h"
+
+#if BUILD_VERSION == VERSION_H
+static OSThread rmonIOThread ALIGNED(0x8);
+static OSMesg rmonMsgs[8] ALIGNED(0x8);
+static STACK(rmonIOStack, 0x4000) ALIGNED(0x10);
+static OSMesg rmonPiMsgs[8] ALIGNED(0x8);
+static OSMesgQueue rmonPiMQ ALIGNED(0x8);
+OSMesgQueue __rmonMQ ALIGNED(0x8);
+#endif
+
+#include "PRinternal/rmonint.h"
 
 // TODO: this comes from a header
 #if BUILD_VERSION >= VERSION_J
@@ -32,12 +42,14 @@ int __rmonSetFault(KKHeader* req) {
     return TV_ERROR_NO_ERROR;
 }
 
+#if BUILD_VERSION != VERSION_H
 OSMesgQueue __rmonMQ ALIGNED(0x8);
 static OSThread rmonIOThread ALIGNED(0x8);
 static OSMesg rmonMsgs[8] ALIGNED(0x8);
 static STACK(rmonIOStack, 0x4000) ALIGNED(0x10);
 static OSMesg rmonPiMsgs[8] ALIGNED(0x8);
 static OSMesgQueue rmonPiMQ ALIGNED(0x8);
+#endif
 
 void __rmonInit(void) {
     osCreateMesgQueue(&__rmonMQ, rmonMsgs, ARRLEN(rmonMsgs));

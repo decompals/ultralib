@@ -50,9 +50,8 @@ void _Litob(_Pft *px, char code) {
         px->nz0 = px->prec - px->n1;
     }
 
-    if (px->prec < 0 && (px->flags & (FLAGS_ZERO | FLAGS_MINUS)) == FLAGS_ZERO) {
-        if ((i = px->width - px->n0 - px->nz0 - px->n1) > 0) {
-            px->nz0 += i;
-        }
+    if (px->prec < 0 && (px->flags & (FLAGS_ZERO | FLAGS_MINUS)) == FLAGS_ZERO &&
+        (i = px->width - px->n0 - px->nz0 - px->n1) > 0) {
+        px->nz0 += i;
     }
 }
