@@ -124,11 +124,19 @@ LEAF(__ptExceptionPreamble)
 .set noreorder
     sw      k0, -0x10(sp)
     b       pt_next
+#if BUILD_VERSION >= VERSION_I
      lui    k0, %hi(__ptException)
+#else
+     nop
+#endif
     nop
     nop
 pt_next:
+#if BUILD_VERSION >= VERSION_I
     addiu   k0, k0, %lo(__ptException)
+#else
+    la      k0, __ptException
+#endif
     jr      k0
      nop
 .set reorder
@@ -697,7 +705,11 @@ rcp:
     /* Mask out SP interrupt */
     andi    s1, s1, (MI_INTR_SI | MI_INTR_AI | MI_INTR_VI | MI_INTR_PI | MI_INTR_DP)
     lw      ta0, PHYS_TO_K1(SP_STATUS_REG)
+#if BUILD_VERSION >= VERSION_I
     li      t1, (SP_CLR_INTR | SP_CLR_SIG3)
+#else
+    li      t1, SP_CLR_INTR
+#endif
 
     /* Clear interrupt and signal 3 */
     sw      t1, PHYS_TO_K1(SP_STATUS_REG)
@@ -1181,6 +1193,9 @@ LEAF(__osPopThread)
     lw      v0, 0(a0) /* a0 is OSThread** */
     lw      t9, THREAD_NEXT(v0)
     sw      t9, 0(a0)
+#if defined(_DEBUG) && defined(__sgi)
+    sw      zero, THREAD_NEXT(v0)
+#endif
     jr      ra
 END(__osPopThread)
 

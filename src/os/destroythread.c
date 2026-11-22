@@ -17,7 +17,7 @@ void osDestroyThread(OSThread* t) {
     if (__osActiveQueue == t) {
         __osActiveQueue = __osActiveQueue->tlnext;
     } else {
-#if BUILD_VERSION >= VERSION_J || !defined(__GNUC__)
+#if BUILD_VERSION >= VERSION_J || (!defined(__GNUC__) && BUILD_VERSION >= VERSION_I)
         pred = __osActiveQueue;
         while (pred->priority != -1) {
             succ = pred->tlnext;

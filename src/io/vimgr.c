@@ -1,6 +1,7 @@
 #include "PRinternal/macros.h"
 #include "PR/os_internal.h"
 #include "PR/ultraerror.h"
+#include "PR/ultralog.h"
 #include "PR/rcp.h"
 #include "PRinternal/viint.h"
 #include "PRinternal/osint.h"

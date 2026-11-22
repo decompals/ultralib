@@ -22,6 +22,11 @@
 #include <os.h>
 #include <stdio.h>
 #include "initfx.h"
+#if BUILD_VERSION >= VERSION_I
+#line 22
+#else
+#line 25 "../audio/drvrNew.c"
+#endif
 // TODO: this comes from a header
 #ident "$Revision: 1.49 $"
 /*

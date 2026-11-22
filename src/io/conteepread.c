@@ -12,14 +12,23 @@ static void __osPackEepReadData(u8 address);
 s32 osEepromRead(OSMesgQueue* mq, u8 address, u8* buffer) {
     s32 ret = 0;
     int i = 0;
+#if BUILD_VERSION >= VERSION_I
     u16 type;
+#endif
     u8* ptr;
     OSContStatus sdata;
     __OSContEepromFormat eepromformat;
 
     ptr = (u8*)&__osEepPifRam.ramarray;
+#if BUILD_VERSION < VERSION_I
+    if (address > EEPROM_MAXBLOCKS) {
+        return -1;
+    }
+#endif
+
     __osSiGetAccess();
     ret = __osEepStatus(mq, &sdata);
+#if BUILD_VERSION >= VERSION_I
     type = sdata.type & (CONT_EEPROM | CONT_EEP16K);
 
 #if BUILD_VERSION >= VERSION_J
@@ -51,8 +60,7 @@ s32 osEepromRead(OSMesgQueue* mq, u8 address, u8* buffer) {
         return ret;
     }
 #else
-    if (ret != 0)
-    {
+    if (ret != 0) {
         __osSiRelAccess();
         return CONT_NO_RESPONSE_ERROR;
     } else {
@@ -76,6 +84,11 @@ s32 osEepromRead(OSMesgQueue* mq, u8 address, u8* buffer) {
         }
     }
 #endif
+#else
+    if ((ret != 0) || (sdata.type != CONT_EEPROM)) {
+        return CONT_NO_RESPONSE_ERROR;
+    }
+#endif
 
     while (sdata.status & CONT_EEPROM_BUSY) {
         __osEepStatus(mq, &sdata);
@@ -84,6 +97,13 @@ s32 osEepromRead(OSMesgQueue* mq, u8 address, u8* buffer) {
     __osPackEepReadData(address);
     ret = __osSiRawStartDma(OS_WRITE, &__osEepPifRam); // send command to pif
     osRecvMesg(mq, NULL, OS_MESG_BLOCK);
+#if BUILD_VERSION < VERSION_I
+    for (i = 0; i < PIF_RAMARRAY_LEN(__osEepPifRam.ramarray); i++) {
+        __osEepPifRam.ramarray[i] = CONT_CMD_NOP;
+    }
+    __osEepPifRam.pifstatus = 0;
+#endif
+
     ret = __osSiRawStartDma(OS_READ, &__osEepPifRam); // recv response
     __osContLastCmd = CONT_CMD_READ_EEPROM;
     osRecvMesg(mq, NULL, OS_MESG_BLOCK);
@@ -111,7 +131,7 @@ static void __osPackEepReadData(u8 address) {
     int i;
 
 #if BUILD_VERSION < VERSION_J
-    for (i = 0; i < ARRLEN(__osEepPifRam.ramarray); i++) {
+    for (i = 0; i < PIF_RAMARRAY_LEN(__osEepPifRam.ramarray); i++) {
         __osEepPifRam.ramarray[i] = CONT_CMD_NOP;
     }
 #endif

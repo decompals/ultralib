@@ -4,6 +4,12 @@
 s32 osEepromLongWrite(OSMesgQueue* mq, u8 address, u8* buffer, int length) {
     s32 ret = 0;
 
+#if BUILD_VERSION < VERSION_I
+    if (address > EEPROM_MAXBLOCKS) {
+        return -1;
+    }
+#endif
+
     while (length > 0) {
         ERRCK(osEepromWrite(mq, address, buffer));
         length -= EEPROM_BLOCK_SIZE;

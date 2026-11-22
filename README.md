@@ -11,13 +11,15 @@ Currently this repo supports building the following versions:
 | 2.0E       | :x: / N/A | :x: / N/A | :x: / N/A |
 | 2.0F       | :x: / N/A | :x: / N/A | :x: / N/A |
 | 2.0G       | :x: / N/A | :x: / N/A | :x: / N/A |
-| 2.0H       | N/A / :x: | N/A / :x: | N/A / :x: |
+| 2.0H       | N/A / :x: | :warning: / :x: | :warning: / :x: |
 | 2.0I       | :heavy_check_mark: / :heavy_check_mark: | :x: / :heavy_check_mark: | :heavy_check_mark: / :heavy_check_mark: |
 | 2.0I_patch | :x: / :x: | :x: / :x: | :x: / :x: |
 | 2.0J       | :heavy_check_mark: / :heavy_check_mark: | :x: / :heavy_check_mark: | :heavy_check_mark: / :heavy_check_mark: |
 | 2.0K       | :heavy_check_mark: / :heavy_check_mark: | :x: / :heavy_check_mark: | :heavy_check_mark: / :heavy_check_mark: |
 | 2.0L       | :heavy_check_mark: / :heavy_check_mark: | :x: / :heavy_check_mark: | :heavy_check_mark: / :heavy_check_mark: |
 | ique_v1.5  | :x: | :x: | :x: |
+
+:warning: There is no available SDK archive for comparison, however, the produced archive may match when used in decomp projects.
 
 ## Preparation
 

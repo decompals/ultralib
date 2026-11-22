@@ -29,7 +29,7 @@ Acmd *alSavePull(void *filter, s16 *outp, s32 outCount, s32 sampleOffset,
     Acmd        *ptr = p;
     ALSave *f = (ALSave *)filter;
     ALFilter    *source = f->filter.source;
-#if BUILD_VERSION < VERSION_J
+#if BUILD_VERSION >= VERSION_I && BUILD_VERSION < VERSION_J
 #line 33
 #endif
     assert(f->filter.source);

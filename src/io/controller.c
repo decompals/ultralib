@@ -78,7 +78,7 @@ void __osPackRequestData(u8 cmd) {
     __OSContRequesFormat requestHeader;
     s32 i;
 
-    for (i = 0; i < ARRLEN(__osContPifRam.ramarray); i++) {
+    for (i = 0; i < PIF_RAMARRAY_LEN(__osContPifRam.ramarray); i++) {
         __osContPifRam.ramarray[i] = 0;
     }
 

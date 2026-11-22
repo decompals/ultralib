@@ -101,9 +101,6 @@ void __rmonIOflush(void);
 void __rmonIOputw(u32 word);
 void __rmonIOhandler(void);
 
-extern void* __osRdb_DbgRead_Buf;
-extern u8 rmonRdbReadBuf[];
-
 /* rmonrcp */
 
 int __rmonRCPrunning(void);

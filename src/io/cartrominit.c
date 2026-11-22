@@ -81,7 +81,9 @@ OSPiHandle* osCartRomInit(void) {
     CartRomHandle.pageSize = (domain >> 0x10) & 0xf;
     CartRomHandle.relDuration = (domain >> 0x14) & 0xf;
     CartRomHandle.domain = PI_DOMAIN1;
+#if BUILD_VERSION >= VERSION_I
     CartRomHandle.speed = 0;
+#endif
 
     bzero(&CartRomHandle.transferInfo, sizeof(__OSTranxInfo));
 

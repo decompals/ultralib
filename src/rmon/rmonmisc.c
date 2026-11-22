@@ -4,6 +4,7 @@
 #include "PR/os_internal.h"
 #include "PR/sptask.h"
 #include "PRinternal/rmonint.h"
+#include "PR/gbi.h"
 
 #include "PRinternal/macros.h"
 

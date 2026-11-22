@@ -27,11 +27,16 @@
 #ident "$Revision: 1.4 $"
 #endif
 
+#if BUILD_VERSION >= VERSION_H || BUILD_VERSION < VERSION_F || !defined(_DEBUG)
 static OSMesgQueue IOmq ALIGNED(0x8);
+#endif
 static OSMesg IOmsgs;
 
 void* __osRdb_DbgRead_Buf;
 u8 rmonRdbReadBuf[RMON_DBG_BUF_SIZE] ALIGNED(0x10);
+#if BUILD_VERSION >= VERSION_F && BUILD_VERSION < VERSION_H && defined(_DEBUG)
+static OSMesgQueue IOmq ALIGNED(0x8);
+#endif
 
 void __rmonSendFault(OSThread* thread) {
     volatile float f UNUSED;
