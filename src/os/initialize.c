@@ -156,7 +156,7 @@ void INITIALIZE_FUNC() {
         *dst++ = *src++;
         *dst++ = *src++;
         *dst++ = *src++;
-#if BUILD_VERSION <= VERSION_H
+#if BUILD_VERSION < VERSION_I
         *dst++ = *src++;
 #endif
 

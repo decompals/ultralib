@@ -2,13 +2,32 @@
 #include "PR/ultraerror.h"
 #include "assert.h"
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // Adjust line numbers to match assert
-#if BUILD_VERSION <= VERSION_H
-#line 22
-#elif BUILD_VERSION < VERSION_J
+#if BUILD_VERSION >= VERSION_J
+#line 23
+#elif BUILD_VERSION >= VERSION_I
 #line 26
 #else
-#line 27
+#line 26
 #endif
 
 // TODO: this comes from a header
@@ -26,10 +45,10 @@ s32 __osEPiRawReadIo(OSPiHandle* pihandle, u32 devAddr, u32* data) {
 #endif
     assert(data != NULL);
 
-#if BUILD_VERSION <= VERSION_H
-    WAIT_ON_IOBUSY(stat);
-#else
+#if BUILD_VERSION >= VERSION_I
     EPI_SYNC(pihandle, stat, domain);
+#else
+    WAIT_ON_IOBUSY(stat);
 #endif
     *data = IO_READ(pihandle->baseAddress | devAddr);
 

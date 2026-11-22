@@ -99,7 +99,7 @@ Acmd *alEnvmixerPull(void *filter, s16 *outp, s32 outCount, s32 sampleOffset,
         samples    = thisOffset - lastOffset;
         if (samples > outCount)
             break;
-#if BUILD_VERSION < VERSION_J && BUILD_VERSION != VERSION_H
+#if BUILD_VERSION >= VERSION_I && BUILD_VERSION < VERSION_J
 #line 103
 #endif
         assert(samples >= 0);
@@ -348,12 +348,12 @@ s32 alEnvmixerParam(void *filter, s32 paramID, void *param)
     }
     return 0;
 }
-#if BUILD_VERSION == VERSION_H
-#line 347
-#elif BUILD_VERSION < VERSION_J
+#if BUILD_VERSION >= VERSION_J
+#line 349
+#elif BUILD_VERSION >= VERSION_I
 #line 348
 #else
-#line 353
+#line 351
 #endif
 static Acmd* _pullSubFrame(void *filter, s16 *inp, s16 *outp, s32 outCount,
                     s32 sampleOffset, Acmd *p) 

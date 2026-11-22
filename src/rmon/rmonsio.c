@@ -15,9 +15,7 @@
 #include "PR/ultralog.h"
 #include "PR/sptask.h"
 #include "PRinternal/dbgproto.h"
-#if BUILD_VERSION != VERSION_H
 #include "PRinternal/rmonint.h"
-#endif
 #include "PR/ramrom.h"
 #include "PR/rdb.h"
 #include "PR/rmon.h"
@@ -29,14 +27,15 @@
 #ident "$Revision: 1.4 $"
 #endif
 
+#if BUILD_VERSION >= VERSION_H || BUILD_VERSION < VERSION_F || !defined(_DEBUG)
 static OSMesgQueue IOmq ALIGNED(0x8);
+#endif
 static OSMesg IOmsgs;
 
 void* __osRdb_DbgRead_Buf;
 u8 rmonRdbReadBuf[RMON_DBG_BUF_SIZE] ALIGNED(0x10);
-
-#if BUILD_VERSION == VERSION_H
-#include "PRinternal/rmonint.h"
+#if BUILD_VERSION >= VERSION_F && BUILD_VERSION < VERSION_H && defined(_DEBUG)
+static OSMesgQueue IOmq ALIGNED(0x8);
 #endif
 
 void __rmonSendFault(OSThread* thread) {

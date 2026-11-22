@@ -70,8 +70,12 @@ Acmd *alFxPull(void *filter, s16 *outp, s32 outCount, s32 sampleOffset,
 #ifdef AUD_PROFILE
     lastCnt[++cnt_index] = osGetCount();
 #endif
-#if BUILD_VERSION < VERSION_J && BUILD_VERSION != VERSION_H
-#line 74
+#if BUILD_VERSION >= VERSION_I && BUILD_VERSION < VERSION_J
+#line 70
+#elif BUILD_VERSION < VERSION_F
+#line 68
+#else
+#line 75
 #endif
     assert(source);
 

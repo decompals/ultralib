@@ -20,7 +20,7 @@ s32 osEepromRead(OSMesgQueue* mq, u8 address, u8* buffer) {
     __OSContEepromFormat eepromformat;
 
     ptr = (u8*)&__osEepPifRam.ramarray;
-#if BUILD_VERSION <= VERSION_H
+#if BUILD_VERSION < VERSION_I
     if (address > EEPROM_MAXBLOCKS) {
         return -1;
     }
@@ -28,11 +28,7 @@ s32 osEepromRead(OSMesgQueue* mq, u8 address, u8* buffer) {
 
     __osSiGetAccess();
     ret = __osEepStatus(mq, &sdata);
-#if BUILD_VERSION <= VERSION_H
-    if ((ret != 0) || (sdata.type != CONT_EEPROM)) {
-        return CONT_NO_RESPONSE_ERROR;
-    }
-#else
+#if BUILD_VERSION >= VERSION_I
     type = sdata.type & (CONT_EEPROM | CONT_EEP16K);
 
 #if BUILD_VERSION >= VERSION_J
@@ -88,6 +84,10 @@ s32 osEepromRead(OSMesgQueue* mq, u8 address, u8* buffer) {
         }
     }
 #endif
+#else
+    if ((ret != 0) || (sdata.type != CONT_EEPROM)) {
+        return CONT_NO_RESPONSE_ERROR;
+    }
 #endif
 
     while (sdata.status & CONT_EEPROM_BUSY) {
@@ -97,7 +97,7 @@ s32 osEepromRead(OSMesgQueue* mq, u8 address, u8* buffer) {
     __osPackEepReadData(address);
     ret = __osSiRawStartDma(OS_WRITE, &__osEepPifRam); // send command to pif
     osRecvMesg(mq, NULL, OS_MESG_BLOCK);
-#if BUILD_VERSION <= VERSION_H
+#if BUILD_VERSION < VERSION_I
     for (i = 0; i < PIF_RAMARRAY_LEN(__osEepPifRam.ramarray); i++) {
         __osEepPifRam.ramarray[i] = CONT_CMD_NOP;
     }

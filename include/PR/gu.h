@@ -37,10 +37,10 @@
 #define M_DTOR		(3.14159265358979323846/180.0)
 
 #define	FTOFIX32(x)	(long)((x) * (float)0x00010000)
-#if BUILD_VERSION <= VERSION_H
-#define	FIX32TOF(x)	((float)(x) / (float)0x00010000)
-#else
+#if BUILD_VERSION >= VERSION_I
 #define	FIX32TOF(x)	((float)(x) * (1.0f / (float)0x00010000))
+#else
+#define	FIX32TOF(x)	((float)(x) / (float)0x00010000)
 #endif
 #define	FTOFRAC8(x)	((int) MIN(((x) * (128.0f)), 127.0f) & 0xff)
 

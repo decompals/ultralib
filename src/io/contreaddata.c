@@ -7,7 +7,7 @@ static void __osPackReadData(void);
 
 s32 osContStartReadData(OSMesgQueue* mq) {
     s32 ret = 0;
-#if BUILD_VERSION <= VERSION_H
+#if BUILD_VERSION < VERSION_I
     int i;
 #endif
 
@@ -19,7 +19,7 @@ s32 osContStartReadData(OSMesgQueue* mq) {
         osRecvMesg(mq, NULL, OS_MESG_BLOCK);
     }
 
-#if BUILD_VERSION <= VERSION_H
+#if BUILD_VERSION < VERSION_I
     for (i = 0; i < PIF_RAMARRAY_LEN(__osContPifRam.ramarray); i++) {
         __osContPifRam.ramarray[i] = CONT_CMD_NOP;
     }

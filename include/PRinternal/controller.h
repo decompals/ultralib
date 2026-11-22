@@ -15,10 +15,10 @@ typedef struct
     /* 0x3C */ u32 pifstatus;
 } OSPifRam ALIGNED(0x10);
 
-#if BUILD_VERSION <= VERSION_H
-#define PIF_RAMARRAY_LEN(x) (ARRLEN(x) + 1)
-#else
+#if BUILD_VERSION >= VERSION_I
 #define PIF_RAMARRAY_LEN(x) ARRLEN(x)
+#else
+#define PIF_RAMARRAY_LEN(x) (ARRLEN(x) + 1)
 #endif
 
 typedef struct

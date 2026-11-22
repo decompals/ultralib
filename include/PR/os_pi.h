@@ -37,6 +37,7 @@ extern "C" {
 #include "ultratypes.h"
 #include "os_thread.h"
 #include "os_message.h"
+#include "os_version.h"
 
 
 #if defined(_LANGUAGE_C) || defined(_LANGUAGE_C_PLUS_PLUS)
@@ -184,6 +185,9 @@ typedef struct {
  */
 
 extern OSPiHandle      *__osPiTable;    /* The head of OSPiHandle link list */
+#if BUILD_VERSION >= VERSION_F && BUILD_VERSION < VERSION_J
+extern OSPiHandle      *__osDiskHandle;
+#endif
 
 
 /**************************************************************************

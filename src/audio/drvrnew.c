@@ -22,10 +22,10 @@
 #include <os.h>
 #include <stdio.h>
 #include "initfx.h"
-#if BUILD_VERSION == VERSION_H && !defined(__GNUC__)
-#line 23 "../audio/drvrNew.c"
+#if BUILD_VERSION >= VERSION_I
+#line 22
 #else
-#line 24
+#line 25 "../audio/drvrNew.c"
 #endif
 // TODO: this comes from a header
 #ident "$Revision: 1.49 $"

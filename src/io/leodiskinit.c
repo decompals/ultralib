@@ -4,13 +4,8 @@
 #include "PR/rcp.h"
 #include "PRinternal/macros.h"
 
-#if BUILD_VERSION == VERSION_H && defined(_DEBUG)
-OSPiHandle *__osDiskHandle;
-OSPiHandle LeoDiskHandle ALIGNED(0x8);
-#else
 OSPiHandle LeoDiskHandle ALIGNED(0x8);
 OSPiHandle *__osDiskHandle;
-#endif
 
 OSPiHandle *osLeoDiskInit(void) {
     u32 saveMask;

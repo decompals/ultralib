@@ -15,10 +15,10 @@ s32 __osEPiRawWriteIo(OSPiHandle* pihandle, u32 devAddr, u32 data) {
     }
 #endif
 
-#if BUILD_VERSION <= VERSION_H
-    WAIT_ON_IOBUSY(stat);
-#else
+#if BUILD_VERSION >= VERSION_I
     EPI_SYNC(pihandle, stat, domain);
+#else
+    WAIT_ON_IOBUSY(stat);
 #endif
     IO_WRITE(pihandle->baseAddress | devAddr, data);
 

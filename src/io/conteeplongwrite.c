@@ -4,7 +4,7 @@
 s32 osEepromLongWrite(OSMesgQueue* mq, u8 address, u8* buffer, int length) {
     s32 ret = 0;
 
-#if BUILD_VERSION <= VERSION_H
+#if BUILD_VERSION < VERSION_I
     if (address > EEPROM_MAXBLOCKS) {
         return -1;
     }
